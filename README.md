@@ -1,4 +1,4 @@
-Tomo
-====
+cg2
+===
 
-This is Rocket Slice!
+Computer Graphics 2
