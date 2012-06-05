@@ -2,7 +2,7 @@
 
 #include <vector>
 
-namespace cg2
+namespace tomo
 {
   using std::vector;
 

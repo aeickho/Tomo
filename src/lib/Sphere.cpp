@@ -1,9 +1,9 @@
-#include "cg2/Sphere.hpp"
+#include "tomo/Sphere.hpp"
 
 
 #include <GL/glut.h>
 
-namespace cg2 
+namespace tomo 
 {
 	void Sphere::draw()
 	{
@@ -13,7 +13,7 @@ namespace cg2
 		glPopMatrix();
 	}
 
-	bool Sphere::intersect(Ray& ray)
+	bool Sphere::intersect(Ray& ray) const
 	{
 		Vec3f o = ray.org - center();
 		float a = ray.dir * ray.dir;
@@ -33,18 +33,18 @@ namespace cg2
 
 		if (!ray.t((t0 < 0) ? t1 : t0)) return false;
 
-		ray.obj = this;
+    ray.obj = const_cast<Sphere*>(this);
 		ray.normal = normal(ray.getIntersectionPoint());
 		return true;
 	}
 
-	Vec3f Sphere::normal(const Point3f& iPoint)
+	Vec3f Sphere::normal(const Point3f& iPoint) const
 	{
 		Vec3f n = iPoint - center();
 		return n.normalized();
 	}
 
-	TexCoords Sphere::texCoords(const Point3f& iPoint)
+	TexCoords Sphere::texCoords(const Point3f& iPoint) const
 	{
 		// from http://www.cse.msu.edu/~cse872/tutorial4.html
 		Vec3f n = normal(iPoint);

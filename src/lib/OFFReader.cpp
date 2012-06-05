@@ -1,4 +1,4 @@
-#include "cg2/OFFReader.hpp"
+#include "tomo/OFFReader.hpp"
 
 #include <fstream>
 #include <boost/algorithm/string/trim.hpp>
@@ -8,19 +8,19 @@
 
 using namespace std; 
 
-namespace cg2 
+namespace tomo 
 {
-  void OFFReader::read(std::string filename, Vertices* vertices, Polygons* polygons)
+  void OFFReader::read(std::string filename, Vertices* vertices, Triangles* triangles)
   {
     ifstream is(filename.c_str(), ios::in);
     LOG_MSG << fmt("Reading mesh from % ...") % filename;
 
-    enum Mode { HEADER, SIZE, VERTICES, POLYGONS, END };
+    enum Mode { HEADER, SIZE, VERTICES, TRIANGLES, END };
     int nRow = 0;
     Mode mode = HEADER;
     
     if (vertices) vertices->clear();
-    if (polygons) polygons->clear();
+    if (triangles) triangles->clear();
     int V = 0,F = 0,E = 0;
 
     while (is.good() && mode != END)
@@ -42,9 +42,9 @@ namespace cg2
 
         case SIZE: 
           V = atoi(tokens[0].c_str()); if (vertices) vertices->reserve(V);
-          F = atoi(tokens[1].c_str()); if (polygons) polygons->reserve(F);
+          F = atoi(tokens[1].c_str()); if (triangles) triangles->reserve(F);
           E = atoi(tokens[2].c_str());
-          LOG_MSG << fmt("Found % vertices, % polygons and % edges.") % V % F % E;
+          LOG_MSG << fmt("Found % vertices, % triangles and % edges.") % V % F % E;
           nRow++; mode = VERTICES;
           break;
 
@@ -53,19 +53,19 @@ namespace cg2
                          Vertex v; v.v.set(atof(tokens[0].c_str()),atof(tokens[1].c_str()),atof(tokens[2].c_str()));
                          vertices->push_back(v);
                          nRow++;
-                         if (nRow >= V+2) mode = POLYGONS;
+                         if (nRow >= V+2) mode = TRIANGLES;
                          break;
                        }
-        case POLYGONS: if (polygons) 
+        case TRIANGLES: if (triangles) 
                        {
                          int n = atoi(tokens[0].c_str());
-                         if (n > 0)
+                         if (n == 3)
                          {
-                           Polygon polygon; polygon.resize(n);
-                           for (int i = 0; i < n; i++)
-                             polygon[i] = &vertices->at(atoi(tokens[i+1].c_str()));
-                          
-                           polygons->push_back(polygon);
+                           Triangle tri;
+                           for (int i = 0; i < 3; i++)
+                             tri.v[i] = &vertices->at(atoi(tokens[i+1].c_str()));
+
+                           triangles->push_back(tri);
                            nRow++;
                          }
                          if (nRow >= V+F+2) mode = END;
@@ -77,8 +77,8 @@ namespace cg2
       }
     }
 
-    LOG_MSG_(1) << fmt("Loaded % vertices, % polygons and % edges") % (vertices ? vertices->size() : 0) %
-                                                                      (polygons ? polygons->size() : 0) % 0;
+    LOG_MSG_(1) << fmt("Loaded % vertices, % triangles and % edges") % (vertices ? vertices->size() : 0) %
+                                                                      (triangles ? triangles->size() : 0) % 0;
   }
 }
 

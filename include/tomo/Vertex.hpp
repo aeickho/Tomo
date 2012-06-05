@@ -1,11 +1,11 @@
 #pragma once
 
-#include "cg2/Vector.hpp"
+#include "tomo/Vector.hpp"
 
 #include <vector>
 #include <set>
 
-namespace cg2 
+namespace tomo 
 {
   using std::vector;
   using std::set;

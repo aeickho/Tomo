@@ -1,7 +1,7 @@
-#include "cg2/Shader.hpp"
-#include "cg2/BoundingBox.hpp"
+#include "tomo/Shader.hpp"
+#include "tomo/BoundingBox.hpp"
 
-namespace cg2
+namespace tomo
 {
   struct SceneObject : public Primitive
   {

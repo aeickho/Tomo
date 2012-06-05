@@ -1,11 +1,11 @@
-#include "cg2/OFFWriter.hpp"
+#include "tomo/OFFWriter.hpp"
 #include <boost/foreach.hpp>
 
 #include <fstream>
 
 using namespace std;
 
-namespace cg2 
+namespace tomo 
 {
   void OFFWriter::write(std::string filename, Vertices* vertices, Polygons* polygons)
   {

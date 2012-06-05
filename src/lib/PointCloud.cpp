@@ -1,19 +1,19 @@
-#include "cg2/PointCloud.hpp"
-#include "cg2/Median.hpp"
+#include "tomo/PointCloud.hpp"
+#include "tomo/Median.hpp"
 
 #include <boost/foreach.hpp>
 
 #include <cassert>
 #include <GL/glut.h>
 
-#include "cg2/OFFReader.hpp"
-#include "cg2/OFFWriter.hpp"
+#include "tomo/OFFReader.hpp"
+#include "tomo/OFFWriter.hpp"
 
 #include "tbd/log.h"
 
 using namespace std;
 
-namespace cg2
+namespace tomo
 {
   PointSet::PointSet(Point3f _center, float _radius, int _k) : k_(_k), radius_(_radius), center_(_center)
   {
@@ -145,20 +145,20 @@ namespace cg2
   void PointCloud::read(string filename)
   {
     OFFReader off;
-    off.read(filename,this,NULL);
+    off.read(filename,&vertices(),NULL);
     update();
   }
 
   void PointCloud::write(string filename)
   {
     OFFWriter off;
-    off.write(filename,this,NULL);
+    off.write(filename,&vertices(),NULL);
   }
 
   void PointCloud::update()
   {
     calcBoundingBox();
-    kdTree.build(*this,boundingBox());
+    kdTree.build(vertices(),boundingBox());
   }
 
   void PointCloud::draw(Color color)
@@ -167,7 +167,7 @@ namespace cg2
     if (drawKDTree_) kdTree.draw(kdTreeColor(),boundingBox());
 
     glBegin(GL_POINTS);
-    BOOST_FOREACH( Vertex& vertex, *this )
+    BOOST_FOREACH( Vertex& vertex, vertices() )
     {
       if (selection.count(&vertex))
         glColor3f(selectionColor().x,selectionColor().y,selectionColor().z);

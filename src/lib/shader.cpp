@@ -1,12 +1,12 @@
-#include "cg2/Shader.hpp"
+#include "tomo/Shader.hpp"
 
 #include <stdlib.h>
 #include <iostream>
-#include "cg2/Scene.hpp"
+#include "tomo/Scene.hpp"
 
 using namespace std;
 
-namespace cg2
+namespace tomo
 {
   void Texture::init(string filename)
   {

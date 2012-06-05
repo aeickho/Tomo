@@ -1,8 +1,8 @@
 #pragma once
 
-#include "cg2/BoundingBox.hpp"
+#include "tomo/BoundingBox.hpp"
 
-namespace cg2 
+namespace tomo 
 {
 
   template <typename T> 

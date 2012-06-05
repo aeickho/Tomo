@@ -2,9 +2,9 @@
 
 #include <iostream>
 #include <cmath>
-#include "cg2/misc.hpp"
+#include "tomo/misc.hpp"
 
-namespace cg2
+namespace tomo
 {
   using std::istream;
   using std::ostream;
@@ -64,8 +64,8 @@ namespace cg2
     friend Vec3f operator*( const Vec3f& a, float f ) { return Vec3f(a.x*f, a.y*f, a.z*f); }
 
     friend Vec3f operator*( float f, const Vec3f& a ) { return Vec3f(a.x*f, a.y*f, a.z*f); }
-    friend float operator*( Vec3f& a, Vec3f& b) { return a.x*b.x + a.y*b.y + a.z*b.z; } 
-    friend Vec3f operator%( Vec3f& a, Vec3f& b) { return Vec3f(a.x*b.x,a.y*b.y,a.z*b.z); } 
+    friend float operator*( const Vec3f& a, const Vec3f& b) { return a.x*b.x + a.y*b.y + a.z*b.z; } 
+    friend Vec3f operator%( const Vec3f& a, const Vec3f& b) { return Vec3f(a.x*b.x,a.y*b.y,a.z*b.z); } 
 
     friend Vec3f operator-( const Vec3f& a, const Vec3f& b) { return Vec3f(a.x-b.x, a.y-b.y, a.z-b.z); }
     friend Vec3f operator+( const Vec3f& a, const Vec3f& b) { return Vec3f(a.x+b.x, a.y+b.y, a.z+b.z); }
@@ -106,5 +106,7 @@ namespace cg2
   typedef enum { X,Y,Z } Axis;
 
   typedef Vec3f Color;
+
+  #define COORDS(C) C.x,C.y,C.y 
 }
 

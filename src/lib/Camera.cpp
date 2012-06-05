@@ -1,6 +1,6 @@
-#include "cg2/Camera.hpp" 
+#include "tomo/Camera.hpp" 
 
-namespace cg2
+namespace tomo
 {
 
   Ray Camera::generateRay(float x, float y)

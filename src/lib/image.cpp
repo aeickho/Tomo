@@ -2,9 +2,9 @@
 #include <cstring>
 #include <fstream>
 
-#include "cg2/Image.hpp"
+#include "tomo/Image.hpp"
 
-namespace cg2
+namespace tomo
 {
   using std::ofstream;
 

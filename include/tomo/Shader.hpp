@@ -1,12 +1,12 @@
 #pragma once
 
-#include "cg2/Ray.hpp"
-#include "cg2/Image.hpp"
+#include "tomo/Ray.hpp"
+#include "tomo/Image.hpp"
 
 typedef enum { SM_STANDARD, SM_PHONG_VERTEX, SM_PHONG_FRAGMENT, SM_ } ShadeMode;
 typedef enum { TF_NONE, TF_BILINEAR, TF_TRILINEAR, TF_ } TextureFilter;
 
-namespace cg2
+namespace tomo
 {
   class Texture
   {

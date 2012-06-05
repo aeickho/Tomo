@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 
-namespace cg2 
+namespace tomo 
 {
   class GCodeInstruction
   {

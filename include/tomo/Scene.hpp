@@ -1,13 +1,13 @@
 #pragma once
 
-#include "cg2/SceneObject.hpp"
-#include "cg2/Light.hpp"
-#include "cg2/Camera.hpp"
-#include "cg2/FrameBuffer.hpp"
+#include "tomo/SceneObject.hpp"
+#include "tomo/Light.hpp"
+#include "tomo/Camera.hpp"
+#include "tomo/FrameBuffer.hpp"
 
 #include <vector>
 
-namespace cg2
+namespace tomo
 {
   using std::vector;
 

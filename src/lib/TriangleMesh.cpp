@@ -1,16 +1,27 @@
-#include "cg2/TriangleMesh.hpp"
-#include "cg2/OFFReader.hpp"
+#include "tomo/TriangleMesh.hpp"
+#include "tomo/OFFReader.hpp"
 
 #include <boost/foreach.hpp>
 #include "tbd/log.h"
 
 using namespace std;
 
-namespace cg2
+namespace tomo
 {
   TriangleKDTree::TriangleKDTree()
   {
   }
+
+  void TriangleMesh::draw(Color color)
+  {
+    glColor3f(color.x,color.y,color.z);
+    
+    glBegin(GL_TRIANGLES);
+    BOOST_FOREACH( Triangle& tri, triangles_ ) 
+      tri.drawStub();
+
+    glEnd();
+ }
 
   void TriangleKDTree::divideNode(Node* node, BoundingBox& box, int depth)
   {
@@ -41,24 +52,12 @@ namespace cg2
 
   void TriangleMesh::read(string filename)
   {
-    PolygonMesh::read(filename);
-    calcTriangles();
+    OFFReader off;
+    off.read(filename,&vertices(),&triangles_);
+    calcBoundingBox();
+    calcNormals();
     kdTree.build(triangles(),boundingBox());
   }
-
-	void TriangleMesh::calcTriangles()
-	{
-    triangles_.reserve(polygons().size());
-    BOOST_FOREACH ( Polygon& p, polygons() )
-    {
-			if (p.size()==3)
-			{
-				Triangle tri(p[0],p[1],p[2]);
-				tri.shader(shader());
-				triangles_.push_back(tri);
-			}
-    }
-	}
 
 
   float TriangleKDTree::recKDTreeTraverse(Ray& ray, Node* node, float tnear, float tfar, bool& found)

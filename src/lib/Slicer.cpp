@@ -1,6 +1,6 @@
-#include "cg2/Slicer.hpp"
+#include "tomo/Slicer.hpp"
 
-namespace cg2 
+namespace tomo 
 {
   Slices Slicer::slice(SceneObject& obj, unsigned nSlices)
   {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "cg2/MeshWriter.hpp"
+#include "tomo/MeshWriter.hpp"
 
-namespace cg2 
+namespace tomo 
 {
   class OFFWriter
   {

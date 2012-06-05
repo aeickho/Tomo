@@ -1,10 +1,10 @@
-#include "cg2/BoundingBox.hpp"
+#include "tomo/BoundingBox.hpp"
 
 #include <GL/glut.h>
 
 using namespace std;
 
-namespace cg2 
+namespace tomo 
 {
   bool BoundingBox::pointInBox(Point3f p)
   {
@@ -13,9 +13,9 @@ namespace cg2
       p.z > min.z && p.z < max.z;
   }
 
-  bool BoundingBox::intersect(Ray& ray)
+  bool BoundingBox::intersect(Ray& ray) const
   {
-    float tnear = 1000.0, tfar = -1000.0;
+    float tnear = INF, tfar = -INF;
     for (int i = 0; i < 3; i++)
     {
       if (abs(ray.dir[i]) < 0.001) continue;

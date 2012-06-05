@@ -1,10 +1,10 @@
 #pragma once 
 
-#include "cg2/Vector.hpp"
+#include "tomo/Vector.hpp"
 
 #include <vector>
 
-namespace cg2
+namespace tomo
 {
   struct Light
   {

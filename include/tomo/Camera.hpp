@@ -1,8 +1,8 @@
 #pragma once 
 
-#include "cg2/Ray.hpp"
+#include "tomo/Ray.hpp"
 
-namespace cg2 
+namespace tomo 
 {
 	struct Camera
 	{

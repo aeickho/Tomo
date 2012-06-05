@@ -1,10 +1,10 @@
-#include "cg2/Plane.hpp"
+#include "tomo/Plane.hpp"
 
 #include <GL/glut.h>
 
-namespace cg2 
+namespace tomo 
 {
-  bool Plane::intersect(Ray& ray)
+  bool Plane::intersect(Ray& ray) const
   {
     float dn = ray.dir * _n;
     if (dn == 0.0f) return false;
@@ -17,7 +17,7 @@ namespace cg2
     if (_infinite || (abs(iPoint.x) < _w && abs(iPoint.z) < _w && abs(iPoint.y) < _w))
     {
       if (!ray.t(d)) return false; 
-      ray.obj = this;
+      ray.obj = const_cast<Plane*>(this);
       ray.normal = _n;
       return true;
     }

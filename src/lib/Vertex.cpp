@@ -1,6 +1,6 @@
-#include "cg2/Vertex.hpp"
+#include "tomo/Vertex.hpp"
 
-namespace cg2
+namespace tomo
 {
   Vec3f Polygon::normal()
   {

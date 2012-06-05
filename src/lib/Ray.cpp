@@ -1,10 +1,10 @@
-#include "cg2/Ray.hpp"
-#include "cg2/Primitive.hpp"
+#include "tomo/Ray.hpp"
+#include "tomo/Primitive.hpp"
 
 #include <GL/glut.h>
 
 
-namespace cg2
+namespace tomo
 {
   void Ray::drawIntersectionPoint() 
   {

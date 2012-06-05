@@ -1,8 +1,8 @@
 #pragma once
 
-#include "cg2/Primitive.hpp"
+#include "tomo/Primitive.hpp"
 
-namespace cg2 
+namespace tomo 
 {
   struct Plane : public Primitive
   {
@@ -17,7 +17,7 @@ namespace cg2
 
     }
 
-    bool intersect(Ray& ray); 
+    bool intersect(Ray& ray) const; 
     Vec3f normal(const Vec3f& iPoint)
     {
       return _n;

@@ -2,9 +2,9 @@
 
 #include <boost/foreach.hpp>
 
-#include "cg2/Scene.hpp"
+#include "tomo/Scene.hpp"
 
-namespace cg2
+namespace tomo
 {
   Vec3f Scene::traceRay(Ray& ray, SceneObject* curObj)
   {

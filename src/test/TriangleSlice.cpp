@@ -6,15 +6,15 @@
 #include <boost/program_options.hpp>
 #include <boost/foreach.hpp>
 
-#include "cg2/Plane.hpp"
-#include "cg2/Triangle.hpp"
+#include "tomo/Plane.hpp"
+#include "tomo/Triangle.hpp"
 #include "tbd/log.h"
 
 using namespace boost;
 namespace po = program_options;
 
 using namespace std;
-using namespace cg2;
+using namespace tomo;
 
 LOG_INIT;
 

@@ -1,9 +1,9 @@
 #pragma once
-#include "cg2/Image.hpp"
+#include "tomo/Image.hpp"
 
 #include <vector>
 
-namespace cg2
+namespace tomo
 {
   using std::vector;
 

@@ -1,8 +1,8 @@
-#include "cg2/Vector.hpp"
+#include "tomo/Vector.hpp"
 
 using namespace std; 
 
-namespace cg2
+namespace tomo
 {
   void Matrix4f::print()
   {

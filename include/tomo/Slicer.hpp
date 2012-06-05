@@ -1,9 +1,9 @@
-#include "cg2/Slice.hpp"
-#include "cg2/SceneObject.hpp"
+#include "tomo/Slice.hpp"
+#include "tomo/SceneObject.hpp"
 
 #include <tbd/config.h>
 
-namespace cg2
+namespace tomo
 {
   using tbd::Config;
   using tbd::ConfigurableObject;

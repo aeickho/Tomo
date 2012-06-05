@@ -1,11 +1,11 @@
 #pragma once
 
-#include "cg2/Vector.hpp"
-#include "cg2/misc.hpp"
+#include "tomo/Vector.hpp"
+#include "tomo/misc.hpp"
 
 #include <vector>
 
-namespace cg2
+namespace tomo
 {
   using std::vector;
   typedef Vec3f Color;

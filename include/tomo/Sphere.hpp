@@ -1,6 +1,6 @@
-#include "cg2/SceneObject.hpp"
+#include "tomo/SceneObject.hpp"
 
-namespace cg2 
+namespace tomo 
 {
 	struct Sphere : public SceneObject 
 	{
@@ -9,10 +9,10 @@ namespace cg2
 		{
 		}
 
-		bool intersect(Ray& ray);
+		bool intersect(Ray& ray) const;
 
-		Vec3f normal(const Point3f& iPoint);
-		TexCoords texCoords(const Point3f& iPoint);
+		Vec3f normal(const Point3f& iPoint) const;
+		TexCoords texCoords(const Point3f& iPoint) const;
 		
         void draw();
 

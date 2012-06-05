@@ -1,11 +1,11 @@
 #pragma once
 
-#include "cg2/Mesh.hpp"
-#include "cg2/KDTree.hpp"
+#include "tomo/Mesh.hpp"
+#include "tomo/KDTree.hpp"
 
 #include <set>
 
-namespace cg2
+namespace tomo
 {
   struct SelectedPoint
   {

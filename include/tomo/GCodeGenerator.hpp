@@ -1,7 +1,7 @@
 #pragma once
 #include <tbd/config.hpp>
 
-namespace cg2
+namespace tomo
 {
   class GCodeGenerator : public ConfigurableObject
   {
