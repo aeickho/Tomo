@@ -16,8 +16,8 @@ namespace tomo
 		
         void draw();
 
-        TBD_DECLARE_PROPERTY_REF(Point3f,center);
-        TBD_DECLARE_PROPERTY(float,radius);
+        TBD_PROPERTY_REF(Point3f,center);
+        TBD_PROPERTY(float,radius);
 	};
 
 }

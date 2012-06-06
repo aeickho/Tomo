@@ -59,9 +59,9 @@ namespace tomo
       return !data_.empty();
     }
 
-    TBD_DECLARE_PROPERTY(unsigned,width);
-    TBD_DECLARE_PROPERTY(unsigned,height);
-    TBD_DECLARE_PROPERTY_REF(vector<Color>,data);
+    TBD_PROPERTY(unsigned,width);
+    TBD_PROPERTY(unsigned,height);
+    TBD_PROPERTY_REF(vector<Color>,data);
   };
 }
 

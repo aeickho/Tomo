@@ -13,7 +13,7 @@ namespace tomo
 
     virtual bool intersect(Ray& ray) const = 0;
     
-    TBD_DECLARE_PROPERTY(Shader*,shader);
+    TBD_PROPERTY(Shader*,shader);
   };
 
   DEFINE_CONTAINERS(Primitive)

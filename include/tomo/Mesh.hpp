@@ -9,7 +9,7 @@ namespace tomo
   {
       virtual void read(string filename) = 0;
 
-      TBD_DECLARE_PROPERTY_REF(Vertices,vertices);
+      TBD_PROPERTY_REF(Vertices,vertices);
 
       void displayNormals();
     protected:

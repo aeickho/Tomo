@@ -31,9 +31,9 @@ namespace tomo
     VertexSet vertexSet();
     float maxDist();
 
-    TBD_DECLARE_PROPERTY(int,k);
-    TBD_DECLARE_PROPERTY(float,radius);
-    TBD_DECLARE_PROPERTY_REF(Point3f,center); 
+    TBD_PROPERTY(int,k);
+    TBD_PROPERTY(float,radius);
+    TBD_PROPERTY_REF(Point3f,center); 
   };
 
   class PointKDTree : public KDTree<Vertex>
@@ -42,7 +42,7 @@ namespace tomo
     PointKDTree() : drawDepth_(10) {}
     void collect(KDNode<Vertex>* node, BoundingBox& box, PointSet& pointSet);
 
-    TBD_DECLARE_PROPERTY(unsigned,drawDepth);
+    TBD_PROPERTY(unsigned,drawDepth);
   private:
     void divideNode(KDNode<Vertex>* node, BoundingBox& box, int depth);
 
@@ -72,13 +72,13 @@ namespace tomo
 
       VertexSet selection;
 
-      TBD_DECLARE_PROPERTY(bool,drawKDTree);
-      TBD_DECLARE_PROPERTY_REF(Color,kdTreeColor);
-      TBD_DECLARE_PROPERTY(bool,drawBoundingBox);
-      TBD_DECLARE_PROPERTY_REF(Color,boundingBoxColor);
+      TBD_PROPERTY(bool,drawKDTree);
+      TBD_PROPERTY_REF(Color,kdTreeColor);
+      TBD_PROPERTY(bool,drawBoundingBox);
+      TBD_PROPERTY_REF(Color,boundingBoxColor);
 
-      TBD_DECLARE_PROPERTY(bool,highlightSelection);
-      TBD_DECLARE_PROPERTY(Color,selectionColor);
+      TBD_PROPERTY(bool,highlightSelection);
+      TBD_PROPERTY(Color,selectionColor);
     private:
       PointKDTree kdTree;
   };

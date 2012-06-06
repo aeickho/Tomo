@@ -15,9 +15,11 @@ namespace tomo
 
 	  Slices slice(SceneObject& obj, unsigned nSlices = 0);
 
-    TBD_DECLARE_PROPERTY_CFG(unsigned,nSlices,"NUMBER_OF_SLICES",10);
-    TBD_DECLARE_PROPERTY_CFG(unsigned,resX,"RESOLUTION_X",1000);
-    TBD_DECLARE_PROPERTY_CFG(unsigned,resY,"RESOLUTION_Y",1000);
+    boost::ptr_vector<Isle> fetchIsles(const SceneObject& obj, const SplitPlane& splitPlane, IsleType = ALL);
+
+    TBD_PROPERTY_CFG(unsigned,nSlices,"NUMBER_OF_SLICES",10);
+    TBD_PROPERTY_CFG(unsigned,resX,"RESOLUTION_X",1000);
+    TBD_PROPERTY_CFG(unsigned,resY,"RESOLUTION_Y",1000);
 
     private:
       Slice generateSlice(SceneObject& obj, unsigned sliceIdx);

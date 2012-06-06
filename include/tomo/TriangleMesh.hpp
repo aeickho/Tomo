@@ -35,7 +35,7 @@ namespace tomo
       Vec3f normal(const Ray& ray) { return Vec3f(); }
 
 
-      TBD_DECLARE_PROPERTY_REF(Triangles,triangles);
+      TBD_PROPERTY_REF(Triangles,triangles);
     protected:
       void calcTriangles();
       void calcNormals();

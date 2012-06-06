@@ -6,8 +6,8 @@ namespace tomo
   struct SceneObject : public Primitive
   {
     bool visible;
-    TBD_DECLARE_PROPERTY_REF(Matrix4f,matrix);   
-    TBD_DECLARE_PROPERTY_REF(BoundingBox,boundingBox);
+    TBD_PROPERTY_REF(Matrix4f,matrix);   
+    TBD_PROPERTY_REF(BoundingBox,boundingBox);
 
   protected:
     virtual void calcBoundingBox() = 0;
