@@ -37,9 +37,9 @@ namespace tomo
     return true;
   }
 
-  VertexSet PointSet::vertexSet()
+  set<const Vertex*> PointSet::vertexSet()
   {
-    VertexSet result;
+    set<const Vertex*> result;
     BOOST_FOREACH( const SelectedPoint& p, *this )
       result.insert(p.v);
     return result;
@@ -65,7 +65,7 @@ namespace tomo
   static bool compareY(const Vertex* a, const Vertex* b) { return a->v.y < b->v.y; }
   static bool compareZ(const Vertex* a, const Vertex* b) { return a->v.z < b->v.z; }
 
-  void PointKDTree::collect(KDNode<Vertex>* node, BoundingBox& box, PointSet& pointSet)
+  void PointKDTree::collect(KDNode<Vertex>* node, const BoundingBox& box, PointSet& pointSet)
   {
     if (!node) return;
 
@@ -84,7 +84,7 @@ namespace tomo
     if (nodeDistance(pointSet.center(),boxRight) < pointSet.maxDist())
       collect(node->right,boxRight,pointSet);
   }
-  void PointKDTree::divideNode(KDNode<Vertex>* node, BoundingBox& box, int depth)
+  void PointKDTree::divideNode(KDNode<Vertex>* node, const BoundingBox& box, int depth)
   {
     assert(node);
     LOG_MSG_(2) << fmt("Depth: %, objs: %") % depth % node->objs.size();
@@ -118,7 +118,7 @@ namespace tomo
     divideNode(node->right,boxRight,depth+1);
   }
 
-  float PointKDTree::nodeDistance(Point3f& p, BoundingBox& box)
+  float PointKDTree::nodeDistance(const Point3f& p, const BoundingBox& box) const
   {
     if (box.pointInBox(p)) return 0.0;
 
@@ -145,29 +145,29 @@ namespace tomo
   void PointCloud::read(string filename)
   {
     OFFReader off;
-    off.read(filename,&vertices(),NULL);
+    off.read(filename,&vertices,NULL);
     update();
   }
 
   void PointCloud::write(string filename)
   {
     OFFWriter off;
-    off.write(filename,&vertices(),NULL);
+    off.write(filename,&vertices,NULL);
   }
 
   void PointCloud::update()
   {
     calcBoundingBox();
-    kdTree.build(vertices(),boundingBox());
+    kdTree.build(vertices,boundingBox);
   }
 
-  void PointCloud::draw(Color color)
+  void PointCloud::draw(Color color) const
   {
-    if (drawBoundingBox_ && !drawKDTree_) boundingBox().draw(boundingBoxColor());
-    if (drawKDTree_) kdTree.draw(kdTreeColor(),boundingBox());
+    if (drawBoundingBox_ && !drawKDTree_) boundingBox.draw(boundingBoxColor());
+    if (drawKDTree_) kdTree.draw(kdTreeColor(),boundingBox);
 
     glBegin(GL_POINTS);
-    BOOST_FOREACH( Vertex& vertex, vertices() )
+    BOOST_FOREACH( const Vertex& vertex, vertices )
     {
       if (selection.count(&vertex))
         glColor3f(selectionColor().x,selectionColor().y,selectionColor().z);
@@ -182,14 +182,14 @@ namespace tomo
   void PointCloud::collectKNearest(Point3f& p, int k)
   {
     PointSet pointSet(p,0.0,k);
-    kdTree.collect(kdTree.root,boundingBox(),pointSet);
+    kdTree.collect(kdTree.root,boundingBox,pointSet);
     selection = pointSet.vertexSet();
   }
 
   void PointCloud::collectInRadius(Point3f& p, float radius)
   {
     PointSet pointSet(p,radius); 
-    kdTree.collect(kdTree.root,boundingBox(),pointSet);
+    kdTree.collect(kdTree.root,boundingBox,pointSet);
     selection = pointSet.vertexSet();
   }
 

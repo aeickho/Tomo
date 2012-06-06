@@ -29,39 +29,41 @@ namespace tomo
 
     void resize(unsigned _width, unsigned _height)
     {
-      data_.resize(_width*_height);
-      for (size_t i = 0; i < data_.size(); i++)
-        data_[i] = Color();
+      data.resize(_width*_height);
+      for (size_t i = 0; i < data.size(); i++)
+        data[i] = Color();
     }
 
     inline Color& operator() (int x, int y)
     {
-      return data_[x + y*width_];
+      return data[x + y*width_];
     }
 
     inline const Color& operator() (int x, int y) const
     {
-      return data_[x + y*width_];
+      return data[x + y*width_];
     }
 
     inline const Color& get(int x, int y) 
     {
-      return data_[x + y*width_];
+      return data[x + y*width_];
     }
 
     inline void set(int x, int y, Color color)
     {
-      data_[x + y*width_] = color; 
+      data[x + y*width_] = color; 
     }
 
     inline bool valid() const
     {
-      return !data_.empty();
+      return !data.empty();
     }
 
+    vector<Color> data;
+    
     TBD_PROPERTY(unsigned,width);
     TBD_PROPERTY(unsigned,height);
-    TBD_PROPERTY_REF(vector<Color>,data);
+    
   };
 }
 

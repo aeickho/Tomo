@@ -10,7 +10,7 @@ using namespace std;
 
 namespace tomo 
 {
-  void OFFReader::read(std::string filename, Vertices* vertices, Triangles* triangles)
+  void OFFReader::read(std::string filename, vector<Vertex>* vertices, vector<Triangle>* triangles)
   {
     ifstream is(filename.c_str(), ios::in);
     LOG_MSG << fmt("Reading mesh from % ...") % filename;

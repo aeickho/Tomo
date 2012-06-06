@@ -16,8 +16,5 @@ namespace tomo
   #define EPSILON 0.000001
 
   #define FOREACH_AXIS for(int axis = 0; axis < 3; axis++)
-
-  #define DEFINE_CONTAINERS(TYPENAME) typedef std::vector<TYPENAME> TYPENAME##s; \
-                                   typedef std::vector<TYPENAME*> TYPENAME##List;
 }
 

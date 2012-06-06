@@ -49,11 +49,11 @@ namespace tomo
     fread(&rawdata[0], 1, rawdata.size(), fp);
     fclose(fp);
 
-    data_.resize(w*h);
+    data.resize(w*h);
     for (unsigned i = 0; i < width()*height(); i++)
     {
       unsigned k = i * 3;
-      data_[i] = Color(rawdata[k], rawdata[k+1], rawdata[k+2]) * (1.0f / 255.0f);
+      data[i] = Color(rawdata[k], rawdata[k+1], rawdata[k+2]) * (1.0f / 255.0f);
     }
 
     width(w);
@@ -71,7 +71,7 @@ namespace tomo
 
     for (unsigned i = 0; i < width()*height(); i++)
     {
-      u8 r = U8(data_[i].x), g = U8(data_[i].y), b = U8(data_[i].z);	
+      u8 r = U8(data[i].x), g = U8(data[i].y), b = U8(data[i].z);	
       os.write(reinterpret_cast<char*>(&r),sizeof(u8));
       os.write(reinterpret_cast<char*>(&g),sizeof(u8));
       os.write(reinterpret_cast<char*>(&b),sizeof(u8));

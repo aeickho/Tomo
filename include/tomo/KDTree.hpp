@@ -15,7 +15,7 @@ namespace tomo
       left = NULL; right = NULL;
     }
 
-    bool isLeaf() { return (!left && !right); }
+    bool isLeaf() const { return (!left && !right); }
 
     KDNode<T>* left;
     KDNode<T>* right;
@@ -34,7 +34,7 @@ namespace tomo
       right = NULL;
     }
 
-    void draw(Color color, BoundingBox& box, int depth, int maxDepth)
+    void draw(Color color, const BoundingBox& box, int depth, int maxDepth) const
     {
       if (isLeaf() || depth >= maxDepth) { box.draw(color); return; }
 
@@ -60,12 +60,12 @@ namespace tomo
       root = NULL;
     }
 
-    void draw(Color color, BoundingBox& box)
+    void draw(Color color, const BoundingBox& box) const
     {
       if (root) root->draw(color,box,0,12);
     }
 
-    void build(vector<T>& objs, BoundingBox& boundingBox)
+    void build(vector<T>& objs, const BoundingBox& boundingBox)
     {
       clear();
       root = new Node;
@@ -79,7 +79,7 @@ namespace tomo
 
 
   private:
-    virtual void divideNode(Node* node, BoundingBox& boundingBox, int depth) = 0;
+    virtual void divideNode(Node* node, const BoundingBox& boundingBox, int depth) = 0;
   };
 }
 

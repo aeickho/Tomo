@@ -15,6 +15,4 @@ namespace tomo
     
     TBD_PROPERTY(Shader*,shader);
   };
-
-  DEFINE_CONTAINERS(Primitive)
 }

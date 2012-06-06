@@ -28,7 +28,7 @@ namespace tomo
     PointSet(Point3f _center, float _radius = 0.0, int _k = 0);
 
     bool insert(Vertex* v);
-    VertexSet vertexSet();
+    set<const Vertex*> vertexSet();
     float maxDist();
 
     TBD_PROPERTY(int,k);
@@ -40,13 +40,13 @@ namespace tomo
   {
   public:
     PointKDTree() : drawDepth_(10) {}
-    void collect(KDNode<Vertex>* node, BoundingBox& box, PointSet& pointSet);
+    void collect(KDNode<Vertex>* node, const BoundingBox& box, PointSet& pointSet);
 
     TBD_PROPERTY(unsigned,drawDepth);
   private:
-    void divideNode(KDNode<Vertex>* node, BoundingBox& box, int depth);
+    void divideNode(KDNode<Vertex>* node, const BoundingBox& box, int depth);
 
-    float nodeDistance(Point3f& p, BoundingBox& box);
+    float nodeDistance(const Point3f& p, const BoundingBox& box) const;
   };
 
 
@@ -58,7 +58,7 @@ namespace tomo
       void read(string filename);
       void write(string filename);
 
-      void draw(Color color = Color());
+      void draw(Color color = Color()) const;
 
       Vec3f normal(const Ray& ray) { return Vec3f(); }
       TexCoords texCoords(const Ray& ray) { return TexCoords(); }
@@ -70,7 +70,7 @@ namespace tomo
       void collectKNearest(Point3f& p, int k);
       void collectInRadius(Point3f& p, float radius);
 
-      VertexSet selection;
+      set<const Vertex*> selection;
 
       TBD_PROPERTY(bool,drawKDTree);
       TBD_PROPERTY_REF(Color,kdTreeColor);

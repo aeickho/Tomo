@@ -5,9 +5,6 @@
 
 namespace tomo
 {
-  struct Triangle;
-  DEFINE_CONTAINERS(Triangle);
-
   struct Triangle : public Primitive
   {
     Triangle(Vertex* _v0 = NULL, Vertex* _v1 = NULL, Vertex* _v2 = NULL)
@@ -19,15 +16,15 @@ namespace tomo
 
     bool intersect(Ray &ray) const;
 
-    Triangles split(const Plane& plane);
+    std::vector<Triangle> split(const Plane& plane);
 
     int splitPlaneIntersect(float splitPos, int axis);
 
     Vec3f normal(const Ray& ray) const ;
     TexCoords texCoords(const Ray& ray) const { return TexCoords(ray.u,ray.v); }
 
-    void draw(Color color = Color());
-    inline void drawStub();
+    void draw(Color color = Color()) const;
+    inline void drawStub() const;
   };
 
 }

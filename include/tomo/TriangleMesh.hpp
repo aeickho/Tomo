@@ -21,7 +21,7 @@ namespace tomo
       float recKDTreeTraverse(Ray& ray, Node* node, float tnear, float tfar, bool& found);
 
     private:
-      void divideNode(Node* node, BoundingBox& box, int depth);
+      void divideNode(Node* node, const BoundingBox& box, int depth);
   };
 
   struct TriangleMesh : public Mesh
@@ -34,8 +34,7 @@ namespace tomo
       TexCoords texCoords(const Ray& ray) { return TexCoords(); }
       Vec3f normal(const Ray& ray) { return Vec3f(); }
 
-
-      TBD_PROPERTY_REF(Triangles,triangles);
+      vector<Triangle> triangles;
     protected:
       void calcTriangles();
       void calcNormals();

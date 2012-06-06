@@ -7,6 +7,6 @@ namespace tomo
   class OFFReader
   {
     public:
-      void read(std::string filename, Vertices* vertices = NULL, Triangles* triangles = NULL);
+      void read(std::string filename, vector<Vertex>* vertices = NULL, vector<Triangle>* triangles = NULL);
   };
 }

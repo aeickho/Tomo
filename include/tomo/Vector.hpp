@@ -36,7 +36,7 @@ namespace tomo
     void set(float _x, float _y, float _z) { x = _x; y = _y; z = _z; }
     float* p() { return cell; }
     const float* p() const { return cell; }
-    float operator[] (int i) { return cell[i]; }
+    float operator[] (int i) const { return cell[i]; }
 
     union 	
     {

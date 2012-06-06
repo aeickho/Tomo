@@ -17,13 +17,13 @@ namespace tomo
     glColor3f(color.x,color.y,color.z);
     
     glBegin(GL_TRIANGLES);
-    BOOST_FOREACH( Triangle& tri, triangles_ ) 
+    BOOST_FOREACH( Triangle& tri, triangles ) 
       tri.drawStub();
 
     glEnd();
  }
 
-  void TriangleKDTree::divideNode(Node* node, BoundingBox& box, int depth)
+  void TriangleKDTree::divideNode(Node* node, const BoundingBox& box, int depth)
   {
     if (depth > 15 || node->objs.size() < 10)
     {   // We have a leaf node!
@@ -53,10 +53,10 @@ namespace tomo
   void TriangleMesh::read(string filename)
   {
     OFFReader off;
-    off.read(filename,&vertices(),&triangles_);
+    off.read(filename,&vertices,&triangles);
     calcBoundingBox();
     calcNormals();
-    kdTree.build(triangles(),boundingBox());
+    kdTree.build(triangles,boundingBox);
   }
 
 

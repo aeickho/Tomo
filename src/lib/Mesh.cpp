@@ -10,25 +10,25 @@ namespace tomo
 {
   void Mesh::calcBoundingBox()
   {
-    boundingBox().min.set(INF,INF,INF);
-    boundingBox().max.set(-INF,-INF,-INF);
+    boundingBox.min.set(INF,INF,INF);
+    boundingBox.max.set(-INF,-INF,-INF);
 
-    BOOST_FOREACH( Vertex& vertex, vertices_ )
+    BOOST_FOREACH( Vertex& vertex, vertices )
     {
       Point3f v = vertex.v;
-      for (int j = 0; j < 3; j++)
+      FOREACH_AXIS
       {
-        if (v.cell[j] > boundingBox().max.cell[j]) boundingBox().max.cell[j] = v.cell[j];
-        if (v.cell[j] < boundingBox().min.cell[j]) boundingBox().min.cell[j] = v.cell[j];
+        if (v.cell[axis] > boundingBox.max.cell[axis]) boundingBox.max.cell[axis] = v.cell[axis];
+        if (v.cell[axis] < boundingBox.min.cell[axis]) boundingBox.min.cell[axis] = v.cell[axis];
       }
     }
   }
 
   void Mesh::displayNormals()
   {
-    BOOST_FOREACH( Vertex& vertex, vertices_ )
+    BOOST_FOREACH( Vertex& vertex, vertices )
     {
-      Vec3f n = boundingBox().size().length()*0.02f*vertex.n; 
+      Vec3f n = boundingBox.size().length()*0.02f*vertex.n; 
 
       glPushMatrix();
       glTranslatef(COORDS(vertex.v));

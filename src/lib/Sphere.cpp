@@ -15,7 +15,7 @@ namespace tomo
 
 	bool Sphere::intersect(Ray& ray) const
 	{
-		Vec3f o = ray.org - center();
+		Vec3f o = ray.org - center_;
 		float a = ray.dir * ray.dir;
 		float b = 2.0f * (ray.dir * o);
 		float c = o*o - radius()*radius();
@@ -40,7 +40,7 @@ namespace tomo
 
 	Vec3f Sphere::normal(const Point3f& iPoint) const
 	{
-		Vec3f n = iPoint - center();
+		Vec3f n = iPoint - center_;
 		return n.normalized();
 	}
 

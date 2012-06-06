@@ -6,12 +6,10 @@ namespace tomo
   struct SceneObject : public Primitive
   {
     bool visible;
+    BoundingBox boundingBox;
     TBD_PROPERTY_REF(Matrix4f,matrix);   
-    TBD_PROPERTY_REF(BoundingBox,boundingBox);
 
   protected:
     virtual void calcBoundingBox() = 0;
   };
-
-  DEFINE_CONTAINERS(SceneObject)
 }

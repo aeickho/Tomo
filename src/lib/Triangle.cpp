@@ -50,7 +50,7 @@ namespace tomo
     return 3;
   }
 
-  inline void Triangle::drawStub()
+  inline void Triangle::drawStub() const
   {
     for (int i  = 0; i < 3; i++)
     {
@@ -59,7 +59,7 @@ namespace tomo
     }
   }
 
-  void Triangle::draw(Color color) 
+  void Triangle::draw(Color color) const
   {
     glColor3fv(color.p());
     glBegin(GL_TRIANGLES);
@@ -73,9 +73,9 @@ namespace tomo
     return n.normalized();
   }
 
-  Triangles Triangle::split(const Plane& plane)
+  vector<Triangle> Triangle::split(const Plane& plane)
   {
-    Triangles triangles;
+    vector<Triangle> triangles;
 
     Ray rayAB(v[0]->v,v[1]->v - v[0]->v), 
         rayAC(v[0]->v,v[2]->v - v[0]->v), 

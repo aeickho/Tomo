@@ -2,6 +2,8 @@
 #include "tomo/SceneObject.hpp"
 
 #include <tbd/config.h>
+#include <boost/ptr_container/ptr_vector.hpp>
+
 
 namespace tomo
 {
@@ -15,7 +17,7 @@ namespace tomo
 
 	  Slices slice(SceneObject& obj, unsigned nSlices = 0);
 
-    boost::ptr_vector<Isle> fetchIsles(const SceneObject& obj, const SplitPlane& splitPlane, IsleType = ALL);
+  //  boost::ptr_vector<Isle> fetchIsles(const SceneObject& obj, const SplitPlane& splitPlane, IsleType = ALL);
 
     TBD_PROPERTY_CFG(unsigned,nSlices,"NUMBER_OF_SLICES",10);
     TBD_PROPERTY_CFG(unsigned,resX,"RESOLUTION_X",1000);

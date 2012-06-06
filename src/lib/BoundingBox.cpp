@@ -6,7 +6,7 @@ using namespace std;
 
 namespace tomo 
 {
-  bool BoundingBox::pointInBox(Point3f p)
+  bool BoundingBox::pointInBox(Point3f p) const
   {
     return p.x > min.x && p.x < max.x &&
       p.y > min.y && p.y < max.y &&
@@ -37,7 +37,7 @@ namespace tomo
     return (tnear < tfar);
   }
 
-  Axis BoundingBox::dominantAxis() 
+  Axis BoundingBox::dominantAxis() const
   {
     Vec3f d = min - max; d.set(abs(d.x),abs(d.y),abs(d.z));
     if (d.x > d.y)
@@ -47,18 +47,15 @@ namespace tomo
     return Z;
   }
 
-  void BoundingBox::split(float splitPos, Axis axis, BoundingBox& boxLeft, BoundingBox& boxRight)
+  void BoundingBox::split(float splitPos, Axis axis, BoundingBox& boxLeft, BoundingBox& boxRight) const
   {
-    for (int i = 0; i < 3; i++)
-      if (min.cell[i] > max.cell[i]) swap(min.cell[i],max.cell[i]);
-
     boxLeft.set(min,max);
     boxRight.set(min,max);
     boxLeft.max.cell[axis] = splitPos;
     boxRight.min.cell[axis] = splitPos;
   }
 
-  void BoundingBox::draw(Color color)
+  void BoundingBox::draw(Color color) const
   {
     float x  = min.x, y  = min.y, z  = min.z;
     float xs = max.x, ys = max.y, zs = max.z;

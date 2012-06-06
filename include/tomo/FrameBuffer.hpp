@@ -26,7 +26,7 @@ namespace tomo
 
         int pos = (h()-1-Y)*w() + X;
         sampleBuffer[pos]++;
-        img.data()[pos] += color;
+        img.data[pos] += color;
         //    cout << img._data[pos].x << " " << sampleBuffer[pos] << endl;
       }
 
@@ -36,7 +36,7 @@ namespace tomo
         for (size_t i = 0; i < sampleBuffer.size(); i++) 
         {   
           if (sampleBuffer[i] == 0) continue;
-          image.data()[i] = (1.0f / sampleBuffer[i]) * img.data()[i];
+          image.data[i] = (1.0f / sampleBuffer[i]) * img.data[i];
         }   
       }
 

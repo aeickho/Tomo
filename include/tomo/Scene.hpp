@@ -24,9 +24,9 @@ namespace tomo
 
     unsigned maxBounce;
 
-    SceneObjectList objects;
-    LightList  lights;
-    Camera* camera;
+    vector<SceneObject*> objects;
+    vector<Light*> lights;
+    vector<Camera*> camera;
     FrameBuffer frameBuffer;
   };
 }
