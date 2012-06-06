@@ -1,6 +1,6 @@
 #pragma once
 
-#include <tbd/declare_property.h>
+#include <tbd/property.h>
 
 #include <limits>
 
