@@ -37,6 +37,16 @@ namespace tomo
     return (tnear < tfar);
   }
 
+  void BoundingBox::set(const Point3f& _min, const Point3f& _max) 
+    { 
+      FOREACH_AXIS 
+        if (min.cell[axis] > max.cell[axis]) 
+          std::swap(min.cell[axis],max.cell[axis]);
+      min = _min; 
+      max = _max; 
+    }
+
+
   Axis BoundingBox::dominantAxis() const
   {
     Vec3f d = min - max; d.set(abs(d.x),abs(d.y),abs(d.z));

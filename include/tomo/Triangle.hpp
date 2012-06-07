@@ -12,11 +12,11 @@ namespace tomo
       v[0] = _v0; v[1] = _v1; v[2] = _v2;
     }
   
-    Vertex *v[3];
+    Vec3f n;
+    Point3f v[3];
 
     bool intersect(Ray &ray) const;
 
-    std::vector<Triangle> split(const Plane& plane);
 
     int splitPlaneIntersect(float splitPos, int axis);
 
