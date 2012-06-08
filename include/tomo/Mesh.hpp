@@ -31,16 +31,16 @@ namespace tomo
       TexCoords texCoords(const Ray& ray) const { return TexCoords(); }
       Vec3f normal(const Ray& ray) const { return Vec3f(); }
 
-      vector<Triangle> triangles;
       
       void displayNormals();
     protected:
-      void calcNormals();
       void calcBoundingBox();
     private:
 
       void splitTriangle(const Triangle& tri, const Plane& plane, Mesh& behind, Mesh& front);
       TriangleKDTree kdTree;
+
+      vector<Triangle> triangles;
       GLuint dispList;
       // DisplayList
   };

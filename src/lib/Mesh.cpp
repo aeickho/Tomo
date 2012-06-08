@@ -95,7 +95,6 @@ namespace tomo
     Vertices vertices;
     off.read(filename,&vertices,&triangles);
     calcBoundingBox();
-    calcNormals();
     kdTree.build(triangles,boundingBox);
   }
 
