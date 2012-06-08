@@ -1,5 +1,5 @@
 #include "tbd/log.h"
-#include "cg2/Vector.hpp"
+#include "tomo/Vector.hpp"
 
 #include "glwidget.h"
 
@@ -8,7 +8,7 @@
 
 LOG_INIT;
 
-using namespace cg2;
+using namespace tomo;
 
 GLWidget::GLWidget(QWidget *parent) :
         QGLWidget(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer | QGL::Rgba | QGL::AlphaChannel | QGL::DirectRendering), parent)
@@ -43,6 +43,28 @@ void GLWidget::initializeGL()
 
   glEnable(GL_CULL_FACE);
 
+  glEnable(GL_LIGHTING);
+
+  // light and material
+  glEnable(GL_COLOR_MATERIAL);
+  GLfloat mat_ambient[] = {0.5, 0.5, 0.5, 1.0};
+  GLfloat mat_specular[] = {0.6, 0.6, 0.6, 1.0};
+  GLfloat mat_shininess[] = { 3.0 };
+  GLfloat LightAmbient[]= { 0.5f, 0.5f, 0.5f, 1.0f };
+  GLfloat LightDiffuse[]= { 1.0f, 1.0f, 1.0f, 1.0f };
+  GLfloat model_ambient[] = { 0.3, 0.3, 0.3 };
+  GLfloat light_position[] = { 0.0, 0.0, 2.0, 1.0 };
+  /* glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
+  glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+  glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);*/
+  glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient);
+  glLightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse);
+  glLightfv(GL_LIGHT1, GL_POSITION, light_position);
+  glLightModelfv(GL_LIGHT_MODEL_AMBIENT, model_ambient);
+  glShadeModel(GL_SMOOTH);
+  glEnable(GL_LIGHT1);
+  //glEnable(GL_NORMALIZE);
+
   // fix outlines z-fighting withthe quads
   glPolygonOffset(1, 1);
   glEnable(GL_POLYGON_OFFSET_FILL);
@@ -50,10 +72,10 @@ void GLWidget::initializeGL()
 
 void GLWidget::update() 
 {
-  if (selectionMode == SELECT_RADIUS) 
-    pointCloud.collectInRadius(selection,radius); else
-  if (selectionMode == SELECT_KNEAREST)
-    pointCloud.collectKNearest(selection,kNearest);
+//  if (selectionMode == SELECT_RADIUS) 
+//    pointCloud.collectInRadius(selection,radius); else
+//  if (selectionMode == SELECT_KNEAREST)
+//    pointCloud.collectKNearest(selection,kNearest);
   
   paintGL();
 }
@@ -77,9 +99,9 @@ void GLWidget::resizeGL(int w, int h)
 	GLdouble centerY= 0;
 	GLdouble centerZ= 0;
   // set camera parameters
-	GLdouble eyeX=pointCloud.boundingBox().size().length()*cos(angle/100.0);
-	GLdouble eyeY=pointCloud.boundingBox().size().y*1.5;
-	GLdouble eyeZ=pointCloud.boundingBox().size().length()*sin(angle/100.0); 
+	GLdouble eyeX=pointCloud.boundingBox.size().length()*cos(angle/100.0);
+	GLdouble eyeY=pointCloud.boundingBox.size().y*1.5;
+	GLdouble eyeZ=pointCloud.boundingBox.size().length()*sin(angle/100.0); 
 	GLdouble upX=0;
 	GLdouble upY=1;
 	GLdouble upZ=0;
@@ -122,9 +144,9 @@ void GLWidget::paintGL()
   glPointSize(pointSize);
   glLoadIdentity();
   
-  cg2::Vec3f c = 0.5*(pointCloud.boundingBox().max.vec3f() + pointCloud.boundingBox().min.vec3f());
+  Vec3f c = 0.5*(pointCloud.boundingBox.max.vec3f() + pointCloud.boundingBox.min.vec3f());
   glTranslatef(-c.x,-c.y,-c.z);
-  pointCloud.draw(cg2::Color(0.8,0.5,0.0));
+  pointCloud.draw(Color(0.8,0.5,0.0));
 
   glPointSize(pointSize*4.0);
   glBegin(GL_POINTS);

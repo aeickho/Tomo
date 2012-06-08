@@ -35,7 +35,7 @@ void MainWindow::setRadius()
 
 void MainWindow::setDrawKDTree()
 {
-  glWidget->pointCloud.drawKDTree(btnRenderKDTree->isChecked());
+//  glWidget->pointCloud.drawKDTree(btnRenderKDTree->isChecked());
   glWidget->update();
 }
 
@@ -47,16 +47,16 @@ void MainWindow::setKNearest()
 
 void MainWindow::setVertexId()
 {
-  int value = spinVertexID->value();
-  if (value < 0) value = 0;
-  if (value > (int)glWidget->pointCloud.size()) value = (int)glWidget->pointCloud.size();
+//  int value = spinVertexID->value();
+//  if (value < 0) value = 0;
+//  if (value > (int)glWidget->pointCloud.size()) value = (int)glWidget->pointCloud.size();
 
-  glWidget->selection = glWidget->pointCloud[value].v;
+//  glWidget->selection = glWidget->pointCloud[value].v;
 
-  if (glWidget->selectionMode == GLWidget::SELECT_RADIUS) 
-    glWidget->pointCloud.collectInRadius(glWidget->selection,glWidget->radius); else
-  if (glWidget->selectionMode == GLWidget::SELECT_KNEAREST)
-    glWidget->pointCloud.collectKNearest(glWidget->selection,glWidget->kNearest);
+//  if (glWidget->selectionMode == GLWidget::SELECT_RADIUS) 
+//    glWidget->pointCloud.collectInRadius(glWidget->selection,glWidget->radius); else
+//  if (glWidget->selectionMode == GLWidget::SELECT_KNEAREST)
+//    glWidget->pointCloud.collectKNearest(glWidget->selection,glWidget->kNearest);
   
   glWidget->update();
 }

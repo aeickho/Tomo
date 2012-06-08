@@ -3,7 +3,7 @@
 
 #include <QtOpenGL/QGLWidget>
 
-#include "cg2/PointCloud.hpp"
+#include "tomo/PointCloud.hpp"
 
 class GLWidget : public QGLWidget
 {
@@ -11,7 +11,7 @@ class GLWidget : public QGLWidget
 public:
   explicit GLWidget(QWidget *parent = 0);
 
-  cg2::PointCloud pointCloud;
+  tomo::Mesh pointCloud;
 
   void mouseMoveEvent(QMouseEvent *event);
   void mousePressEvent(QMouseEvent *event);
@@ -23,7 +23,7 @@ public:
   int kNearest;
   SelectionMode selectionMode;
 
-  cg2::Point3f selection;
+  tomo::Point3f selection;
 
   void update();
 
