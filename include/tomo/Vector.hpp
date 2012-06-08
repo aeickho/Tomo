@@ -36,7 +36,8 @@ namespace tomo
     void set(float _x, float _y, float _z) { x = _x; y = _y; z = _z; }
     float* p() { return cell; }
     const float* p() const { return cell; }
-    float operator[] (int i) const { return cell[i]; }
+    float& operator[] (int i) { return cell[i]; }
+    const float& operator[] (int i) const { return cell[i]; }
 
     union 	
     {
@@ -52,7 +53,7 @@ namespace tomo
 
     float 	 length() 				{ return (float)sqrtf( x * x + y * y + z * z ); }
     void 	 normalize() 			{ float l = length(); if (l>0.0f) set(x/l,y/l,z/l); }
-    Vec3f 	 normalized() 			{ Vec3f v(x,y,z); v.normalize(); return v; }
+    Vec3f 	 normalized() const { Vec3f v(x,y,z); v.normalize(); return v; }
 
     Vec3f cross(Vec3f v) 		{ return Vec3f(y*v.z - z*v.y, 
         z*v.x - x*v.z, 

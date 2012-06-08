@@ -50,7 +50,7 @@ namespace tomo
   };
 
 
-  class PointCloud : public Mesh
+  class PointCloud : public SceneObject 
   {
     public:
       PointCloud();
@@ -71,6 +71,8 @@ namespace tomo
       void collectInRadius(Point3f& p, float radius);
 
       set<const Vertex*> selection;
+
+      Vertices vertices;
 
       TBD_PROPERTY(bool,drawKDTree);
       TBD_PROPERTY_REF(Color,kdTreeColor);

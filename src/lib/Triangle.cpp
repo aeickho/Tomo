@@ -3,7 +3,6 @@
 
 #include "tbd/log.h"
 
-#include <GL/glu.h>
 
 namespace tomo 
 {
@@ -22,7 +21,7 @@ namespace tomo
 
     float inv_d = 1.0f / d;
 
-    Vec3f tV = ray.org - v[0]->v;
+    Vec3f tV = ray.org - v[0];
 
     float u = tV * p * inv_d;
     if (u < 0.0 || u > 1.0) return false;
@@ -35,26 +34,19 @@ namespace tomo
 
     ray.t(t);
     ray.texCoord(u,v);
-    ray.normal = normal();
+    ray.normal = normal(ray);
     ray.obj = const_cast<Triangle*>(this);
     return true;
   }
 
   int Triangle::splitPlaneIntersect(float splitPos, int axis)
   {
-    float minPos = min(v[0]->v[axis],min(v[1]->v[axis],v[2]->v[axis]));
-    float maxPos = max(v[0]->v[axis],max(v[1]->v[axis],v[2]->v[axis]));
+    float minPos = min(v[0][axis],min(v[1][axis],v[2][axis]));
+    float maxPos = max(v[0][axis],max(v[1][axis],v[2][axis]));
 
     if (maxPos < splitPos) return 1;
     if (minPos > splitPos) return 2; 
     return 3;
-  }
-
-  inline void Triangle::drawStub() const
-  {
-    glNormal3fv(normal);	 
-    for (int i  = 0; i < 3; i++)
-      glVertex3fv(v[i].p());
   }
 
   void Triangle::draw(Color color) const

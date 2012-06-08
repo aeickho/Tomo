@@ -61,10 +61,9 @@ namespace tomo
                          int n = atoi(tokens[0].c_str());
                          if (n == 3)
                          {
-                           Triangle tri;
-                           for (int i = 0; i < 3; i++)
-                             tri.v[i] = &vertices->at(atoi(tokens[i+1].c_str()));
-
+                           Triangle tri(vertices->at(atoi(tokens[1].c_str())).v,
+                                        vertices->at(atoi(tokens[2].c_str())).v,
+                                        vertices->at(atoi(tokens[3].c_str())).v);
                            triangles->push_back(tri);
                            nRow++;
                          }
