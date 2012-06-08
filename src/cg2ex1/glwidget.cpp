@@ -27,29 +27,28 @@ void GLWidget::initializeGL()
 {
   pointCloud.read("cow.off");
 
-    // Set up the rendering context, define display lists etc.:
-    glClearColor(1.0, 1.0, 1.0, 1.0);
-    glEnable(GL_DEPTH_TEST);
-    //glDepthFunc(GL_LEQUAL);
+  // Set up the rendering context, define display lists etc.:
+  glClearColor(1.0, 1.0, 1.0, 1.0);
+  glEnable(GL_DEPTH_TEST);
+  //glDepthFunc(GL_LEQUAL);
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glEnable(GL_LINE_SMOOTH);
-    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+  glEnable(GL_LINE_SMOOTH);
+  glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 
-    glEnable(GL_POINT_SMOOTH);
-    glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+  glEnable(GL_POINT_SMOOTH);
+  glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
 
-    glEnable(GL_CULL_FACE);
+  glEnable(GL_CULL_FACE);
 
-    // fix outlines z-fighting withthe quads
-    glPolygonOffset(1, 1);
-    glEnable(GL_POLYGON_OFFSET_FILL);
-    
+  // fix outlines z-fighting withthe quads
+  glPolygonOffset(1, 1);
+  glEnable(GL_POLYGON_OFFSET_FILL);
 }
 
-void GLWidget::update()
+void GLWidget::update() 
 {
   if (selectionMode == SELECT_RADIUS) 
     pointCloud.collectInRadius(selection,radius); else
@@ -61,15 +60,14 @@ void GLWidget::update()
 
 void GLWidget::resizeGL(int w, int h)
 {
-
   w = w & ~1; h = h & ~1;
-    // setup viewport, projection etc.:
-    glViewport(0, 0, (GLint)w, (GLint)h);
+  // setup viewport, projection etc.:
+  glViewport(0, 0, (GLint)w, (GLint)h);
 
 	// reshaped window aspect ratio
 	float aspect = (float) w / (float) h;
 
-// restore view definition after window reshape
+  // restore view definition after window reshape
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
   // perspective projection
@@ -86,56 +84,55 @@ void GLWidget::resizeGL(int w, int h)
 	GLdouble upY=1;
 	GLdouble upZ=0;
 
-    gluLookAt(eyeX,eyeY,eyeZ,centerX,centerY,centerZ,upX,upY,upZ);
+  gluLookAt(eyeX,eyeY,eyeZ,centerX,centerY,centerZ,upX,upY,upZ);
 	   
-    // clear background and depth buffer
+  // clear background and depth buffer
 	glClearColor(0.0,0.0,0.0,1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glMatrixMode(GL_MODELVIEW);
-
 }
 
 Point3f unProject(QPoint const & pos)
 {
-    GLdouble projection[16];
-    glGetDoublev(GL_PROJECTION_MATRIX, projection);
+  GLdouble projection[16];
+  glGetDoublev(GL_PROJECTION_MATRIX, projection);
 
-    GLdouble modelView[16];
-    glGetDoublev(GL_MODELVIEW_MATRIX, modelView);
+  GLdouble modelView[16];
+  glGetDoublev(GL_MODELVIEW_MATRIX, modelView);
 
-    GLint viewport[4];
-    glGetIntegerv(GL_VIEWPORT, viewport);
+  GLint viewport[4];
+  glGetIntegerv(GL_VIEWPORT, viewport);
 
-    double winX = pos.x();
-    double winY = viewport[3] - pos.y();
+  double winX = pos.x();
+  double winY = viewport[3] - pos.y();
 
-    GLfloat winZ;
-    glReadPixels(winX, winY, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
+  GLfloat winZ;
+  glReadPixels(winX, winY, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
 
-    GLdouble x,y,z;
-    gluUnProject(winX, winY, winZ, modelView, projection, viewport, &x, &y, &z);
-    return Point3f(x,y,z);
+  GLdouble x,y,z;
+  gluUnProject(winX, winY, winZ, modelView, projection, viewport, &x, &y, &z);
+  return Point3f(x,y,z);
 }
 
 void GLWidget::paintGL()
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glPointSize(pointSize);
-    glLoadIdentity();
+  glPointSize(pointSize);
+  glLoadIdentity();
   
-    cg2::Vec3f c = 0.5*(pointCloud.boundingBox().max.vec3f() + pointCloud.boundingBox().min.vec3f());
-    glTranslatef(-c.x,-c.y,-c.z);
-    pointCloud.draw(cg2::Color(0.8,0.5,0.0));
+  cg2::Vec3f c = 0.5*(pointCloud.boundingBox().max.vec3f() + pointCloud.boundingBox().min.vec3f());
+  glTranslatef(-c.x,-c.y,-c.z);
+  pointCloud.draw(cg2::Color(0.8,0.5,0.0));
 
-    glPointSize(pointSize*4.0);
-    glBegin(GL_POINTS);
-    glColor3f(1.0,0.0,0.0);
-    glVertex3f(selection.x,selection.y,selection.z);
-    glEnd();
+  glPointSize(pointSize*4.0);
+  glBegin(GL_POINTS);
+  glColor3f(1.0,0.0,0.0);
+  glVertex3f(selection.x,selection.y,selection.z);
+  glEnd();
 
-    swapBuffers();
+  swapBuffers();
 }
 
 
@@ -145,15 +142,15 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
   if (event->buttons() != Qt::NoButton)
   {
-      angle += event->x() - old_x;
-        //int motionY = event->y() - old_y;
-      //mouseMotion(motionX, motionY);
-      //
-   resizeGL(this->width(),this->height());
-      paintGL();
+    angle += event->x() - old_x;
+    //int motionY = event->y() - old_y;
+    //mouseMotion(motionX, motionY);
+    //
+    resizeGL(this->width(),this->height());
+    paintGL();
 
-        old_x = event->x();
-        old_y = event->y();
+    old_x = event->x();
+    old_y = event->y();
  }
 }
 
@@ -166,7 +163,7 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     lbutton = !lbutton;
     selection = unProject(event->pos());
     update();
- }
+  }
 }
 
 
