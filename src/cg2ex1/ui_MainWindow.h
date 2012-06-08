@@ -1,8 +1,8 @@
 /********************************************************************************
 ** Form generated from reading UI file 'MainWindow.ui'
 **
-** Created: Wed May 9 13:24:06 2012
-**      by: Qt User Interface Compiler version 4.7.4
+** Created: Fri Jun 8 17:06:23 2012
+**      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -15,121 +15,150 @@
 #include <QtGui/QApplication>
 #include <QtGui/QButtonGroup>
 #include <QtGui/QCheckBox>
+#include <QtGui/QDockWidget>
 #include <QtGui/QDoubleSpinBox>
-#include <QtGui/QGridLayout>
-#include <QtGui/QGroupBox>
+#include <QtGui/QFormLayout>
+#include <QtGui/QHBoxLayout>
 #include <QtGui/QHeaderView>
 #include <QtGui/QLabel>
 #include <QtGui/QMainWindow>
+#include <QtGui/QMenuBar>
 #include <QtGui/QRadioButton>
 #include <QtGui/QSpinBox>
+#include <QtGui/QStatusBar>
 #include <QtGui/QWidget>
-#include <QtGui/QDockWidget>
-
 #include "glwidget.h"
-
-#include <iostream>
 
 QT_BEGIN_NAMESPACE
 
 class Ui_MainWindow
 {
 public:
+    QWidget *centralwidget;
+    QHBoxLayout *horizontalLayout;
     GLWidget *glWidget;
-    QDockWidget *grpSelectionMethod;
-    QDockWidget *grpRenderSettings;
-    QRadioButton *btnInRadius;
-    QRadioButton *btnKNearest;
-    QSpinBox *spinBox;
-    QSpinBox *boxVertexId;
-    QDoubleSpinBox *doubleSpinBox;
-    QCheckBox *boxRenderKDTree;
-    QDoubleSpinBox *doubleSpinBox_3;
+    QMenuBar *menubar;
+    QStatusBar *statusbar;
+    QDockWidget *dockSelectionMethod;
+    QWidget *dockWidgetContents;
+    QFormLayout *formLayout;
+    QRadioButton *btnRadius;
+    QDoubleSpinBox *spinRadius;
+    QSpinBox *spinKNearest;
     QLabel *label;
-    QLabel *lbVertexId;
+    QSpinBox *spinVertexID;
+    QRadioButton *btnKNearest;
+    QDockWidget *dockRenderSettings;
+    QWidget *dockWidgetContents_3;
+    QFormLayout *formLayout_2;
+    QCheckBox *btnRenderKDTree;
+    QLabel *label_2;
+    QDoubleSpinBox *spinPointSize;
 
     void setupUi(QMainWindow *MainWindow)
     {
-        glWidget = new GLWidget(MainWindow);
-        glWidget->resize(950,670);
-        glWidget->setMouseTracking(true);
-
-        MainWindow->setCentralWidget(glWidget);
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
-        MainWindow->resize(950, 670);
-        
-        MainWindow->setFocusPolicy(Qt::NoFocus);
-        MainWindow->setContextMenuPolicy(Qt::ActionsContextMenu);
-        MainWindow->setAutoFillBackground(true);
+        MainWindow->resize(847, 600);
+        centralwidget = new QWidget(MainWindow);
+        centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
+        horizontalLayout = new QHBoxLayout(centralwidget);
+        horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
+        glWidget = new GLWidget(centralwidget);
+        glWidget->setObjectName(QString::fromUtf8("glWidget"));
 
+        horizontalLayout->addWidget(glWidget);
 
+        MainWindow->setCentralWidget(centralwidget);
+        menubar = new QMenuBar(MainWindow);
+        menubar->setObjectName(QString::fromUtf8("menubar"));
+        menubar->setGeometry(QRect(0, 0, 847, 29));
+        MainWindow->setMenuBar(menubar);
+        statusbar = new QStatusBar(MainWindow);
+        statusbar->setObjectName(QString::fromUtf8("statusbar"));
+        MainWindow->setStatusBar(statusbar);
+        dockSelectionMethod = new QDockWidget(MainWindow);
+        dockSelectionMethod->setObjectName(QString::fromUtf8("dockSelectionMethod"));
+        dockWidgetContents = new QWidget();
+        dockWidgetContents->setObjectName(QString::fromUtf8("dockWidgetContents"));
+        formLayout = new QFormLayout(dockWidgetContents);
+        formLayout->setObjectName(QString::fromUtf8("formLayout"));
+        formLayout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
+        formLayout->setLabelAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter);
+        btnRadius = new QRadioButton(dockWidgetContents);
+        btnRadius->setObjectName(QString::fromUtf8("btnRadius"));
 
-        grpSelectionMethod = new QDockWidget(MainWindow);
-        grpRenderSettings = new QDockWidget(MainWindow);
-        MainWindow->addDockWidget(Qt::RightDockWidgetArea,grpSelectionMethod);
-        MainWindow->addDockWidget(Qt::RightDockWidgetArea,grpRenderSettings);
-            
-        btnInRadius = new QRadioButton(grpSelectionMethod);
-        btnInRadius->setObjectName(QString::fromUtf8("btnInRadius"));
-        btnInRadius->setGeometry(QRect(20, 30, 116, 22));
-        btnInRadius->setChecked(true);
-        btnKNearest = new QRadioButton(grpSelectionMethod);
-        btnKNearest->setObjectName(QString::fromUtf8("btnKNearest"));
-        btnKNearest->setGeometry(QRect(20, 60, 116, 22));
-        btnKNearest->setChecked(false);
-        spinBox = new QSpinBox(grpSelectionMethod);
-        spinBox->setObjectName(QString::fromUtf8("spinBox"));
-        spinBox->setGeometry(QRect(140, 60, 91, 27));
-        spinBox->setValue(10);
-        doubleSpinBox = new QDoubleSpinBox(grpSelectionMethod);
-        doubleSpinBox->setObjectName(QString::fromUtf8("doubleSpinBox"));
-        doubleSpinBox->setGeometry(QRect(140, 30, 91, 27));
-        doubleSpinBox->setValue(2);
-        doubleSpinBox->setSingleStep(0.05);
+        formLayout->setWidget(0, QFormLayout::LabelRole, btnRadius);
 
-        boxVertexId = new QSpinBox(grpSelectionMethod);
-        boxVertexId->setObjectName(QString::fromUtf8("boxVertexId"));
-        boxVertexId->setGeometry(QRect(140, 90, 91, 27));
-        boxVertexId->setValue(200);
-        boxVertexId->setRange(0,10000);
-        lbVertexId = new QLabel(grpSelectionMethod);
-        lbVertexId->setObjectName(QString::fromUtf8("lbVertexId"));
-        lbVertexId->setGeometry(QRect(20, 90, 66, 17));
+        spinRadius = new QDoubleSpinBox(dockWidgetContents);
+        spinRadius->setObjectName(QString::fromUtf8("spinRadius"));
 
-        boxRenderKDTree = new QCheckBox(grpRenderSettings);
-        boxRenderKDTree->setObjectName(QString::fromUtf8("boxRenderKDTree"));
-        boxRenderKDTree->setGeometry(QRect(10, 30, 191, 22));
-        doubleSpinBox_3 = new QDoubleSpinBox(grpRenderSettings);
-        doubleSpinBox_3->setObjectName(QString::fromUtf8("doubleSpinBox_3"));
-        doubleSpinBox_3->setGeometry(QRect(140, 60, 91, 27));
-        doubleSpinBox_3->setValue(2);
-        doubleSpinBox_3->setSingleStep(0.2);
+        formLayout->setWidget(0, QFormLayout::FieldRole, spinRadius);
 
-        label = new QLabel(grpRenderSettings);
+        spinKNearest = new QSpinBox(dockWidgetContents);
+        spinKNearest->setObjectName(QString::fromUtf8("spinKNearest"));
+
+        formLayout->setWidget(1, QFormLayout::FieldRole, spinKNearest);
+
+        label = new QLabel(dockWidgetContents);
         label->setObjectName(QString::fromUtf8("label"));
-        label->setGeometry(QRect(30, 60, 66, 17));
-        boxRenderKDTree->raise();
-        doubleSpinBox_3->raise();
-        label->raise();
+
+        formLayout->setWidget(3, QFormLayout::LabelRole, label);
+
+        spinVertexID = new QSpinBox(dockWidgetContents);
+        spinVertexID->setObjectName(QString::fromUtf8("spinVertexID"));
+
+        formLayout->setWidget(3, QFormLayout::FieldRole, spinVertexID);
+
+        btnKNearest = new QRadioButton(dockWidgetContents);
+        btnKNearest->setObjectName(QString::fromUtf8("btnKNearest"));
+
+        formLayout->setWidget(1, QFormLayout::LabelRole, btnKNearest);
+
+        dockSelectionMethod->setWidget(dockWidgetContents);
+        MainWindow->addDockWidget(static_cast<Qt::DockWidgetArea>(2), dockSelectionMethod);
+        dockRenderSettings = new QDockWidget(MainWindow);
+        dockRenderSettings->setObjectName(QString::fromUtf8("dockRenderSettings"));
+        dockWidgetContents_3 = new QWidget();
+        dockWidgetContents_3->setObjectName(QString::fromUtf8("dockWidgetContents_3"));
+        formLayout_2 = new QFormLayout(dockWidgetContents_3);
+        formLayout_2->setObjectName(QString::fromUtf8("formLayout_2"));
+        btnRenderKDTree = new QCheckBox(dockWidgetContents_3);
+        btnRenderKDTree->setObjectName(QString::fromUtf8("btnRenderKDTree"));
+
+        formLayout_2->setWidget(0, QFormLayout::SpanningRole, btnRenderKDTree);
+
+        label_2 = new QLabel(dockWidgetContents_3);
+        label_2->setObjectName(QString::fromUtf8("label_2"));
+
+        formLayout_2->setWidget(1, QFormLayout::LabelRole, label_2);
+
+        spinPointSize = new QDoubleSpinBox(dockWidgetContents_3);
+        spinPointSize->setObjectName(QString::fromUtf8("spinPointSize"));
+
+        formLayout_2->setWidget(1, QFormLayout::FieldRole, spinPointSize);
+
+        dockRenderSettings->setWidget(dockWidgetContents_3);
+        MainWindow->addDockWidget(static_cast<Qt::DockWidgetArea>(2), dockRenderSettings);
+
         retranslateUi(MainWindow);
+        QObject::connect(btnRadius, SIGNAL(toggled(bool)), spinRadius, SLOT(setEnabled(bool)));
+        QObject::connect(btnKNearest, SIGNAL(toggled(bool)), spinKNearest, SLOT(setEnabled(bool)));
 
         QMetaObject::connectSlotsByName(MainWindow);
-   
     } // setupUi
 
     void retranslateUi(QMainWindow *MainWindow)
     {
-        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "CG2 Projekt von Bjoern, Elmar und Michael", 0, QApplication::UnicodeUTF8));
-        grpSelectionMethod->setWindowTitle(QApplication::translate("MainWindow", "Selection method", 0, QApplication::UnicodeUTF8));
-        btnInRadius->setText(QApplication::translate("MainWindow", "In Radius:", 0, QApplication::UnicodeUTF8));
+        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", 0, QApplication::UnicodeUTF8));
+        dockSelectionMethod->setWindowTitle(QApplication::translate("MainWindow", "Selection Method", 0, QApplication::UnicodeUTF8));
+        btnRadius->setText(QApplication::translate("MainWindow", "In Radius:", 0, QApplication::UnicodeUTF8));
+        label->setText(QApplication::translate("MainWindow", "Vertex ID:", 0, QApplication::UnicodeUTF8));
         btnKNearest->setText(QApplication::translate("MainWindow", "k Nearest:", 0, QApplication::UnicodeUTF8));
-        grpRenderSettings->setWindowTitle(QApplication::translate("MainWindow", "Render settings", 0, QApplication::UnicodeUTF8));
-        boxRenderKDTree->setText(QApplication::translate("MainWindow", "Render KDTree", 0, QApplication::UnicodeUTF8));
-        label->setText(QApplication::translate("MainWindow", "Point size:", 0, QApplication::UnicodeUTF8));
-        lbVertexId->setText(QApplication::translate("MainWindow", "Vertex Id:", 0, QApplication::UnicodeUTF8));
-    
-      } // retranslateUi
+        dockRenderSettings->setWindowTitle(QApplication::translate("MainWindow", "Render Settings", 0, QApplication::UnicodeUTF8));
+        btnRenderKDTree->setText(QApplication::translate("MainWindow", "Render KD-Tree", 0, QApplication::UnicodeUTF8));
+        label_2->setText(QApplication::translate("MainWindow", "Point Size:", 0, QApplication::UnicodeUTF8));
+    } // retranslateUi
 
 };
 

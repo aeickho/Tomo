@@ -5,16 +5,16 @@ MainWindow::MainWindow(QMainWindow *parent) : QMainWindow(parent)
 {
   setupUi(this);
 
-  connect(btnInRadius,SIGNAL(clicked()), this, SLOT(setSelectionMode()));
+  connect(btnRadius,SIGNAL(clicked()), this, SLOT(setSelectionMode()));
   connect(btnKNearest,SIGNAL(clicked()), this, SLOT(setSelectionMode()));
-  connect(spinBox,SIGNAL(editingFinished()), this, SLOT(setKNearest()));
-  connect(doubleSpinBox,SIGNAL(editingFinished()), this, SLOT(setRadius()));
-  connect(doubleSpinBox_3,SIGNAL(editingFinished()), this, SLOT(setPointSize()));
-  connect(spinBox,SIGNAL(valueChanged(int)), this, SLOT(setKNearest()));
-  connect(boxVertexId,SIGNAL(valueChanged(int)), this, SLOT(setVertexId()));
-  connect(doubleSpinBox,SIGNAL(valueChanged(double)), this, SLOT(setRadius()));
-  connect(doubleSpinBox_3,SIGNAL(valueChanged(double)), this, SLOT(setPointSize()));
-  connect(boxRenderKDTree,SIGNAL(clicked()), this, SLOT(setDrawKDTree()));
+  connect(spinKNearest,SIGNAL(editingFinished()), this, SLOT(setKNearest()));
+  connect(spinRadius,SIGNAL(editingFinished()), this, SLOT(setRadius()));
+  connect(spinPointSize,SIGNAL(editingFinished()), this, SLOT(setPointSize()));
+  connect(spinKNearest,SIGNAL(valueChanged(int)), this, SLOT(setKNearest()));
+  connect(spinVertexID,SIGNAL(valueChanged(int)), this, SLOT(setVertexId()));
+  connect(spinRadius,SIGNAL(valueChanged(double)), this, SLOT(setRadius()));
+  connect(spinPointSize,SIGNAL(valueChanged(double)), this, SLOT(setPointSize()));
+  connect(btnRenderKDTree,SIGNAL(clicked()), this, SLOT(setDrawKDTree()));
 }
 
 MainWindow::~MainWindow()
@@ -23,31 +23,31 @@ MainWindow::~MainWindow()
 
 void MainWindow::setPointSize()
 {
-  glWidget->pointSize = doubleSpinBox_3->value();
+  glWidget->pointSize = spinPointSize->value();
   glWidget->update();
 }
 
 void MainWindow::setRadius()
 {
-  glWidget->radius = doubleSpinBox->value();
+  glWidget->radius = spinRadius->value();
   setVertexId();
 }
 
 void MainWindow::setDrawKDTree()
 {
-  glWidget->pointCloud.drawKDTree(boxRenderKDTree->isChecked());
+  glWidget->pointCloud.drawKDTree(btnRenderKDTree->isChecked());
   glWidget->update();
 }
 
 void MainWindow::setKNearest()
 {
-  glWidget->kNearest = spinBox->value();
+  glWidget->kNearest = spinKNearest->value();
   setVertexId();
 }
 
 void MainWindow::setVertexId()
 {
-  int value = boxVertexId->value();
+  int value = spinVertexID->value();
   if (value < 0) value = 0;
   if (value > (int)glWidget->pointCloud.size()) value = (int)glWidget->pointCloud.size();
 
@@ -63,7 +63,7 @@ void MainWindow::setVertexId()
 
 void MainWindow::setSelectionMode()
 {
-  glWidget->selectionMode = (btnInRadius->isChecked()) ? GLWidget::SELECT_RADIUS : GLWidget::SELECT_KNEAREST;
+  glWidget->selectionMode = (btnRadius->isChecked()) ? GLWidget::SELECT_RADIUS : GLWidget::SELECT_KNEAREST;
   setVertexId();
 }
 
