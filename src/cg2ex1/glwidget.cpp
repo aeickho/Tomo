@@ -44,6 +44,8 @@ void GLWidget::initializeGL()
   glEnable(GL_CULL_FACE);
 
   glEnable(GL_LIGHTING);
+  // calculate normals clockwise
+  glFrontFace(GL_CW);
 
   // light and material
   glEnable(GL_COLOR_MATERIAL);
@@ -53,7 +55,7 @@ void GLWidget::initializeGL()
   GLfloat LightAmbient[]= { 0.5f, 0.5f, 0.5f, 1.0f };
   GLfloat LightDiffuse[]= { 1.0f, 1.0f, 1.0f, 1.0f };
   GLfloat model_ambient[] = { 0.3, 0.3, 0.3 };
-  GLfloat light_position[] = { 0.0, 0.0, 2.0, 1.0 };
+  GLfloat light_position[] = { 0.0, 100.0, 0.0, 1.0 };
   /* glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
   glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
   glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);*/
@@ -63,7 +65,7 @@ void GLWidget::initializeGL()
   glLightModelfv(GL_LIGHT_MODEL_AMBIENT, model_ambient);
   glShadeModel(GL_SMOOTH);
   glEnable(GL_LIGHT1);
-  //glEnable(GL_NORMALIZE);
+  glEnable(GL_NORMALIZE);
 
   // fix outlines z-fighting withthe quads
   glPolygonOffset(1, 1);
@@ -146,7 +148,7 @@ void GLWidget::paintGL()
   
   Vec3f c = 0.5*(pointCloud.boundingBox.max.vec3f() + pointCloud.boundingBox.min.vec3f());
   glTranslatef(-c.x,-c.y,-c.z);
-  pointCloud.draw(Color(0.8,0.5,0.0));
+  pointCloud.draw(Color(0.8,0.8,0.8));
 
   glPointSize(pointSize*4.0);
   glBegin(GL_POINTS);
