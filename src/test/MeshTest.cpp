@@ -6,8 +6,8 @@
 #include <boost/program_options.hpp>
 #include <boost/foreach.hpp>
 
-#include "cg2/TriangleMesh.hpp"
-#include "cg2/Image.hpp"
+#include "tomo/Mesh.hpp"
+#include "tomo/Image.hpp"
 #include "tbd/log.h"
 
 
@@ -15,7 +15,7 @@ using namespace boost;
 namespace po = program_options;
 
 using namespace std;
-using namespace cg2;
+using namespace tomo;
 
 LOG_INIT;
 
@@ -54,7 +54,7 @@ int main(int ac, char* av[])
 
   LOG->level(2);
 
-  cg2::TriangleMesh mesh;
+  tomo::Mesh mesh;
   mesh.read(inputFile);
 
   cout << endl;
@@ -89,8 +89,6 @@ int main(int ac, char* av[])
     stringstream ss; ss << "test" << slice << ".ppm";
     image.save_ppm(ss.str());
   }
-
-
 
   return EXIT_SUCCESS;
 }

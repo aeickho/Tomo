@@ -156,7 +156,9 @@ namespace tomo
   void Mesh::splitTriangle(const Triangle& tri, const Plane& plane, Mesh& behind, Mesh& front)
   {
     vector<Triangle> triangles;
-    Point3f V[3] = tri.v; 
+    Point3f V[3]; 
+    for (int i = 0; i < 3; i++)
+      V[i] = tri.v[i];
 
     int signCount = 0;
     bool signs[3];
