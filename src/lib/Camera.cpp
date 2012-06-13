@@ -6,9 +6,9 @@ namespace tomo
   Ray Camera::generateRay(float x, float y)
   {
     Ray ray; 
-    ray.org.set(m.get(3,0),m.get(3,1),m.get(3,2));
-    ray.dir = Vec3f(x,y,1.0f) * m - ray.org.vec3f();
-    ray.setScreenPos(x,y);
+    ray.org_(m.get(3,0),m.get(3,1),m.get(3,2));
+//    ray.dir_ = Vec3f(x,y,1.0f) * m - ray.org_.vec();
+//    ray.setScreenPos(x,y);
 
     return ray;
   }

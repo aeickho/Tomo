@@ -2,6 +2,9 @@
 
 
 #include <GL/glut.h>
+#include <cmath>
+
+using namespace std; 
 
 namespace tomo 
 {
@@ -15,9 +18,9 @@ namespace tomo
 
 	bool Sphere::intersect(Ray& ray) const
 	{
-		Vec3f o = ray.org - center_;
-		float a = ray.dir * ray.dir;
-		float b = 2.0f * (ray.dir * o);
+		Vec3f o = ray.org_ - center_;
+		float a = ray.dir_ * ray.dir_;
+		float b = 2.0f * (ray.dir_ * o);
 		float c = o*o - radius()*radius();
 		float disc = b*b - 4*a*c;
 
@@ -31,11 +34,7 @@ namespace tomo
 		if (t0 > t1) std::swap(t0,t1);
 		if (t1 < 0) return false;
 
-		if (!ray.t((t0 < 0) ? t1 : t0)) return false;
-
-    ray.obj = const_cast<Sphere*>(this);
-		ray.normal = normal(ray.getIntersectionPoint());
-		return true;
+    return ray.intersection(pointer(),(t0 < 0) ? t1 : t0,0,0);
 	}
 
 	Vec3f Sphere::normal(const Point3f& iPoint) const
@@ -48,8 +47,8 @@ namespace tomo
 	{
 		// from http://www.cse.msu.edu/~cse872/tutorial4.html
 		Vec3f n = normal(iPoint);
-		float u = atan2(n.x,n.z) / (2.0*M_PI) + 0.5;
-		float v = acosf(n.y)/M_PI;
+		float u = atan2(n.x(),n.z()) / (2.0*M_PI) + 0.5;
+		float v = acosf(n.y())/M_PI;
 
 		return TexCoords(u,v);
 	}

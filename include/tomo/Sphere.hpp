@@ -2,7 +2,7 @@
 
 namespace tomo 
 {
-	struct Sphere : public SceneObject 
+	struct Sphere : public SceneObject, public Primitive 
 	{
 		Sphere(const Point3f& _center, float _radius)
 			: center_(_center), radius_(_radius)

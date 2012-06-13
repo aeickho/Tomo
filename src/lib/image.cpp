@@ -71,7 +71,7 @@ namespace tomo
 
     for (unsigned i = 0; i < width()*height(); i++)
     {
-      u8 r = U8(data[i].x), g = U8(data[i].y), b = U8(data[i].z);	
+      u8 r = U8(data[i].x()), g = U8(data[i].y()), b = U8(data[i].z());	
       os.write(reinterpret_cast<char*>(&r),sizeof(u8));
       os.write(reinterpret_cast<char*>(&g),sizeof(u8));
       os.write(reinterpret_cast<char*>(&b),sizeof(u8));

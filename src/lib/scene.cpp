@@ -31,23 +31,24 @@ namespace tomo
 
   bool Scene::traceShadowRay(Ray& shadowRay, SceneObject* curObj)
   {
-    BOOST_FOREACH( SceneObject* obj, objects )
+ /*   BOOST_FOREACH( SceneObject* obj, objects )
     {
       if (obj == curObj) continue;
       obj->intersect(shadowRay);
       if (shadowRay.obj) return true;
-    }
+    }*/
     return false;
   }
   void Scene::castRays(Rays& rays, Image* outImage)
   {
+    /*
     if (outImage) frameBuffer.resize(outImage->width(),outImage->height());
 
     BOOST_FOREACH( Ray& ray, rays)
       frameBuffer.set(ray.scrPosX,ray.scrPosY,traceRay(ray));
 
     if (outImage) frameBuffer.drawToImage(*outImage);
-
+*/
   }
 }
 

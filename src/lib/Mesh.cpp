@@ -13,8 +13,8 @@ namespace tomo
 {
   void Mesh::calcBoundingBox()
   {
-    boundingBox.min.set(INF,INF,INF);
-    boundingBox.max.set(-INF,-INF,-INF);
+    boundingBox.min(INF,INF,INF);
+    boundingBox.max(-INF,-INF,-INF);
 
     BOOST_FOREACH( Triangle& tri, triangles )
       for (int i = 0; i < 3; i++)
@@ -33,7 +33,7 @@ namespace tomo
     BOOST_FOREACH( Triangle& tri, triangles )
     {
       Vec3f n = boundingBox.size().length()*0.02f*tri.n; 
-      Vec3f mid = (1.0f / 3.0f) * ( tri.v[0].vec3f() + tri.v[1].vec3f() + tri.v[2].vec3f());
+      Vec3f mid = (1.0f / 3.0f) * ( tri.v[0].vec() + tri.v[1].vec() + tri.v[2].vec());
 
       glPushMatrix();
       glTranslatef(COORDS(mid));
@@ -53,7 +53,7 @@ namespace tomo
 
   void Mesh::draw(Color color) const
   {
-    glColor3f(color.x,color.y,color.z);
+    glColor3f(COORDS(color));
     
     glBegin(GL_TRIANGLES);
     BOOST_FOREACH( const Triangle& tri, triangles ) 
@@ -74,7 +74,7 @@ namespace tomo
     node->axis = box.dominantAxis();
 
     // TODO: Surface Area Heuristic here!
-    node->splitPos = 0.5*(box.min.cell[node->axis] + box.max.cell[node->axis]);
+    node->splitPos = 0.5*(box.min[node->axis] + box.max[node->axis]);
     BoundingBox boxLeft, boxRight;
     box.split(node->splitPos,node->axis,boxLeft,boxRight);
     
@@ -104,16 +104,16 @@ namespace tomo
     if (node->isLeaf())
     {
       BOOST_FOREACH( Triangle* tri, node->objs )
-        if (tri != ray.obj) found |= (tri->intersect(ray));
-      return ray.tmax;
+        if (tri != ray.primitive_) found |= (tri->intersect(ray));
+      return ray.tMax_;
     }
 
     int k = node->axis;
-    float d = (node->splitPos - ray.org[k]) / ray.dir[k];
+    float d = (node->splitPos - ray.org_[k]) / ray.dir_[k];
 
     KDNode<Triangle>* front = node->left;
     KDNode<Triangle>* back  = node->right;
-    if (ray.dir[k] < 0) swap(front,back); 
+    if (ray.dir_[k] < 0) swap(front,back); 
 
     if (d <= tnear)
     {
@@ -134,7 +134,7 @@ namespace tomo
   bool Mesh::intersect(Ray& ray) const
   {
     bool found = false;
-    kdTree.recKDTreeTraverse(ray,kdTree.root,ray.tmin,ray.tmax,found);
+    kdTree.recKDTreeTraverse(ray,kdTree.root,ray.tMin_,ray.tMax_,found);
     return found;
   }
 

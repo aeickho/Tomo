@@ -86,12 +86,13 @@ namespace tomo
 
   Vec3f PhongShader::shade(Ray& ray)
   {
-    if (!scene) return Vec3f();
+    if (!scene || !ray.primitive_) return Vec3f();
 
     vector<Light*>::iterator lightIt;
     Vec3f color;
-    Point3f iPoint = ray.getIntersectionPoint();
-    Vec3f N = ray.normal.normalized();
+    Point3f iPoint = ray.intersectionPoint();
+    
+    Vec3f N = ray.primitive_->normal(ray);
 
     for (lightIt = scene->lights.begin(); lightIt != scene->lights.end(); ++lightIt)
     {
@@ -109,7 +110,7 @@ namespace tomo
       if (angle > 0.0f)
       {	
         Vec3f diff = light->diffuse() % diffuse * angle * invlightDist;
-        Vec3f E = ray.org.vec3f().normalized();
+        Vec3f E = ray.org_.vec().normalized();
         L = -L;
         float dotLN = N * L;
         Vec3f R = L - (2.0 * dotLN * N);
@@ -119,15 +120,15 @@ namespace tomo
 
         if (light->shadows() > 0.0f)
         {
-          Point3f rndPos(light->pos().x-(RND-0.5)*light->radius(),
-              light->pos().y-(RND-0.5)*light->radius(),
-              light->pos().z-(RND-0.5)*light->radius());
+          Point3f rndPos(light->pos().x()-(RND-0.5)*light->radius(),
+              light->pos().y()-(RND-0.5)*light->radius(),
+              light->pos().z()-(RND-0.5)*light->radius());
 
           Ray shadowRay(rndPos,iPoint-rndPos);
-          shadowRay.tmin = 0.01;
-          shadowRay.tmax = 0.99;
+          shadowRay.tMin_ = 0.01;
+          shadowRay.tMax_ = 0.99;
 
-          if (scene->traceShadowRay(shadowRay,(SceneObject*)ray.obj))
+          if (scene->traceShadowRay(shadowRay,(SceneObject*)ray.primitive_)) // TODO: Fix this, can be evil!
             diff *=  (1.0 - light->shadows()*(1.0-refract)*(1.0-reflect));
         }	
 
@@ -135,8 +136,8 @@ namespace tomo
       }
     }
 
-    ray.color = color;
-
+    //ray.color = color;
+/*
     if (ray.bounce < scene->maxBounce)
     {
       if (reflect > 0.0f)
@@ -150,7 +151,7 @@ namespace tomo
         color += color*(1.0f - refract) + scene->traceRay(rayRefr,(SceneObject*)ray.obj) * refract;
       }
     }
-
+*/
     return color;	
   }
 }

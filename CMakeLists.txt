@@ -25,6 +25,8 @@ TARGET_LINK_LIBRARIES(mediantest boost_program_options tomo)
 ADD_EXECUTABLE(pointCloudTest ./src/test/pointCloudTest.cpp)
 TARGET_LINK_LIBRARIES(pointCloudTest boost_program_options tomo)
 
+ADD_EXECUTABLE(VectorTest ./src/test/VectorTest.cpp)
+TARGET_LINK_LIBRARIES(VectorTest boost_program_options)
 
 #ADD_DEFINITIONS(-g -O2 -fsigned-char -freg-struct-return -Wall -W -Wshadow -Wpointer-arith -Wcast-qual -Winline)
 

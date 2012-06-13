@@ -1,15 +1,11 @@
 #pragma once
 
 #include <vector>
+#include "tomo/Vector.hpp"
 
 namespace tomo
 {
   using std::vector;
-
-  struct Point2f
-  {
-    float x,y;
-  };
 
   typedef vector<Point2f> Polyline;
   typedef vector<Polyline> Polylines;

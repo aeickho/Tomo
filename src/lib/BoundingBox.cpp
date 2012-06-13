@@ -6,11 +6,11 @@ using namespace std;
 
 namespace tomo 
 {
-  bool BoundingBox::pointInBox(Point3f p) const
+  bool BoundingBox::pointInBox(const Point3f p) const
   {
-    return p.x > min.x && p.x < max.x &&
-      p.y > min.y && p.y < max.y &&
-      p.z > min.z && p.z < max.z;
+    return p.x() > min.x() && p.x() < max.x() &&
+      p.y() > min.y() && p.y() < max.y() &&
+      p.z() > min.z() && p.z() < max.z();
   }
 
   bool BoundingBox::intersect(Ray& ray) const
@@ -18,12 +18,12 @@ namespace tomo
     float tnear = INF, tfar = -INF;
     for (int i = 0; i < 3; i++)
     {
-      if (abs(ray.dir[i]) < 0.001) continue;
-      float minV = min.cell[i], maxV = max.cell[i];
-      if (ray.dir[i] < 0) swap(minV,maxV);
+      if (abs(ray.dir_[i]) < 0.001) continue;
+      float minV = min[i], maxV = max[i];
+      if (ray.dir_[i] < 0) swap(minV,maxV);
 
-      float tn = (minV - ray.org.cell[i]) / ray.dir.cell[i];
-      float tf = (maxV - ray.org.cell[i] ) / ray.dir.cell[i];
+      float tn = (minV - ray.org_[i]) / ray.dir_[i];
+      float tf = (maxV - ray.org_[i] ) / ray.dir_[i];
 
       if (tn < tnear) tnear = tn;
       if (tf > tfar) tfar = tf;
@@ -31,8 +31,8 @@ namespace tomo
 
     if (tnear < tfar)
     {
-      ray.tmin = tnear;
-      ray.tmax = tfar;
+      ray.tMin_ = tnear;
+      ray.tMax_ = tfar;
     }
     return (tnear < tfar);
   }
@@ -40,8 +40,8 @@ namespace tomo
   void BoundingBox::set(const Point3f& _min, const Point3f& _max) 
     { 
       FOREACH_AXIS 
-        if (min.cell[axis] > max.cell[axis]) 
-          std::swap(min.cell[axis],max.cell[axis]);
+        if (min[axis] > max[axis]) 
+          std::swap(min[axis],max[axis]);
       min = _min; 
       max = _max; 
     }
@@ -49,11 +49,11 @@ namespace tomo
 
   Axis BoundingBox::dominantAxis() const
   {
-    Vec3f d = min - max; d.set(abs(d.x),abs(d.y),abs(d.z));
-    if (d.x > d.y)
-    { 	if (d.x > d.z) return X;
+    Vec3f d = size(); 
+    if (d.x() > d.y())
+    { 	if (d.x() > d.z()) return X;
     } else
-      if (d.y > d.z) return Y;
+      if (d.y() > d.z()) return Y;
     return Z;
   }
 
@@ -61,17 +61,16 @@ namespace tomo
   {
     boxLeft.set(min,max);
     boxRight.set(min,max);
-    boxLeft.max.cell[axis] = splitPos;
-    boxRight.min.cell[axis] = splitPos;
+    boxLeft.max[axis] = splitPos;
+    boxRight.min[axis] = splitPos;
   }
 
   void BoundingBox::draw(Color color) const
   {
-    float x  = min.x, y  = min.y, z  = min.z;
-    float xs = max.x, ys = max.y, zs = max.z;
+    float x  = min.x(), y  = min.y(), z  = min.z();
+    float xs = max.x(), ys = max.y(), zs = max.z();
 
-
-    glColor3f(color.x,color.y,color.z);
+    glColor3f(color.x(),color.y(),color.z());
 
     glBegin(GL_LINE_LOOP);
     // top side

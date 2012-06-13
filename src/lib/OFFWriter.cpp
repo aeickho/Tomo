@@ -22,7 +22,7 @@ namespace tomo
     if (vertices)
     {
       BOOST_FOREACH( Vertex& vertex, *vertices )
-        os << vertex.v.x << " " << vertex.v.y << " " << vertex.v.z << endl;
+        os << vertex.v.x() << " " << vertex.v.y() << " " << vertex.v.z() << endl;
     }
 
     if (polygons)

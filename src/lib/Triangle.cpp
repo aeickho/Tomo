@@ -13,7 +13,7 @@ namespace tomo
   {
     Vec3f A = v[1] - v[0], 
           B = v[2] - v[0];
-    Vec3f p = ray.dir.cross(B);
+    Vec3f p = ray.dir_.cross(B);
 
     // d = Determinant
     float d = A * p;
@@ -21,22 +21,18 @@ namespace tomo
 
     float inv_d = 1.0f / d;
 
-    Vec3f tV = ray.org - v[0];
+    Vec3f tV = ray.org_ - v[0];
 
     float u = tV * p * inv_d;
     if (u < 0.0 || u > 1.0) return false;
 
     Vec3f q = tV.cross(A);
-    float v = ray.dir * q * inv_d;
+    float v = ray.dir_ * q * inv_d;
     if (v < 0.0 || u + v > 1.0) return false;
 
     float t = B * q *  inv_d;
 
-    ray.t(t);
-    ray.texCoord(u,v);
-    ray.normal = normal(ray);
-    ray.obj = const_cast<Triangle*>(this);
-    return true;
+    return ray.intersection((Primitive*)this,t,u,v);
   }
 
   int Triangle::splitPlaneIntersect(float splitPos, int axis)

@@ -22,7 +22,7 @@ namespace tomo
 
     bool pointInBox(Point3f p) const;
 
-    Vec3f size() { return max-min; }
+    Vec3f size() const { return max - min; }
 
     // Bounding box points
     Point3f min, max;

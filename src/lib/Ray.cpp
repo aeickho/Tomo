@@ -6,9 +6,9 @@
 
 namespace tomo
 {
+/*
   void Ray::drawIntersectionPoint() 
   {
-/*
     if (!obj) return;
     if (!obj->shader()) return;
 
@@ -22,8 +22,8 @@ namespace tomo
     glVertex3f(iPoint.x,iPoint.y,iPoint.z);
     glEnd();
 
-    glEnable(GL_DEPTH_TEST);*/
-  }
+    glEnable(GL_DEPTH_TEST);
+  }*/
 
 
   Ray Ray::reflect()
@@ -56,14 +56,5 @@ namespace tomo
 */
     }
 
-  string Ray::toString()
-  {
-/*
-    stringstream ss; ss <<"Org: "<<org.toString();
-    ss << "Dir: " << dir.toString();
-    ss << "Tmin, Tmax" << tmin << "," << tmax;
-    return ss.str(); 
-*/
-  }
 
 }

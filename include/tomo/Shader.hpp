@@ -77,7 +77,7 @@ namespace tomo
 
     Vec3f shade(Ray& ray) 
     { 
-      return tex(ray.u,ray.v,0.0); 
+      return tex(ray.u_,ray.v_,0.0); 
     }; 
     Texture tex;
   };

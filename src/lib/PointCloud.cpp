@@ -61,9 +61,9 @@ namespace tomo
     return INF;
   }
  
-  static bool compareX(const Vertex* a, const Vertex* b) { return a->v.x < b->v.x; }
-  static bool compareY(const Vertex* a, const Vertex* b) { return a->v.y < b->v.y; }
-  static bool compareZ(const Vertex* a, const Vertex* b) { return a->v.z < b->v.z; }
+  static bool compareX(const Vertex* a, const Vertex* b) { return a->v.x() < b->v.x(); }
+  static bool compareY(const Vertex* a, const Vertex* b) { return a->v.y() < b->v.y(); }
+  static bool compareZ(const Vertex* a, const Vertex* b) { return a->v.z() < b->v.z(); }
 
   void PointKDTree::collect(KDNode<Vertex>* node, const BoundingBox& box, PointSet& pointSet)
   {
@@ -100,9 +100,9 @@ namespace tomo
 
     switch (node->axis)
     {
-      case X: node->splitPos = median(node->objs,compareX)->v.x; break;
-      case Y: node->splitPos = median(node->objs,compareY)->v.y; break;
-      case Z: node->splitPos = median(node->objs,compareZ)->v.z; break;
+      case X: node->splitPos = median(node->objs,compareX)->v.x(); break;
+      case Y: node->splitPos = median(node->objs,compareY)->v.y(); break;
+      case Z: node->splitPos = median(node->objs,compareZ)->v.z(); break;
       default: return;
     }
     BoundingBox boxLeft, boxRight;
@@ -170,10 +170,10 @@ namespace tomo
     BOOST_FOREACH( const Vertex& vertex, vertices )
     {
       if (selection.count(&vertex))
-        glColor3f(selectionColor().x,selectionColor().y,selectionColor().z);
+        glColor3f(COORDS(selectionColor()));
       else
-        glColor3f(color.x,color.y,color.z);
-      glVertex3f(vertex.v.x,vertex.v.y,vertex.v.z);
+        glColor3f(COORDS(color));
+      glVertex3f(COORDS(vertex.v));
     }
     glEnd(); 
   }

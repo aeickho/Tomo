@@ -23,6 +23,6 @@ namespace tomo
       return _n;
     }
 
-    void draw(Color color = Color());
+    void draw(Color color = Color()) const;
   };
 }

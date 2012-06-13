@@ -50,7 +50,7 @@ namespace tomo
 
         case VERTICES: if (vertices) 
                        {
-                         Vertex v; v.v.set(atof(tokens[0].c_str()),atof(tokens[1].c_str()),atof(tokens[2].c_str()));
+                         Vertex v; v.v(atof(tokens[0].c_str()),atof(tokens[1].c_str()),atof(tokens[2].c_str()));
                          vertices->push_back(v);
                          nRow++;
                          if (nRow >= V+2) mode = TRIANGLES;
