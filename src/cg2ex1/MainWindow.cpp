@@ -23,13 +23,13 @@ MainWindow::~MainWindow()
 
 void MainWindow::setPointSize()
 {
-  glWidget->pointSize = spinPointSize->value();
+  glWidget->pointSize_ = spinPointSize->value();
   glWidget->update();
 }
 
 void MainWindow::setRadius()
 {
-  glWidget->radius = spinRadius->value();
+  glWidget->radius_ = spinRadius->value();
   setVertexId();
 }
 
@@ -41,7 +41,7 @@ void MainWindow::setDrawKDTree()
 
 void MainWindow::setKNearest()
 {
-  glWidget->kNearest = spinKNearest->value();
+  glWidget->kNearest_ = spinKNearest->value();
   setVertexId();
 }
 
@@ -63,7 +63,7 @@ void MainWindow::setVertexId()
 
 void MainWindow::setSelectionMode()
 {
-  glWidget->selectionMode = (btnRadius->isChecked()) ? GLWidget::SELECT_RADIUS : GLWidget::SELECT_KNEAREST;
+  glWidget->selectionMode_ = (btnRadius->isChecked()) ? GLWidget::SELECT_RADIUS : GLWidget::SELECT_KNEAREST;
   setVertexId();
 }
 
