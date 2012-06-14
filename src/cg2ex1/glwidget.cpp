@@ -105,7 +105,7 @@ void GLWidget::resizeGL(int w, int h)
 	GLdouble centerZ= 0;
   // set camera parameters
 	GLfloat eyeX=this->pointCloud_.boundingBox_.size().length()*cos(angle_/100.0);
-	GLfloat eyeY=pointCloud_.boundingBox_.size().y*1.5;
+	GLfloat eyeY=pointCloud_.boundingBox_.size().y()*1.5;
 	GLfloat eyeZ=pointCloud_.boundingBox_.size().length()*sin(angle_/100.0); 
 	GLdouble upX=0;
 	GLdouble upY=1;
@@ -146,8 +146,8 @@ void GLWidget::paintGL()
   glMatrixMode(GL_MODELVIEW);
 //  glLoadIdentity();
   
-  Vec3f c = 0.5*(pointCloud_.boundingBox.max.vec3f() + pointCloud_.boundingBox.min.vec3f());
-  glTranslatef(-c.x,-c.y,-c.z);
+  Vec3f c = 0.5*(pointCloud_.boundingBox_.max.vec() + pointCloud_.boundingBox_.min.vec());
+  glTranslatef(-c.x(),-c.y(),-c.z());
   pointCloud_.draw(Color(0.8,0.8,0.8));
 
   glPointSize(pointSize_*4.0);
@@ -155,7 +155,7 @@ void GLWidget::paintGL()
   glBegin(GL_POINTS);
   {
     glColor3f(1.0,0.0,0.0);
-    glVertex3f(selection_.x,selection_.y,selection_.z);
+    glVertex3f(selection_.x(),selection_.y(),selection_.z());
   }
   glEnd();
 }
@@ -184,3 +184,5 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     update();
   }
 }
+
+

@@ -6,7 +6,7 @@
 #include <boost/program_options.hpp>
 #include <boost/foreach.hpp>
 
-#include "cg2/PointCloud.hpp"
+#include "tomo/PointCloud.hpp"
 #include "tbd/log.h"
 
 
@@ -48,16 +48,20 @@ int main(int ac, char* av[])
 
   LOG->level(2);
 
-  cg2::PointCloud pointCloud;
+  // [pat] Wilston, plz fix this code so it gets thru the compiler!
+  BOOST_ASSERT(0);
+/*
+ 
+  tomo::PointCloud pointCloud;
   pointCloud.read(inputFile);
   pointCloud.write(outputFile);
 
-  cg2::Point3f p(1.0,1.0,0.0);
+  tomo::Point3f p(1.0,1.0,0.0);
   pointCloud.collectKNearest(p,20);
 
-  BOOST_FOREACH( const cg2::Vertex* vertex, pointCloud.selection )
+  BOOST_FOREACH( const ::Vertex* vertex, pointCloud.selection )
     LOG_MSG << fmt("(%,%,%) dist = %") % vertex->v.x % vertex->v.y % vertex->v.z % (vertex->v - p).length();
-
+*/
 
 
 
