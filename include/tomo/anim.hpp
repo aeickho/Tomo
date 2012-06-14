@@ -1,19 +1,16 @@
-#include <QtGui/QGLWidget>
-#include <ptr_vector>
+#include <QtOpenGL/QGLWidget>
+#include <ptr_container/ptr_vector.hpp>
+#include <boost/foreach.hpp>
+#include "tomo/defaults.h"
 
 namespace tomo {
-  
+
   /// animation processing
   namespace anim {
-    /// define default data type
-    typedef GLDouble DEFAULT_TYPE;
-    /// define default time type
-    typedef unsigned long DEFAULT_TIME;
-
     /** basic acceleration processor with infinite acceleraton
      * @tparam TIME time type to use
      */
-    template<class TIME=DEFAULT_TIME> 
+    template<class TIME=DefTime> 
     struct Acc {
       /** define local time type */
       typedef TIME Time;
@@ -22,7 +19,7 @@ namespace tomo {
       : start_(_start)
       , duration_(_duration) {
       }
-      Time elapsed(Time _time) { 
+      Time elapsed(Time _time) const { 
         if( finished(_time) )
           return duration_;
         else
@@ -37,7 +34,7 @@ namespace tomo {
       Time  duration_;
     };
 
-    template<class TIME=DEFAULT_TIME> 
+    template<class TIME=DefTime> 
     struct Linear : public Acc<TIME> {
       typedef TIME Time;
       typedef Acc<Time> Base;
@@ -46,22 +43,17 @@ namespace tomo {
       }
       template<class TYPE> 
       TYPE progress( Time _time ) const { 
-        return elapsed(_time) / Base::duration_;
+        return Base::elapsed(_time) / Base::duration_;
       }
     };
     
-    template<class TYPE=DEFAULT_TYPE> 
     struct Objective {
-      typedef TYPE Type;
-      virtual void begin(Type _progress ) = 0;
+      virtual void begin(double _progress ) = 0;
       virtual void end() = 0;
     };
       
-    template<class TYPE=DEFAULT_TYPE> 
-    struct MatrixTransformation : Objective<TYPE> {
-      typedef TYPE Type;
-      typedef Objective<Type> Base;
-      virtual void begin(Type _progress ) {
+    struct MatrixTransformation : Objective {
+      virtual void begin(double _progress) {
         glPushMatrix();
         transform(_progress);
       }
@@ -72,8 +64,8 @@ namespace tomo {
       virtual void transform( Type _progress ) = 0;
     };
 
-     template<class TYPE=DEFAULT_TYPE> 
-    struct Rotation : MatrixTransformation<TYPE> {
+    template<class COORD=DefCoord> 
+    struct Rotation : MatrixTransformation<COORD> {
       typedef TYPE Type;
       typedef MatrixTransformation<Type> Base;
       Rotation(Type _angle, Type _x, Type _y, Type _z) 
@@ -90,14 +82,14 @@ namespace tomo {
     template<class TYPE=DEFAULT_TYPE>
     struct Objectives : Objective<TYPE> {
       typedef TYPE Type;
-      typedef std::ptr_vector<Objective<TYPE> Container;
+      typedef boost::ptr_vector<Objective<TYPE> > Container;
       typedef Objective<Type> Base;
       virtual void begin(const Type _progress) {
-        BOOST_FOREACH( Container::reference r, transformations_ )
+        BOOST_FOREACH( typename Container::reference r, transformations_ )
           r.begin(_progress);
       }
       virtual void end() {
-        BOOST_FOREACH( Container::reference r, transformations_ )
+        BOOST_FOREACH( typename Container::reference r, transformations_ )
           r.end();
       }
     protected:

@@ -1,14 +1,15 @@
 #pragma once
 #include <vector>
+#include <string>
 
 namespace tomo 
 {
   class GCodeInstruction
   {
-    virtual string asString() = 0;
+    virtual std::string asString() = 0;
   };
 
-  vector<GCodeInstruction*> GCodeInstructions;
+  std::vector<GCodeInstruction*> GCodeInstructions;
 
   class GCode : public GCodeInstructions
   {

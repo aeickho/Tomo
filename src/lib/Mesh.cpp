@@ -13,8 +13,8 @@ namespace tomo
 {
   void Mesh::calcBoundingBox()
   {
-    boundingBox.min(INF,INF,INF);
-    boundingBox.max(-INF,-INF,-INF);
+    boundingBox_.min(INF,INF,INF);
+    boundingBox_.max(-INF,-INF,-INF);
 
     BOOST_FOREACH( Triangle& tri, triangles )
       for (int i = 0; i < 3; i++)
@@ -22,8 +22,8 @@ namespace tomo
         Point3f v = tri.v[i];
         FOREACH_AXIS
         {
-          boundingBox.min[axis] = std::min(v[axis],boundingBox.min[axis]);
-          boundingBox.max[axis] = std::max(v[axis],boundingBox.max[axis]);
+          boundingBox_.min[axis] = std::min(v[axis],boundingBox_.min[axis]);
+          boundingBox_.max[axis] = std::max(v[axis],boundingBox_.max[axis]);
         }
       }
   }
@@ -32,7 +32,7 @@ namespace tomo
   {
     BOOST_FOREACH( Triangle& tri, triangles )
     {
-      Vec3f n = boundingBox.size().length()*0.02f*tri.n; 
+      Vec3f n = boundingBox_.size().length()*0.02f*tri.n; 
       Vec3f mid = (1.0f / 3.0f) * ( tri.v[0].vec() + tri.v[1].vec() + tri.v[2].vec());
 
       glPushMatrix();
@@ -95,7 +95,7 @@ namespace tomo
     Vertices vertices;
     off.read(filename,&vertices,&triangles);
     calcBoundingBox();
-    kdTree.build(triangles,boundingBox);
+    kdTree.build(triangles,boundingBox_);
   }
 
 
@@ -146,9 +146,9 @@ namespace tomo
       splitTriangle(tri,splitPlane,halves.first,halves.second);
 
     halves.first.calcBoundingBox();
-    halves.first.kdTree.build(halves.first.triangles,halves.first.boundingBox);    
+    halves.first.kdTree.build(halves.first.triangles,halves.first.boundingBox_);    
     halves.second.calcBoundingBox();
-    halves.second.kdTree.build(halves.second.triangles,halves.first.boundingBox);
+    halves.second.kdTree.build(halves.second.triangles,halves.first.boundingBox_);
 
     return halves;
   }

@@ -11,13 +11,13 @@ namespace tomo
 
 		bool intersect(Ray& ray) const;
 
-		Vec3f normal(const Point3f& iPoint) const;
-		TexCoords texCoords(const Point3f& iPoint) const;
+		Vec3f normal(const Ray& ray) const;
+		TexCoords texCoords(const Ray& ray) const;
 		
-        void draw();
+    void draw(Color color=Color()) const;
 
-        TBD_PROPERTY_REF(Point3f,center);
-        TBD_PROPERTY(float,radius);
+    TBD_PROPERTY_REF(Point3f,center);
+    TBD_PROPERTY(float,radius);
 	};
 
 }

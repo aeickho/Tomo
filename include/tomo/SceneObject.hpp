@@ -9,7 +9,7 @@ namespace tomo
   struct SceneObject : public Object 
   {
     bool visible;
-    BoundingBox boundingBox;
+    BoundingBox boundingBox_;
     TBD_PROPERTY_REF(Matrix4f,matrix);   
 
   protected:

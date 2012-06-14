@@ -18,7 +18,7 @@ namespace tomo
     }
 
     bool intersect(Ray& ray) const; 
-    Vec3f normal(const Vec3f& iPoint)
+    Vec3f normal(const Ray& ) const
     {
       return _n;
     }
