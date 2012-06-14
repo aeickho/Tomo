@@ -32,5 +32,6 @@ TARGET_LINK_LIBRARIES(VectorTest boost_program_options)
 
 INCLUDE(${QT_USE_FILE})
 ADD_DEFINITIONS(${QT_DEFINITIONS})
-ADD_DEFINITIONS(-g -O3 -fsigned-char -fopenmp -freg-struct-return -Wall -fPIC)
+#ADD_DEFINITIONS(-g -O3 -fsigned-char -fopenmp -freg-struct-return -Wall -fPIC)
+ADD_DEFINITIONS(-g -O3 -fsigned-char -Wall -fPIC)
 
