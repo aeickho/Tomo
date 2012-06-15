@@ -1,9 +1,18 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
-
 PROJECT(Tomo)
+
+SET (CMAKE_LIBRARY_OUTPUT_DIRECTORY
+   ${PROJECT_BINARY_DIR}/bin )
+SET (CMAKE_RUNTIME_OUTPUT_DIRECTORY
+   ${PROJECT_BINARY_DIR}/bin )
+SET (CMAKE_ARCHIVE_OUTPUT_DIRECTORY
+   ${PROJECT_BINARY_DIR}/bin )
+SET (CMAKE_CURRENT_BINARY_DIR
+   ${PROJECT_BINARY_DIR}/moc )
+
 FIND_PACKAGE(Qt4 REQUIRED)
 
-INCLUDE_DIRECTORIES(./include ./TbdLib/include)
+INCLUDE_DIRECTORIES(. ${CMAKE_CURRENT_BINARY_DIR} ./include ./TbdLib/include)
 
 AUX_SOURCE_DIRECTORY(./src/lib tomo_src)
 
@@ -13,9 +22,15 @@ TARGET_LINK_LIBRARIES(tomo glut GLU GL)
 INCLUDE(${QT_USE_FILE})
 SET(cg2ex1_SOURCES ./src/cg2ex1/glwidget.cpp ./src/cg2ex1/main.cpp ./src/cg2ex1/MainWindow.cpp)
 SET(cg2ex1_HEADERS ./src/cg2ex1/glwidget.h ./src/cg2ex1/MainWindow.h)
+SET(cg2ex1_FORMS   ./src/cg2ex1/MainWindow.ui)
 QT4_WRAP_CPP(cg2ex1_HEADERS_MOC ${cg2ex1_HEADERS})
+QT4_WRAP_UI(cg2ex1_FORMS_HEADERS ${cg2ex1_FORMS})
 
-ADD_EXECUTABLE(cg2ex1 ${cg2ex1_SOURCES} ${cg2ex1_HEADERS_MOC})
+ADD_EXECUTABLE(cg2ex1 
+  ${cg2ex1_SOURCES} 
+  ${cg2ex1_HEADERS_MOC}
+  ${cg2ex1_FORMS_HEADERS}
+  )
 TARGET_LINK_LIBRARIES(cg2ex1 tomo -lQtOpenGL -lQtGui -lQtCore -lGLU -lGL -lpthread )
 
 #Tests
