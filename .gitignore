@@ -1,10 +1,12 @@
 # igonre output/intermediate directories
-doc
+doc/html
+doc/latex
 bin
 moc
 
 # ignore temporary swap files
 *.sw?
+*.tmp
 
 # ignore BLOBs
 *.ppm
