@@ -15,7 +15,7 @@ namespace tomo
     public:
       Slicer(Config* _config = NULL) : ConfigurableObject(_config) {}
 
-	  Slices slice(SceneObject& obj, unsigned nSlices = 0);
+	  Slices slice(const Primitive& obj, unsigned nSlices = 0) const;
 
   //  boost::ptr_vector<Isle> fetchIsles(const SceneObject& obj, const SplitPlane& splitPlane, IsleType = ALL);
 
@@ -24,7 +24,18 @@ namespace tomo
     TBD_PROPERTY_CFG(unsigned,resY,"RESOLUTION_Y",1000);
 
     private:
-      Slice generateSlice(SceneObject& obj, unsigned sliceIdx);
+      struct RaySegments
+      {
+        std::map<float,bool> segments_; 
+      }
+
+      map<float,RaySegments> inter
+    
+      Slice generateSlice(SceneObject& obj, unsigned sliceIdx)
+      {
+      }
+
+
   };
 }
 

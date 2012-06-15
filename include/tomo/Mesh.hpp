@@ -22,7 +22,7 @@ namespace tomo
       void divideNode(Node* node, const BoundingBox& box, int depth);
   };
 
-  struct Mesh : public SceneObject
+  struct Mesh : public SceneObject, public Primitive
   {
       void read(string filename);
 
