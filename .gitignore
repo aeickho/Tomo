@@ -1,1 +1,19 @@
+# igonre output/intermediate directories
 doc
+bin
+moc
+
+# ignore temporary swap files
+*.swp
+
+# ignore clic index.db
+index.db
+
+# ignore moc intermediate files
+moc_*.cxx
+
+# igonre cmake cache
+CMakeCache.txt
+CMakeFiles
+cmake_install.cmake
+Makefile
