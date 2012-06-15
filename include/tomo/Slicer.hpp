@@ -24,17 +24,18 @@ namespace tomo
     TBD_PROPERTY_CFG(unsigned,resY,"RESOLUTION_Y",1000);
 
     private:
-      struct RaySegments
+    /*  
+    struct RaySegments
       {
         std::map<float,bool> segments_; 
       }
 
-      map<float,RaySegments> inter
+      std::map<float,RaySegments> inter
     
       Slice generateSlice(SceneObject& obj, unsigned sliceIdx)
       {
       }
-
+*/
 
   };
 }

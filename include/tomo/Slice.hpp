@@ -17,7 +17,7 @@ namespace tomo
 
   struct Slice 
   {
-    SplitPlane plane_;
+ /*   SplitPlane plane_;
     std::vector<Isle> isles_;
 
     Ray generateRay(float _pos)
@@ -33,12 +33,12 @@ namespace tomo
       diff = (_org - plane.center_) * (0.5 / _numberOfRays);
 
       for (unsigned i = 0; i < _numberOfRays; i++)
-      {
+       {
         _rays.push_back(Ray(_org,_dir,0.0,1.0));
         _org += diff; 
       }
     }
-
+*/
 
   };
 

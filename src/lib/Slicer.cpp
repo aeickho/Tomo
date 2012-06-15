@@ -2,22 +2,22 @@
 
 namespace tomo 
 {
-  Slices Slicer::slice(SceneObject& obj, unsigned nSlices)
+/*  Slices Slicer::slice(SceneObject& obj, unsigned nSlices)
   {
 
     Slices slices;
     slices.resize(nSlices);
-/*    for (unsigned i = 0; i < nSlices; i++)
+    for (unsigned i = 0; i < nSlices; i++)
     {
       slices.push_back(generateSlice(obj,slicePos,axis,i,resX,resY));
       slicePos += sliceThickness;
-    }*/
+    }
     return slices;
   }
 
   Slice Slicer::generateSlice(SceneObject& obj, unsigned sliceIdx)
   { return Slice(); }
-/*    Slice slice;
+    Slice slice;
     vector<Traces> traces(4);
 
     Ray ray;
