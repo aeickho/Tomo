@@ -4,7 +4,11 @@ bin
 moc
 
 # ignore temporary swap files
-*.swp
+*.sw?
+
+# ignore BLOBs
+*.ppm
+*.mp4
 
 # ignore clic index.db
 index.db
