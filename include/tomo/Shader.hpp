@@ -28,7 +28,7 @@ namespace tomo
       vector<Image> mipMaps;
   };
 
-  class Scene;
+  struct Scene;
 
   struct Shader
   {

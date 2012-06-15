@@ -1,0 +1,4 @@
+-I/usr/share/qt4/include
+-I/usr/include
+-I/usr/include/c++/4.6
+

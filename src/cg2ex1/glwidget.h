@@ -11,21 +11,19 @@ class GLWidget : public QGLWidget
 public:
   explicit GLWidget(QWidget *parent = 0);
 
-  tomo::Mesh pointCloud;
+  tomo::Mesh pointCloud_;
 
   void mouseMoveEvent(QMouseEvent *event);
   void mousePressEvent(QMouseEvent *event);
 
   typedef enum { SELECT_KNEAREST, SELECT_RADIUS } SelectionMode;
 
-  float pointSize;
-  float radius;
-  int kNearest;
-  SelectionMode selectionMode;
+  float pointSize_;
+  float radius_;
+  int kNearest_;
+  SelectionMode selectionMode_;
 
-  tomo::Point3f selection;
-
-  void update();
+  tomo::Point3f selection_;
 
 protected:
   virtual void initializeGL();
@@ -35,12 +33,14 @@ protected:
 private:
   // some stateholders for mouse motion
   // last mouse position in window
-  int old_x, old_y;
+  int oldX_, oldY_;
   // is left mouse button pressed
-  bool lbutton;
-  float angle;
+  bool leftButton_;
+  float angle_;
+  QTimer* timer_;
 signals:
 public slots:
+  virtual void tick();
 };
 
 #endif // GLWIDGET_H

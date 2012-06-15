@@ -8,7 +8,7 @@ using namespace std;
 
 namespace tomo 
 {
-	void Sphere::draw()
+	void Sphere::draw(Color color) const
 	{
 		glPushMatrix();
 		glTranslatef(center_[0], center_[1], center_[2]);
@@ -39,8 +39,13 @@ namespace tomo
 
 	Vec3f Sphere::normal(const Ray& ray) const
 	{
+<<<<<<< HEAD
 		Vec3f n = ray.intersectionPoint() - center_;
 		return n.normalized();
+=======
+    Vec3f n = ray.intersectionPoint() - center_;
+    return n.normalized();    
+>>>>>>> ed3709e3c6b9f19cf2f38d5d9a1e6254654f45a9
 	}
 
 	TexCoords Sphere::texCoords(const Ray& ray) const

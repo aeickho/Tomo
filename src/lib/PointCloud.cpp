@@ -158,13 +158,13 @@ namespace tomo
   void PointCloud::update()
   {
     calcBoundingBox();
-    kdTree.build(vertices,boundingBox);
+    kdTree.build(vertices,boundingBox_);
   }
 
   void PointCloud::draw(Color color) const
   {
-    if (drawBoundingBox_ && !drawKDTree_) boundingBox.draw(boundingBoxColor());
-    if (drawKDTree_) kdTree.draw(kdTreeColor(),boundingBox);
+    if (drawBoundingBox_ && !drawKDTree_) boundingBox_.draw(boundingBoxColor());
+    if (drawKDTree_) kdTree.draw(kdTreeColor(),boundingBox_);
 
     glBegin(GL_POINTS);
     BOOST_FOREACH( const Vertex& vertex, vertices )
@@ -182,14 +182,14 @@ namespace tomo
   void PointCloud::collectKNearest(Point3f& p, int k)
   {
     PointSet pointSet(p,0.0,k);
-    kdTree.collect(kdTree.root,boundingBox,pointSet);
+    kdTree.collect(kdTree.root,boundingBox_,pointSet);
     selection = pointSet.vertexSet();
   }
 
   void PointCloud::collectInRadius(Point3f& p, float radius)
   {
     PointSet pointSet(p,radius); 
-    kdTree.collect(kdTree.root,boundingBox,pointSet);
+    kdTree.collect(kdTree.root,boundingBox_,pointSet);
     selection = pointSet.vertexSet();
   }
 

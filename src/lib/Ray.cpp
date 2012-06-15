@@ -37,6 +37,7 @@ namespace tomo
     reflRay.bounce = bounce + 1;
     return reflRay;
 */
+    return Ray();
   }
 
   Ray Ray::refract(float index)
@@ -54,6 +55,7 @@ namespace tomo
     refrRay.obj = obj;
     return refrRay;
 */
+      return Ray();
     }
 
 

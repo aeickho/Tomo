@@ -26,7 +26,7 @@
      <x>0</x>
      <y>0</y>
      <width>847</width>
-     <height>29</height>
+     <height>27</height>
     </rect>
    </property>
   </widget>
@@ -108,12 +108,113 @@
     </layout>
    </widget>
   </widget>
+  <widget class="QDockWidget" name="dockNavigation">
+   <property name="windowTitle">
+    <string>Navigation</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QFormLayout" name="formLayout_3">
+     <property name="sizeConstraint">
+      <enum>QLayout::SetDefaultConstraint</enum>
+     </property>
+     <item row="0" column="0">
+      <widget class="QGroupBox" name="groupBox">
+       <property name="title">
+        <string>Fixed...</string>
+       </property>
+       <layout class="QFormLayout" name="formLayout_4">
+        <property name="fieldGrowthPolicy">
+         <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+        </property>
+        <item row="0" column="0">
+         <widget class="QCheckBox" name="checkCamera">
+          <property name="text">
+           <string>Camera</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QCheckBox" name="checkLight">
+          <property name="text">
+           <string>Light</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QGroupBox" name="groupBox_2">
+       <property name="title">
+        <string>Rotate</string>
+       </property>
+       <layout class="QFormLayout" name="formLayout_5">
+        <item row="0" column="0">
+         <widget class="QCheckBox" name="checkRotateX">
+          <property name="text">
+           <string>X</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QCheckBox" name="checkRotateY">
+          <property name="text">
+           <string>Y</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QCheckBox" name="checkRotateZ">
+          <property name="text">
+           <string>Z</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QGroupBox" name="groupBox_3">
+       <property name="title">
+        <string>Move</string>
+       </property>
+       <layout class="QFormLayout" name="formLayout_6">
+        <item row="0" column="0">
+         <widget class="QCheckBox" name="checkMoveX">
+          <property name="text">
+           <string>X</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QCheckBox" name="checkMoveY">
+          <property name="text">
+           <string>Y</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QCheckBox" name="checkMoveZ">
+          <property name="text">
+           <string>Z</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
  </widget>
  <customwidgets>
   <customwidget>
    <class>GLWidget</class>
    <extends>QWidget</extends>
-   <header>glwidget.h</header>
+   <header>src/cg2ex1/glwidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
