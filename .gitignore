@@ -17,6 +17,7 @@ index.db
 
 # ignore moc intermediate files
 moc_*.cxx
+ui_*.h
 
 # igonre cmake cache
 CMakeCache.txt

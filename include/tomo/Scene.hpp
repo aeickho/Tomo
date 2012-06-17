@@ -26,7 +26,7 @@ namespace tomo
 
     vector<SceneObject*> objects;
     vector<Light*> lights;
-    vector<Camera*> camera;
+//    vector<Camera*> camera;
     FrameBuffer frameBuffer;
   };
 }

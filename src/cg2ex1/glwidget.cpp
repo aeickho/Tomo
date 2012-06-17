@@ -1,22 +1,18 @@
+#include "render.hpp"
 #include "glwidget.h"
 #include "helper.h"
 #include "tbd/log.h"
 #include "tomo/Vector.hpp"
-#include <GL/glu.h>
+#include <algorithm>
 
 LOG_INIT;
 
 using namespace tomo;
 
-
-
 GLWidget::GLWidget(QWidget *parent)
         : QGLWidget(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer | QGL::Rgba | QGL::AlphaChannel | QGL::DirectRendering), parent)
+, mousePosition_(0,0) 
 {
-  oldX_ = 0;
-  oldY_ = 0;
-  leftButton_ = false;
-  angle_ = 0.0;
   pointSize_ = 2.0;
   kNearest_ = 10;
   radius_ = 2.0;
@@ -27,7 +23,8 @@ void GLWidget::initializeGL()
   pointCloud_.read("cow.off");
 
   camera_.latitude(35.0);
-
+  camera_.distance(1.5 * pointCloud_.boundingBox_.size().length() + pointCloud_.boundingBox_.size().length() );
+ 
   // Set up the rendering context, define display lists etc.:
   glClearColor(1.0, 1.0, 1.0, 1.0);
   glEnable(GL_DEPTH_TEST);
@@ -82,12 +79,13 @@ void GLWidget::initializeGL()
 }
 void GLWidget::tick() 
 {
-  static float t = 0;
+/*  static float t = 0;
   t+=2.1;
   camera_.longitude(camera_.longitude()+1);
   camera_.latitude(camera_.latitude()+1);
   camera_.distance(1.5 * pointCloud_.boundingBox_.size().length() + pointCloud_.boundingBox_.size().length() * sin(t/100.0));
   update();
+  */
 }
 void GLWidget::resizeGL(int w, int h)
 {
@@ -137,7 +135,7 @@ void GLWidget::paintGL()
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  project(camera_);
+  render::gl::project(camera_);
 
   Vec3f c = 0.5*(pointCloud_.boundingBox_.max.vec() + pointCloud_.boundingBox_.min.vec());
   glTranslatef(-c.x(),-c.y(),-c.z());
@@ -154,28 +152,30 @@ void GLWidget::paintGL()
 }
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
-  if (event->buttons() != Qt::NoButton)
+  if (0 != (event->buttons() & Qt::LeftButton))
   {
-    angle_ += event->x() - oldX_;
-    //int motionY = event->y() - old_y;
-    //mouseMotion(motionX, motionY);
-    //
-    resizeGL(this->width(),this->height());
-    paintGL();
-
-    oldX_ = event->x();
-    oldY_ = event->y();
+    camera_.move( event->pos().x() - mousePosition_.x(), event->pos().y() - mousePosition_.y() );
+    update();
+    mousePosition_ = event->pos();
  }
 }
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
-  if (event->button() != Qt::NoButton)
+  mousePosition_ = event->pos(); 
+  switch (event->button())
   {
-    oldX_ = event->x(); oldY_ = event->y();
-    leftButton_ = !leftButton_;
-    selection_ = unProject(event->pos());
-    update();
+    case Qt::LeftButton:
+      selection_ = unProject(event->pos());
+      update();
+      break;
+    default:
+      ;
   }
 }
-
+void GLWidget::wheelEvent(QWheelEvent* event) 
+{
+  camera_.distance( camera_.distance() - (double)event->delta()/100.0 );
+  camera_.distance( std::max( camera_.distance(), (GLdouble)pointCloud_.boundingBox_.size().length() ) );  
+  update();
+}
 
