@@ -8,8 +8,10 @@ LOG_INIT;
 
 using namespace tomo;
 
-GLWidget::GLWidget(QWidget *parent) :
-        QGLWidget(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer | QGL::Rgba | QGL::AlphaChannel | QGL::DirectRendering), parent)
+
+
+GLWidget::GLWidget(QWidget *parent)
+        : QGLWidget(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer | QGL::Rgba | QGL::AlphaChannel | QGL::DirectRendering), parent)
 {
   oldX_ = 0;
   oldY_ = 0;
@@ -23,6 +25,9 @@ GLWidget::GLWidget(QWidget *parent) :
 void GLWidget::initializeGL()
 {
   pointCloud_.read("cow.off");
+
+  camera_.latitude(35.0);
+  camera_.distance(1.5 * pointCloud_.boundingBox_.size().length());
 
   // Set up the rendering context, define display lists etc.:
   glClearColor(1.0, 1.0, 1.0, 1.0);
@@ -78,12 +83,9 @@ void GLWidget::initializeGL()
 }
 void GLWidget::tick() 
 {
-  angle_ += 1;
-//  resizeGL(this->width(),this->height());
-//  paintGL();
-//  updateGL();
+  camera_.longitude(camera_.longitude()+1);
+  camera_.latitude(camera_.latitude()+1);
   update();
-//  repaint();
 }
 void GLWidget::resizeGL(int w, int h)
 {
@@ -99,20 +101,7 @@ void GLWidget::resizeGL(int w, int h)
 	glLoadIdentity();
   // perspective projection
 	gluPerspective(60.0, aspect, 1.0, 100.0);
-	  
-	GLdouble centerX= 0;
-	GLdouble centerY= 0;
-	GLdouble centerZ= 0;
-  // set camera parameters
-	GLfloat eyeX=this->pointCloud_.boundingBox_.size().length()*cos(angle_/100.0);
-	GLfloat eyeY=pointCloud_.boundingBox_.size().y()*1.5;
-	GLfloat eyeZ=pointCloud_.boundingBox_.size().length()*sin(angle_/100.0); 
-	GLdouble upX=0;
-	GLdouble upY=1;
-	GLdouble upZ=0;
-
-  gluLookAt(eyeX,eyeY,eyeZ,centerX,centerY,centerZ,upX,upY,upZ);
-	   
+  
   // clear background and depth buffer
 	glClearColor(0.0,0.0,0.0,1.0);
 	glMatrixMode(GL_MODELVIEW);
@@ -144,8 +133,10 @@ void GLWidget::paintGL()
 
   glPointSize(pointSize_);
   glMatrixMode(GL_MODELVIEW);
-//  glLoadIdentity();
-  
+  glLoadIdentity();
+
+  project(camera_);
+
   Vec3f c = 0.5*(pointCloud_.boundingBox_.max.vec() + pointCloud_.boundingBox_.min.vec());
   glTranslatef(-c.x(),-c.y(),-c.z());
   pointCloud_.draw(Color(0.8,0.8,0.8));
