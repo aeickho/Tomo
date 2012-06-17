@@ -10,8 +10,8 @@ namespace tomo
   {
     bool visible;
     BoundingBox boundingBox_;
+    float radius() const { return boundingBox_.size().length()/2; }
     TBD_PROPERTY_REF(Matrix4f,matrix);   
-
   protected:
     virtual void calcBoundingBox() = 0;
   };

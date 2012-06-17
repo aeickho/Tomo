@@ -4,9 +4,7 @@
 #include "tomo/PointCloud.hpp"
 #include "tomo/Camera.hpp"
 #include <QtOpenGL/QGLWidget>
-#include <boost/assert.hpp>
 #include <GL/gl.h>
-#include <algorithm>
 
 class GLWidget : public QGLWidget
 {
@@ -22,19 +20,25 @@ class GLWidget : public QGLWidget
     virtual void resizeGL(int w, int h);
     virtual void paintGL();
   public:
+    /// @todo replace with a scene
     tomo::Mesh pointCloud_;
+    /// selection parameters
     float pointSize_;
     float radius_;
     int kNearest_;
     SelectionMode selectionMode_;
     tomo::Point3f selection_;
-    // last mouse position in window
+
+    /// last mouse position in window
     QPoint mousePosition_;
+    /// animation timer
     QTimer* timer_;
     /// camera position/view
+    /// @todo move into scene
     tomo::Camera<GLdouble> camera_;
-
+    /// perspective
     public slots:
+      /// triggered by the animation timer
       virtual void tick();
 };
 

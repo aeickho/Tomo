@@ -1,4 +1,3 @@
-#include "render.hpp"
 #include "glwidget.h"
 #include "helper.h"
 #include "tbd/log.h"
@@ -9,9 +8,16 @@ LOG_INIT;
 
 using namespace tomo;
 
-GLWidget::GLWidget(QWidget *parent)
-        : QGLWidget(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer | QGL::Rgba | QGL::AlphaChannel | QGL::DirectRendering), parent)
-, mousePosition_(0,0) 
+GLWidget::GLWidget(QWidget *parent) : 
+  QGLWidget(
+      QGLFormat(
+        QGL::DoubleBuffer | 
+        QGL::DepthBuffer | 
+        QGL::Rgba | 
+        QGL::AlphaChannel | 
+        QGL::DirectRendering), 
+      parent),
+  mousePosition_(0,0) 
 {
   pointSize_ = 2.0;
   kNearest_ = 10;
@@ -22,9 +28,13 @@ void GLWidget::initializeGL()
 {
   pointCloud_.read("cow.off");
 
-  camera_.latitude(35.0);
-  camera_.distance(1.5 * pointCloud_.boundingBox_.size().length() + pointCloud_.boundingBox_.size().length() );
- 
+  // init camera
+  {
+    camera_.latitude(35.0);
+    camera_.range(1.0,100.0);
+    camera_.distance(pointCloud_.radius()*1.5);
+  }
+
   // Set up the rendering context, define display lists etc.:
   glClearColor(1.0, 1.0, 1.0, 1.0);
   glEnable(GL_DEPTH_TEST);
@@ -47,16 +57,16 @@ void GLWidget::initializeGL()
 
   // light and material
   glEnable(GL_COLOR_MATERIAL);
-//  GLfloat mat_ambient[] = {0.5, 0.5, 0.5, 1.0};
-//  GLfloat mat_specular[] = {0.6, 0.6, 0.6, 1.0};
-//  GLfloat mat_shininess[] = { 3.0 };
-  GLfloat LightAmbient[]= { 0.5f, 0.5f, 0.5f, 1.0f };
+  //  GLfloat mat_ambient[] = {0.5, 0.5, 0.5, 1.0};
+  //  GLfloat mat_specular[] = {0.6, 0.6, 0.6, 1.0};
+  //  GLfloat mat_shininess[] = { 3.0 };
+  GLfloat LightAmbient[]= { 0.1f, 0.1f, 0.1f, 1.0f };
   GLfloat LightDiffuse[]= { 1.0f, 1.0f, 1.0f, 1.0f };
   GLfloat model_ambient[] = { 0.3, 0.3, 0.3 };
   GLfloat light_position[] = { 0.0, 100.0, 0.0, 1.0 };
   /* glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
-  glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-  glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);*/
+     glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+     glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);*/
   glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient);
   glLightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse);
   glLightfv(GL_LIGHT1, GL_POSITION, light_position);
@@ -68,7 +78,7 @@ void GLWidget::initializeGL()
   // fix outlines z-fighting withthe quads
   glPolygonOffset(1, 1);
   glEnable(GL_POLYGON_OFFSET_FILL);
-  
+
   setAutoBufferSwap(true);
 
   int fps = 25;
@@ -79,32 +89,29 @@ void GLWidget::initializeGL()
 }
 void GLWidget::tick() 
 {
-/*  static float t = 0;
-  t+=2.1;
-  camera_.longitude(camera_.longitude()+1);
-  camera_.latitude(camera_.latitude()+1);
-  camera_.distance(1.5 * pointCloud_.boundingBox_.size().length() + pointCloud_.boundingBox_.size().length() * sin(t/100.0));
-  update();
-  */
+  /*  static float t = 0;
+      t+=2.1;
+      camera_.longitude(camera_.longitude()+1);
+      camera_.latitude(camera_.latitude()+1);
+      camera_.distance(1.5 * pointCloud_.boundingBox_.size().length() + pointCloud_.boundingBox_.size().length() * sin(t/100.0));
+      update();
+      */
 }
 void GLWidget::resizeGL(int w, int h)
 {
   w = w & ~1; h = h & ~1;
   // setup viewport, projection etc.:
   glViewport(0, 0, (GLint)w, (GLint)h);
-
-	// reshaped window aspect ratio
-	float aspect = (float) w / (float) h;
-
+  // reshaped window aspect ratio
+  float aspect = (float) w / (float) h;
   // restore view definition after window reshape
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
   // perspective projection
-	gluPerspective(60.0, aspect, 1.0, 100.0);
-  
-  // clear background and depth buffer
-	glClearColor(0.0,0.0,0.0,1.0);
-	glMatrixMode(GL_MODELVIEW);
+  gluPerspective(60.0, aspect, 1.0/*camera_.near()*/, camera_.far());
+
+  glClearColor(0.0,0.0,0.0,1.0);
+  glMatrixMode(GL_MODELVIEW);
 }
 Point3f unProject(QPoint const & pos)
 {
@@ -135,14 +142,30 @@ void GLWidget::paintGL()
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  render::gl::project(camera_);
+  // realize camera view
+  {
+    // update coordinates
+    camera_.update();
+    // realize coordinates
+    gluLookAt(
+        camera_.eye().x(),
+        camera_.eye().y(),
+        camera_.eye().z(),
+        camera_.center().x(),
+        camera_.center().y(),
+        camera_.center().z(),
+        camera_.up().x(),
+        camera_.up().y(),
+        camera_.up().z() 
+        );
+  }
 
   Vec3f c = 0.5*(pointCloud_.boundingBox_.max.vec() + pointCloud_.boundingBox_.min.vec());
   glTranslatef(-c.x(),-c.y(),-c.z());
   pointCloud_.draw(Color(0.8,0.8,0.8));
 
   glPointSize(pointSize_*4.0);
-  
+
   glBegin(GL_POINTS);
   {
     glColor3f(1.0,0.0,0.0);
@@ -157,7 +180,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
     camera_.move( event->pos().x() - mousePosition_.x(), event->pos().y() - mousePosition_.y() );
     update();
     mousePosition_ = event->pos();
- }
+  }
 }
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
@@ -174,8 +197,7 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 }
 void GLWidget::wheelEvent(QWheelEvent* event) 
 {
-  camera_.distance( camera_.distance() - (double)event->delta()/100.0 );
-  camera_.distance( std::max( camera_.distance(), (GLdouble)pointCloud_.boundingBox_.size().length() ) );  
+  camera_.distance( camera_.distance() - (double)event->delta()/100.0, pointCloud_.radius() );
   update();
 }
 
