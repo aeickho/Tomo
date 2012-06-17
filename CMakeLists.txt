@@ -65,6 +65,6 @@ IF(DOXYGEN_FOUND)
   ADD_CUSTOM_TARGET(doc
     ${DOXYGEN_EXECUTABLE} ${CMAKE_PROJECT_DOC_DIR}/tomo.doxygen
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-    COMMENT "Generating API documentation with Doxygen" VERBATIM
+    COMMENT "Generating API documentation with Doxygen (see ./doc/html/index.html)" VERBATIM
     )
 ENDIF(DOXYGEN_FOUND)

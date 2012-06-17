@@ -27,7 +27,6 @@ void GLWidget::initializeGL()
   pointCloud_.read("cow.off");
 
   camera_.latitude(35.0);
-  camera_.distance(1.5 * pointCloud_.boundingBox_.size().length());
 
   // Set up the rendering context, define display lists etc.:
   glClearColor(1.0, 1.0, 1.0, 1.0);
@@ -83,8 +82,11 @@ void GLWidget::initializeGL()
 }
 void GLWidget::tick() 
 {
+  static float t = 0;
+  t+=2.1;
   camera_.longitude(camera_.longitude()+1);
   camera_.latitude(camera_.latitude()+1);
+  camera_.distance(1.5 * pointCloud_.boundingBox_.size().length() + pointCloud_.boundingBox_.size().length() * sin(t/100.0));
   update();
 }
 void GLWidget::resizeGL(int w, int h)

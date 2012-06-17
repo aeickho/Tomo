@@ -1,4 +1,10 @@
 -I/usr/share/qt4/include
 -I/usr/include
 -I/usr/include/c++/4.6
+-I./include
+-I./external/meshlab/include
+-I/usr/share/qt4/include/QtXml
+-I/usr/share/qt4/include/QtCore
+-I/usr/share/qt4/include/QtGui
+-I/usr/share/qt4/include/QtOpenGL
 
