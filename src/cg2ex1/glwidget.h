@@ -19,6 +19,9 @@ class GLWidget : public QGLWidget
     virtual void initializeGL();
     virtual void resizeGL(int w, int h);
     virtual void paintGL();
+    void paintCamera();
+    void paintObjects();
+    void paintSelection();
   public:
     /// @todo replace with a scene
     tomo::Mesh pointCloud_;
