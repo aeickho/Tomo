@@ -14,8 +14,6 @@ namespace tomo
 		Vec3f normal(const Ray& ray) const;
 		TexCoords texCoords(const Ray& ray) const;
 		
-    void draw(Color color=Color()) const;
-
     TBD_PROPERTY_REF(Point3f,center);
     TBD_PROPERTY(float,radius);
 	};

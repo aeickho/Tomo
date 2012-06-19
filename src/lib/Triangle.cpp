@@ -45,14 +45,6 @@ namespace tomo
     return 3;
   }
 
-  void Triangle::draw(Color color) const
-  {
-    glColor3fv(color.p());
-    glBegin(GL_TRIANGLES);
-    drawStub();
-    glEnd();
-  }
-
   Vec3f Triangle::normal(const Ray& ray) const
   {
     return n.normalized();

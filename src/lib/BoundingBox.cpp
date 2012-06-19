@@ -1,7 +1,5 @@
 #include "tomo/BoundingBox.hpp"
 
-#include <GL/glut.h>
-
 using namespace std;
 
 namespace tomo 
@@ -65,7 +63,7 @@ namespace tomo
     boxRight.min[axis] = splitPos;
   }
 
-  void BoundingBox::draw(Color color) const
+/*  void BoundingBox::draw(Color color) const
   {
     float x  = min.x(), y  = min.y(), z  = min.z();
     float xs = max.x(), ys = max.y(), zs = max.z();
@@ -120,5 +118,5 @@ namespace tomo
     glVertex3f( xs, ys, z     );
     glEnd();    
   }
-
+*/
 }

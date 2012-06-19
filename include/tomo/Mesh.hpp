@@ -30,10 +30,6 @@ namespace tomo
       // @detail  Uses TriangleKDTree for fast traversal
       bool intersect(Ray& ray) const;
 
-      // Draws Mesh with OpenGL
-      // TODO: Draw with display list
-      void draw(Color color = Color()) const;
-
       // Split a mesh into halves along a split plane
       std::pair<Mesh,Mesh> split(const Plane& plane);
    
@@ -41,7 +37,10 @@ namespace tomo
       Vec3f normal(const Ray& ray) const { return Vec3f(); }
    
       void displayNormals();
-    protected:
+
+      std::vector<Triangle>& triangles() { return triangles_; }
+      const std::vector<Triangle>& triangles() const { return triangles_; }
+     protected:
 
       // Iterate over triangles and determine maximum  
       void calcBoundingBox();
@@ -52,7 +51,7 @@ namespace tomo
       void splitTriangle(const Triangle& tri, const Plane& plane, Mesh& behind, Mesh& front);
       TriangleKDTree kdTree;
 
-      vector<Triangle> triangles;
+      std::vector<Triangle> triangles_;
       GLuint dispList;
       // DisplayList
   };

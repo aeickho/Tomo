@@ -1,4 +1,3 @@
-#include "tomo/Shader.hpp"
 #include "tomo/BoundingBox.hpp"
 
 namespace tomo

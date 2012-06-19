@@ -8,7 +8,6 @@ namespace tomo
 {
   struct Object
   {
-    virtual void draw(Color color = Color()) const = 0;
   };
 
   typedef std::vector<Object*> ObjectList;

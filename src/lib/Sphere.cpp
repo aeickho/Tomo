@@ -1,6 +1,5 @@
 #include "tomo/Sphere.hpp"
 
-
 #include <GL/glut.h>
 #include <cmath>
 
@@ -8,14 +7,14 @@ using namespace std;
 
 namespace tomo 
 {
-	void Sphere::draw(Color color) const
+/*	void Sphere::draw(Color color) const
 	{
 		glPushMatrix();
 		glTranslatef(center_[0], center_[1], center_[2]);
 		glutSolidSphere(radius_, 32, 32);
 		glPopMatrix();
 	}
-
+*/
 	bool Sphere::intersect(Ray& ray) const
 	{
 		Vec3f o = ray.org_ - center_;

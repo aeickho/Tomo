@@ -16,7 +16,7 @@ namespace tomo
     boundingBox_.min(INF,INF,INF);
     boundingBox_.max(-INF,-INF,-INF);
 
-    BOOST_FOREACH( Triangle& tri, triangles )
+    BOOST_FOREACH( Triangle& tri, triangles_ )
       for (int i = 0; i < 3; i++)
       {
         Point3f v = tri.v[i];
@@ -30,7 +30,7 @@ namespace tomo
 
   void Mesh::displayNormals()
   {
-    BOOST_FOREACH( Triangle& tri, triangles )
+    BOOST_FOREACH( Triangle& tri, triangles_ )
     {
       Vec3f n = boundingBox_.size().length()*0.02f*tri.n; 
       Vec3f mid = (1.0f / 3.0f) * ( tri.v[0].vec() + tri.v[1].vec() + tri.v[2].vec());
@@ -50,17 +50,6 @@ namespace tomo
   TriangleKDTree::TriangleKDTree()
   {
   }
-
-  void Mesh::draw(Color color) const
-  {
-    glColor3f(COORDS(color));
-    
-    glBegin(GL_TRIANGLES);
-    BOOST_FOREACH( const Triangle& tri, triangles ) 
-      tri.drawStub();
-
-    glEnd();
- }
 
   void TriangleKDTree::divideNode(Node* node, const BoundingBox& box, int depth)
   {
@@ -93,9 +82,9 @@ namespace tomo
   {
     OFFReader off;
     Vertices vertices;
-    off.read(filename,&vertices,&triangles);
+    off.read(filename,&vertices,&triangles_);
     calcBoundingBox();
-    kdTree.build(triangles,boundingBox_);
+    kdTree.build(triangles_,boundingBox_);
   }
 
 
@@ -142,13 +131,13 @@ namespace tomo
   {
     std::pair<Mesh,Mesh> halves;
     
-    BOOST_FOREACH ( Triangle& tri, triangles )
+    BOOST_FOREACH ( Triangle& tri, triangles_ )
       splitTriangle(tri,splitPlane,halves.first,halves.second);
 
     halves.first.calcBoundingBox();
-    halves.first.kdTree.build(halves.first.triangles,halves.first.boundingBox_);    
+    halves.first.kdTree.build(halves.first.triangles_,halves.first.boundingBox_);    
     halves.second.calcBoundingBox();
-    halves.second.kdTree.build(halves.second.triangles,halves.first.boundingBox_);
+    halves.second.kdTree.build(halves.second.triangles_,halves.first.boundingBox_);
 
     return halves;
   }
@@ -169,7 +158,7 @@ namespace tomo
       signCount += int(signs[i] < 0);
     }
 
-    vector<Triangle> *q = &behind.triangles, *r = &front.triangles;
+    vector<Triangle> *q = &behind.triangles_, *r = &front.triangles_;
     if (signCount >= 2) swap(q,r);
 
     if (signCount == 0 || signCount == 3) 

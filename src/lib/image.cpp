@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <cstring>
 #include <fstream>
-
+#include <boost/assert.hpp>
 #include "tomo/Image.hpp"
 
 namespace tomo
@@ -52,8 +52,10 @@ namespace tomo
     data.resize(w*h);
     for (unsigned i = 0; i < width()*height(); i++)
     {
-      unsigned k = i * 3;
-      data[i] = Color(rawdata[k], rawdata[k+1], rawdata[k+2]) * (1.0f / 255.0f);
+      BOOST_ASSERT(0);
+      /// @todo reactivate the following lines:
+//      unsigned k = i * 3;
+//      data[i] = Color(rawdata[k], rawdata[k+1], rawdata[k+2]) * (1.0f / 255.0f);
     }
 
     width(w);
@@ -71,10 +73,12 @@ namespace tomo
 
     for (unsigned i = 0; i < width()*height(); i++)
     {
-      u8 r = U8(data[i].x()), g = U8(data[i].y()), b = U8(data[i].z());	
-      os.write(reinterpret_cast<char*>(&r),sizeof(u8));
-      os.write(reinterpret_cast<char*>(&g),sizeof(u8));
-      os.write(reinterpret_cast<char*>(&b),sizeof(u8));
+      BOOST_ASSERT(0);
+      /// @todo reactivate the following lines:
+//      u8 r = U8(data[i].x()), g = U8(data[i].y()), b = U8(data[i].z());	
+//      os.write(reinterpret_cast<char*>(&r),sizeof(u8));
+//      os.write(reinterpret_cast<char*>(&g),sizeof(u8));
+//      os.write(reinterpret_cast<char*>(&b),sizeof(u8));
     }
   }
 }

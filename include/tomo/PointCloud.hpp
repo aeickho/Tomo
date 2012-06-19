@@ -58,8 +58,6 @@ namespace tomo
       void read(string filename);
       void write(string filename);
 
-      void draw(Color color = Color()) const;
-
       Vec3f normal(const Ray& ray) const { return Vec3f(); }
       TexCoords texCoords(const Ray& ray) const { return TexCoords(); }
 
@@ -75,12 +73,12 @@ namespace tomo
       Vertices vertices;
 
       TBD_PROPERTY(bool,drawKDTree);
-      TBD_PROPERTY_REF(Color,kdTreeColor);
+//    TBD_PROPERTY_REF(Color,kdTreeColor);
       TBD_PROPERTY(bool,drawBoundingBox);
-      TBD_PROPERTY_REF(Color,boundingBoxColor);
+//    TBD_PROPERTY_REF(Color,boundingBoxColor);
 
       TBD_PROPERTY(bool,highlightSelection);
-      TBD_PROPERTY(Color,selectionColor);
+//      TBD_PROPERTY(Color,selectionColor);
     private:
       PointKDTree kdTree;
   };

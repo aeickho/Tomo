@@ -1,7 +1,6 @@
 #pragma once
 
 #include "tomo/Object.hpp"
-#include "tomo/Shader.hpp"
 #include "tomo/Ray.hpp"
 
 namespace tomo 
@@ -17,6 +16,6 @@ namespace tomo
    
     Primitive* pointer() const { return const_cast<Primitive*>(this); }
 
-    TBD_PROPERTY(Shader*,shader);
+// TBD_PROPERTY(Shader*,shader);
   };
 }

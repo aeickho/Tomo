@@ -4,7 +4,6 @@
 #include <boost/foreach.hpp>
 
 #include <cassert>
-#include <GL/glut.h>
 
 #include "tomo/OFFReader.hpp"
 #include "tomo/OFFWriter.hpp"
@@ -134,10 +133,10 @@ namespace tomo
 
 
   PointCloud::PointCloud() : drawKDTree_(false), 
-                             kdTreeColor_(Color(0.0,0.2,0.4)), 
-                             drawBoundingBox_(false),
-                             boundingBoxColor_(Color(0.0,1.0,0.0)),
-                             selectionColor_(Color(1.0,1.0,1.0))
+                             //kdTreeColor_(Color(0.0,0.2,0.4)), 
+                             drawBoundingBox_(false)
+                             //boundingBoxColor_(Color(0.0,1.0,0.0)),
+                             //selectionColor_(Color(1.0,1.0,1.0))
   {
 
   }
@@ -161,7 +160,7 @@ namespace tomo
     kdTree.build(vertices,boundingBox_);
   }
 
-  void PointCloud::draw(Color color) const
+/*  void PointCloud::draw(Color color) const
   {
     if (drawBoundingBox_ && !drawKDTree_) boundingBox_.draw(boundingBoxColor());
     if (drawKDTree_) kdTree.draw(kdTreeColor(),boundingBox_);
@@ -177,7 +176,7 @@ namespace tomo
     }
     glEnd(); 
   }
-
+*/
 
   void PointCloud::collectKNearest(Point3f& p, int k)
   {

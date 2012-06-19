@@ -2,16 +2,14 @@
 
 #include "tomo/Vector.hpp"
 #include "tomo/misc.hpp"
-
+#include "tomo/Color.hpp"
 #include <vector>
 
 namespace tomo
 {
-  using std::vector;
-  typedef Vec3f Color;
-
   struct Image
   {
+    typedef tomo::Color<3,float> Color;
     Image(unsigned _width = 0, unsigned _height = 0)
       : width_(_width), height_(_height)
     {
@@ -59,7 +57,7 @@ namespace tomo
       return !data.empty();
     }
 
-    vector<Color> data;
+    std::vector<Color> data;
     
     TBD_PROPERTY(unsigned,width);
     TBD_PROPERTY(unsigned,height);

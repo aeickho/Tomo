@@ -3,7 +3,6 @@
 #include "tomo/SceneObject.hpp"
 #include "tomo/Light.hpp"
 #include "tomo/Camera.hpp"
-#include "tomo/FrameBuffer.hpp"
 
 #include <vector>
 
@@ -13,8 +12,7 @@ namespace tomo
 
   struct Scene
   {
-    Scene() { maxBounce = 15; }
-
+/*Scene() { maxBounce = 15; }
     void addObject(SceneObject* obj) { objects.push_back(obj); }
 
     void castRays(Rays& rays, Image* outImage = NULL);
@@ -28,6 +26,7 @@ namespace tomo
     vector<Light*> lights;
 //    vector<Camera*> camera;
     FrameBuffer frameBuffer;
+    */
   };
 }
 

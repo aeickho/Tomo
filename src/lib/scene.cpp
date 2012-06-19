@@ -6,6 +6,7 @@
 
 namespace tomo
 {
+#if 0
   Vec3f Scene::traceRay(Ray& ray, SceneObject* curObj)
   {
 /*
@@ -50,5 +51,6 @@ namespace tomo
     if (outImage) frameBuffer.drawToImage(*outImage);
 */
   }
+#endif
 }
 

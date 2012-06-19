@@ -163,8 +163,6 @@ namespace tomo
   typedef Point<3,float> Point3f;
   //typedef Matrix<float> Matrix4f;
 
-  typedef Vec3f Color;
-
   #define COORDS(C) C.x(),C.y(),C.y() 
 }
 

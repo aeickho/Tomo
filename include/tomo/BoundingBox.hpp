@@ -9,7 +9,6 @@ namespace tomo
     bool intersect(Ray& ray) const;
     
     void set(const Point3f& _min, const Point3f& _max);
-    void draw(Color color = Color()) const;
 
     void split(float splitPos, Axis axis, BoundingBox& boxLeft, BoundingBox& boxRight) const;
 

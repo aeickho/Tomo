@@ -3,6 +3,8 @@
 
 #include "tomo/PointCloud.hpp"
 #include "tomo/Camera.hpp"
+#include "tomo/Light.hpp"
+#include "tomo/Color.hpp"
 #include <QtOpenGL/QGLWidget>
 #include <GL/gl.h>
 
@@ -10,8 +12,13 @@ class GLWidget : public QGLWidget
 {
   Q_OBJECT
   public:
+    typedef tomo::SphericCamera<GLfloat> Camera;
+    typedef tomo::Color<4,GLfloat> Color;
+    typedef tomo::Light<Color,GLfloat,4> Light;
+    typedef tomo::Point<4,GLfloat> Point;
+
     explicit GLWidget(QWidget *parent = 0);
-    typedef enum { SELECT_KNEAREST, SELECT_RADIUS } SelectionMode;
+    enum SelectionMode { SELECT_KNEAREST, SELECT_RADIUS };
   protected:
     virtual void mouseMoveEvent(QMouseEvent *event);
     virtual void mousePressEvent(QMouseEvent *event);
@@ -23,22 +30,23 @@ class GLWidget : public QGLWidget
     void paintObjects();
     void paintSelection();
   public:
-    /// @todo replace with a scene
-    tomo::Mesh pointCloud_;
+    /// @todo replace with an vector<tomo::SceneObjects> 
+    tomo::Mesh mesh_;
     /// selection parameters
     float pointSize_;
     float radius_;
     int kNearest_;
     SelectionMode selectionMode_;
-    tomo::Point3f selection_;
+    Point selection_;
 
     /// last mouse position in window
     QPoint mousePosition_;
     /// animation timer
     QTimer* timer_;
     /// camera position/view
-    /// @todo move into scene
-    tomo::Camera<GLdouble> camera_;
+    Camera camera_;
+    /// light parameters
+    Light light_;
     /// perspective
     public slots:
       /// triggered by the animation timer

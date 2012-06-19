@@ -33,15 +33,5 @@ namespace tomo
 
     Vec3f normal(const Ray& ray) const ;
     TexCoords texCoords(const Ray& ray) const { return TexCoords(ray.u_,ray.v_); }
-
-    void draw(Color color = Color()) const;
-    inline void drawStub() const
-    {
-          glNormal3fv(n.p());	 
-    for (int i  = 0; i < 3; i++)
-      glVertex3fv(v[i].p());
-
-    }
   };
-
 }

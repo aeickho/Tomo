@@ -18,7 +18,7 @@ namespace tomo
       return ray.intersection(const_cast<Plane*>(this),d,0.0,0.0);
     return false;
   }
-
+/*
   void Plane::draw(Color color) const
   {
     glPushMatrix();
@@ -41,5 +41,5 @@ namespace tomo
 
     glPopMatrix();        
   }
-
+*/
 }

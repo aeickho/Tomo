@@ -22,7 +22,5 @@ namespace tomo
     {
       return _n;
     }
-
-    void draw(Color color = Color()) const;
   };
 }

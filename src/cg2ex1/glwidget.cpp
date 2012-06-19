@@ -3,10 +3,8 @@
 #include "tbd/log.h"
 #include "tomo/Vector.hpp"
 #include <algorithm>
-
+#include <boost/foreach.hpp>
 LOG_INIT;
-
-using namespace tomo;
 
 GLWidget::GLWidget(QWidget *parent) :
   QGLWidget(
@@ -26,9 +24,34 @@ GLWidget::GLWidget(QWidget *parent) :
 }
 void GLWidget::initializeGL()
 {
-  pointCloud_.read("cow.off");
+  mesh_.read("cow.off");
 
-  camera_.setup(0.0,35.0, 1.0,100.0, pointCloud_.radius()*1.5);
+  // setup camera
+  camera_.setup(
+    // longitude, latitude
+    0.0, 35.0,
+    // near, far
+    1.0, 100.0,
+    // distance
+    mesh_.radius() * 1.5);
+
+  // setup light source
+  light_.setup(
+    // position
+    Point(0.0, 100.0, 0.0, 1.0),
+    // ambient color
+    Color(0.1, 0.1, 0.1, 1.0),
+    // diffuse color
+    Color(1.0, 1.0, 1.0, 1.0),
+    // specular color,
+    Color(0.6, 0.6, 0.6, 1.0),
+    // intensity
+    1.0,
+    // shadows
+    0.0,
+    // radius
+    1.0
+  );
 
   // Set up the rendering context, define display lists etc.:
   glClearColor(1.0, 1.0, 1.0, 1.0);
@@ -62,7 +85,7 @@ void GLWidget::initializeGL()
   /* glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
      glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
      glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);*/
-  glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient);
+//  glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient);
   glLightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse);
   glLightfv(GL_LIGHT1, GL_POSITION, light_position);
   glLightModelfv(GL_LIGHT_MODEL_AMBIENT, model_ambient);
@@ -88,7 +111,7 @@ void GLWidget::tick()
       t+=2.1;
       camera_.longitude(camera_.longitude()+1);
       camera_.latitude(camera_.latitude()+1);
-      camera_.distance(1.5 * pointCloud_.boundingBox_.size().length() + pointCloud_.boundingBox_.size().length() * sin(t/100.0));
+      camera_.distance(1.5 * mesh_.boundingBox_.size().length() + mesh_.boundingBox_.size().length() * sin(t/100.0));
       update();
       */
 }
@@ -109,7 +132,7 @@ void GLWidget::resizeGL(int w, int h)
   glClearColor(0.0,0.0,0.0,1.0);
   glMatrixMode(GL_MODELVIEW);
 }
-Point3f unProject(QPoint const & pos)
+GLWidget::Point unProject(QPoint const & pos)
 {
   GLdouble projection[16];
   glGetDoublev(GL_PROJECTION_MATRIX, projection);
@@ -128,7 +151,7 @@ Point3f unProject(QPoint const & pos)
 
   GLdouble x,y,z;
   gluUnProject(winX, winY, winZ, modelView, projection, viewport, &x, &y, &z);
-  return Point3f(x,y,z);
+  return GLWidget::Point(x,y,z,1.0);
 }
 void GLWidget::paintGL()
 {
@@ -156,9 +179,20 @@ void GLWidget::paintGL()
   }
 // draw objects
   {
-    Vec3f c = 0.5*(pointCloud_.boundingBox_.max.vec() + pointCloud_.boundingBox_.min.vec());
+    tomo::Vec3f c = 0.5*(mesh_.boundingBox_.max.vec() + mesh_.boundingBox_.min.vec());
     glTranslatef(-c.x(),-c.y(),-c.z());
-    pointCloud_.draw(Color(0.8,0.8,0.8));
+//    draw(mesh_,Color(0.8,0.8,0.8));
+
+    glColor3f(0.8,0.8,0.8);
+
+    glBegin(GL_TRIANGLES);
+    BOOST_FOREACH( const tomo::Triangle& tri, mesh_.triangles() )
+    {
+      glNormal3fv(tri.n.p());
+      for (int i  = 0; i < 3; i++)
+        glVertex3fv(tri.v[i].p());
+    }
+    glEnd();
   }
 // draw selection
   {
@@ -195,7 +229,7 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 }
 void GLWidget::wheelEvent(QWheelEvent* event)
 {
-  camera_.zoom( (double)event->delta()/100.0, pointCloud_.radius() );
+  camera_.zoom( (double)event->delta()/100.0, mesh_.radius() );
   update();
 }
 
