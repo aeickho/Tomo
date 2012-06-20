@@ -29,7 +29,6 @@ namespace tomo
       }
 
     private:
-      std::vector<TRIANGLE> triangles_;
 
       // Method to define how KDTree is constructed 
       void divideNode(Node* node, const BoundingBox& box, int depth)
