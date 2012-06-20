@@ -33,7 +33,9 @@ void GLWidget::initializeGL()
     // near, far
     1.0, 100.0,
     // distance
-    mesh_.radius() * 1.5);
+    mesh_.radius() * 1.5,
+    Point(0.0, 1.0, 0.0, 1.0)
+  );
 
   // setup light source
   light_.setup(
@@ -91,6 +93,12 @@ void GLWidget::initializeGL()
   glLightModelfv(GL_LIGHT_MODEL_AMBIENT, model_ambient);
   glShadeModel(GL_SMOOTH);
   glEnable(GL_LIGHT1);
+
+  /*  glLightfv(GL_LIGHT1, GL_DIFFUSE, light_.diffuse() );
+    glLightfv(GL_LIGHT1, GL_POSITION, light_.pos() );
+    glLightModefv(GL_LIGHT_MODEL_AMBIENT, light_.ambient() );
+  */
+
   glEnable(GL_NORMALIZE);
 
   // fix outlines z-fighting withthe quads
@@ -163,12 +171,13 @@ void GLWidget::paintGL()
 
   // realize camera
   {
+    /// @todo not necessary
     camera_.update();
     // realize coordinates
     gluLookAt(
-      camera_.eye().x(),
-      camera_.eye().y(),
-      camera_.eye().z(),
+      camera_.pos().x(),
+      camera_.pos().y(),
+      camera_.pos().z(),
       camera_.center().x(),
       camera_.center().y(),
       camera_.center().z(),
@@ -177,14 +186,11 @@ void GLWidget::paintGL()
       camera_.up().z()
     );
   }
-// draw objects
+  // draw objects
   {
     tomo::Vec3f c = 0.5*(mesh_.boundingBox_.max.vec() + mesh_.boundingBox_.min.vec());
     glTranslatef(-c.x(),-c.y(),-c.z());
-//    draw(mesh_,Color(0.8,0.8,0.8));
-
     glColor3f(0.8,0.8,0.8);
-
     glBegin(GL_TRIANGLES);
     BOOST_FOREACH( const tomo::Triangle& tri, mesh_.triangles() )
     {
@@ -194,7 +200,7 @@ void GLWidget::paintGL()
     }
     glEnd();
   }
-// draw selection
+  // draw selection
   {
     glPointSize(pointSize_*4.0);
     glBegin(GL_POINTS);
@@ -209,7 +215,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
   if (0 != (event->buttons() & Qt::LeftButton))
   {
-    camera_.move( event->pos().x() - mousePosition_.x(), event->pos().y() - mousePosition_.y() );
+    camera_.drag( event->pos().x() - mousePosition_.x(), event->pos().y() - mousePosition_.y() );
     update();
     mousePosition_ = event->pos();
   }
@@ -229,7 +235,7 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 }
 void GLWidget::wheelEvent(QWheelEvent* event)
 {
-  camera_.zoom( (double)event->delta()/100.0, mesh_.radius() );
+  camera_.wheel( (double)event->delta()/100.0 );
   update();
 }
 
