@@ -50,7 +50,7 @@ namespace tomo
   };
 
 
-  class PointCloud : public SceneObject 
+  class PointCloud : public Compound<Vertex>
   {
     public:
       PointCloud();
@@ -61,8 +61,7 @@ namespace tomo
       Vec3f normal(const Ray& ray) const { return Vec3f(); }
       TexCoords texCoords(const Ray& ray) const { return TexCoords(); }
 
-      bool intersect(Ray& ray) const { return false; }
-
+      bool intersect(Ray& _ray, Vec3f* _normal, TexCoords* _texCoords) const { return false; }
 
       void update();
       void collectKNearest(Point3f& p, int k);

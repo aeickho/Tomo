@@ -5,8 +5,6 @@
 #include "tomo/Triangle.hpp"
 #include "tomo/KDTree.hpp"
 
-#include <GL/glu.h>
-
 namespace tomo
 { 
   class TriangleKDTree : public KDTree<Triangle>
@@ -22,38 +20,43 @@ namespace tomo
       void divideNode(Node* node, const BoundingBox& box, int depth);
   };
 
-  struct Mesh : public SceneObject, public Primitive
+  template<class TRIANGLE>
+  struct MeshConcept : public Compound<TRIANGLE>
   {
-      void read(string filename);
+      virtual void read(const string& filename) = 0;
+      
+      bool intersect(Ray& _ray, Vec3f* _normal = NULL, TexCoords* _texCoords = NULL) const;
+    
+      void displayNormals();
+      
+      std::vector<Triangle>& triangles() { return triangles_; }
+      const std::vector<Triangle>& triangles() const { return triangles_; }
+    
+    protected:
+      void calcBoundingBox();
+    private:
+      std::vector<TRIANGLE> triangles_;
+  };
 
-      // Test if mesh intersects ray.
-      // @detail  Uses TriangleKDTree for fast traversal
-      bool intersect(Ray& ray) const;
+  struct VertexMesh : public Compound<VertexTriangle>
+  {
+
+  };
+
+  struct TriangleMesh : public Compound<Triangle>
+  {
 
       // Split a mesh into halves along a split plane
       std::pair<Mesh,Mesh> split(const Plane& plane);
-   
-      TexCoords texCoords(const Ray& ray) const { return TexCoords(); }
-      Vec3f normal(const Ray& ray) const { return Vec3f(); }
-   
-      void displayNormals();
-
-      std::vector<Triangle>& triangles() { return triangles_; }
-      const std::vector<Triangle>& triangles() const { return triangles_; }
+      
      protected:
 
       // Iterate over triangles and determine maximum  
-      void calcBoundingBox();
     private:
 
       // Splits are triangle with splitting plane
       // Adds triangles behind plane to behind and triangles in front of plane to front 
       void splitTriangle(const Triangle& tri, const Plane& plane, Mesh& behind, Mesh& front);
-      TriangleKDTree kdTree;
-
-      std::vector<Triangle> triangles_;
-      GLuint dispList;
-      // DisplayList
   };
 
 }
