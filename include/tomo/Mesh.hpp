@@ -10,8 +10,12 @@ namespace tomo
     template<class TRIANGLE>
       struct MeshConcept : public Compound<TRIANGLE>
     {
+      virtual void read(const std::string& _filename) = 0;
+
       typedef KDNode<TRIANGLE> Node;
 
+      const std::vector<TRIANGLE>& triangles() const { return Compound<TRIANGLE>::objs_; }
+      
       bool intersect(Ray& _ray, Vec3f* _normal = NULL, Point2f* _texCoords = NULL) const
       {
         bool found = false;
@@ -100,7 +104,7 @@ namespace tomo
 
   struct TriangleMesh : public mesh_detail::MeshConcept<Triangle>
   {
-    void read(const string& filename);
+    void read(const std::string& filename);
 
     // Split a mesh into halves along a split plane
     std::pair<TriangleMesh,TriangleMesh> split(const Plane& plane);

@@ -1,12 +1,14 @@
 #ifndef GLWIDGET_H
 #define GLWIDGET_H
 
+#include "tomo/Mesh.hpp"
 #include "tomo/PointCloud.hpp"
 #include "tomo/Camera.hpp"
 #include "tomo/Light.hpp"
 #include "tomo/Color.hpp"
 #include <QtOpenGL/QGLWidget>
 #include <GL/gl.h>
+#include <GL/glu.h>
 
 class GLWidget : public QGLWidget
 {
@@ -31,7 +33,7 @@ protected:
   void paintSelection();
 public:
   /// @todo replace with an vector<tomo::SceneObjects>
-  tomo::Mesh mesh_;
+  tomo::TriangleMesh mesh_;
   /// @brief selection parameters
   float pointSize_;
   float radius_;

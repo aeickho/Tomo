@@ -33,7 +33,7 @@ void GLWidget::initializeGL()
     // near, far
     1.0, 100.0,
     // distance
-    mesh_.radius() * 1.5,
+    mesh_.bounds().radius() * 1.5,
     Point(0.0, 1.0, 0.0, 1.0)
   );
 
@@ -188,13 +188,13 @@ void GLWidget::paintGL()
   }
   // draw objects
   {
-    tomo::Vec3f c = 0.5*(mesh_.boundingBox_.max.vec() + mesh_.boundingBox_.min.vec());
+    tomo::Vec3f c = 0.5*(mesh_.bounds().max().vec() + mesh_.bounds().min().vec());
     glTranslatef(-c.x(),-c.y(),-c.z());
     glColor3f(0.8,0.8,0.8);
     glBegin(GL_TRIANGLES);
     BOOST_FOREACH( const tomo::Triangle& tri, mesh_.triangles() )
     {
-      glNormal3fv(tri.n.p());
+      glNormal3f(COORDS(tri.normal()));
       for (int i  = 0; i < 3; i++)
         glVertex3fv(tri.v[i].p());
     }
