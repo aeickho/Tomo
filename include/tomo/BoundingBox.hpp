@@ -4,26 +4,18 @@
 
 namespace tomo 
 {
-  struct BoundingBox : public Primitive
+  struct BoundingBox : public Primitive, public Bounds
   {
-    bool intersect(Ray& ray) const;
-    
-    void set(const Point3f& _min, const Point3f& _max);
+    BoundingBox() : Bounds(Point3f(INF,INF,INF),Point3f(-INF,-INF,-INF)) {}
+    BoundingBox(Point3f _min, Point3f _max) : Bounds(_min,_max) {}
 
+    bool intersect(Ray& _ray, Vec3f* _normal = NULL, Point2f* _texCoords = NULL) const;
+    
     void split(float splitPos, Axis axis, BoundingBox& boxLeft, BoundingBox& boxRight) const;
 
-    std::vector<Point3f> corners() const;
-
-    Vec3f normal(const Ray& ray) const { return Vec3f(); }
-    TexCoords texCoords(const Ray& ray) const { return TexCoords(); }
+    Bounds bounds() const { return Bounds(min(),max()); }
 
     Axis dominantAxis() const;
-
     bool pointInBox(Point3f p) const;
-
-    Vec3f size() const { return max - min; }
-
-    // Bounding box points
-    Point3f min, max;
   };
 }

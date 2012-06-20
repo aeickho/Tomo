@@ -4,23 +4,17 @@
 
 namespace tomo 
 {
-  struct Plane : public Primitive
+  struct Plane : public Primitive 
   {
-    bool _infinite;
-    Point3f _c;
-    Vec3f _n;
-    float _w;
+    Plane(const Point3f& _center, const Vec3f& _normal)
+      : center_(_center), normal_(_normal)
+    {}
 
-    Plane(const Point3f& center, const Vec3f& normal, float width)
-      : _c(center), _n(normal), _w(width)
-    {
+    bool intersect(Ray& _ray, Vec3f* _normal = NULL, Point2f* _texCoords = NULL) const;
 
-    }
+    Bounds bounds() const;
 
-    bool intersect(Ray& ray) const; 
-    Vec3f normal(const Ray& ) const
-    {
-      return _n;
-    }
+    Point3f center_;
+    Vec3f normal_;
   };
 }

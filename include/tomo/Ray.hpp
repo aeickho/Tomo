@@ -9,15 +9,15 @@ namespace tomo
 
   struct Ray
   {
-    Ray(const Point3f _org = Point3f(), const Vec3f _dir = Vec3f(), float _tMin = 0.002, float _tMax = 1000000.0): 
-      org_(_org), dir_(_dir), primitive_(NULL), tMin_(_tMin), tMax_(_tMax),  u_(0.0), v_(0.0) {  }
+    Ray(const Point3f _org = Point3f(), const Vec3f _dir = Vec3f(), float _tMin = 0.002, float _tMax = INF): 
+      org_(_org), dir_(_dir), primitive_(NULL), tMin_(_tMin), tMax_(_tMax) {  }
 
-    bool intersection(Primitive* _primitive, float _t, float _u, float _v) 
+    bool intersection(Primitive* _primitive, float _t) 
     {
       if (_t >= tMin_ && _t < tMax_)
       {
       primitive_ = _primitive;
-      tMin_ = _t; u_ = _u; v_ = _v;
+      tMin_ = _t;
       return true;
       }
       return false;
@@ -40,8 +40,6 @@ namespace tomo
    
     Primitive* primitive_;
     float tMin_, tMax_;
-    float u_,v_;
-
   };
 
   typedef std::vector<Ray*> RayList;

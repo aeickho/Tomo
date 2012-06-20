@@ -15,12 +15,12 @@ namespace tomo
 		glPopMatrix();
 	}
 */
-	bool Sphere::intersect(Ray& ray) const
+	bool Sphere::intersect(Ray& _ray, Vec3f* _normal, Point2f* _texCoords) const
 	{
-		Vec3f o = ray.org_ - center_;
-		float a = ray.dir_ * ray.dir_;
-		float b = 2.0f * (ray.dir_ * o);
-		float c = o*o - radius()*radius();
+		Vec3f o = _ray.org_ - center_;
+		float a = _ray.dir_.dot( _ray.dir_ ) ;
+		float b = 2.0f * (_ray.dir_.dot(o));
+		float c = o.dot(o) - radius()*radius();
 		float disc = b*b - 4*a*c;
 
 		if (disc < 0) return false;
@@ -33,24 +33,20 @@ namespace tomo
 		if (t0 > t1) std::swap(t0,t1);
 		if (t1 < 0) return false;
 
-    return ray.intersection(pointer(),(t0 < 0) ? t1 : t0,0,0);
+    if (_normal) 
+    { 
+      (*_normal)((_ray.intersectionPoint() - center_).normalized());
+      if (_texCoords)
+        (*_texCoords)(atan2(_normal->x(),_normal->z()) / (2.0*M_PI) + 0.5,acosf(_normal->y())/M_PI);
+    }
+    return _ray.intersection(pointer(),(t0 < 0) ? t1 : t0);
 	}
 
-	Vec3f Sphere::normal(const Ray& ray) const
-	{
-    Vec3f n = ray.intersectionPoint() - center_;
-    return n.normalized();    
-	}
-
-	TexCoords Sphere::texCoords(const Ray& ray) const
-	{
-		// from http://www.cse.msu.edu/~cse872/tutorial4.html
-		Vec3f n = normal(ray);
-		float u = atan2(n.x(),n.z()) / (2.0*M_PI) + 0.5;
-		float v = acosf(n.y())/M_PI;
-
-		return TexCoords(u,v);
-	}
-
+  Bounds Sphere::bounds() const
+  {
+    Point3f _rP(radius_,radius_,radius_),
+            _rM(-radius_,-radius_,-radius_);
+    return Bounds(center_ + _rM, center_ + _rP);
+  }
 
 }

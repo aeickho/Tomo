@@ -2,6 +2,8 @@
 
 #include "tomo/BoundingBox.hpp"
 
+#include <vector>
+
 namespace tomo 
 {
   template <typename T> struct KDNode
@@ -20,7 +22,7 @@ namespace tomo
 
     Axis axis;
     float splitPos;
-    vector<T*> objs;
+    std::vector<T*> objs;
 
     void free() 
     { 
@@ -47,16 +49,18 @@ namespace tomo
   template <typename T> 
   struct KDTree
   {
-    KDTree() : root(NULL) {}
+    KDTree() : root_(NULL) {}
+    ~KDTree() { clear(); }
 
+  protected:
     typedef KDNode<T> Node;
-    Node* root;
+    Node* root_;
     void clear()
     {
-      if (!root) return;
-      root->free();
-      delete root;
-      root = NULL;
+      if (!root_) return;
+      root_->free();
+      delete root_;
+      root_ = NULL;
     }
 
 /*  void draw(Color color, const BoundingBox& box) const
@@ -64,21 +68,20 @@ namespace tomo
       if (root) root->draw(color,box,0,12);
     }
 */
-    void build(vector<T>& objs, const BoundingBox& boundingBox)
+
+     void build(std::vector<T>& objs, const BoundingBox& boundingBox)
     {
       clear();
-      root = new Node;
-      root->objs.reserve(objs.size());
+      root_ = new Node;
+      root_->objs.reserve(objs.size());
       
       for (unsigned i = 0; i < objs.size(); i++)
-        root->objs.push_back(&objs[i]);
+        root_->objs.push_back(&objs[i]);
       
-      divideNode(root,boundingBox,0);
+      divideNode(root_,boundingBox,0);
     }
 
-
-  private:
-    virtual void divideNode(Node* node, const BoundingBox& boundingBox, int depth) = 0;
+   virtual void divideNode(Node* node, const BoundingBox& boundingBox, int depth) = 0;
   };
 }
 

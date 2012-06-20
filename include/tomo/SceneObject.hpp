@@ -5,7 +5,7 @@ namespace tomo
   /* A SceneObject is an object which is transformable and displayable within a scene.
      Moreover, it has a bounding box to determine its extents.
    */
-  struct SceneObject : public Object 
+  struct SceneObject : public Primitive
   {
     bool visible;
     BoundingBox boundingBox_;

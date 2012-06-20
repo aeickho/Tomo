@@ -7,7 +7,7 @@ using namespace std;
 
 namespace tomo 
 {
-  void OFFWriter::write(std::string filename, Vertices* vertices, Polygons* polygons)
+  void OFFWriter::write(std::string filename, const Vertices* vertices, const Polygons* polygons) const
   {
 
     unsigned V = vertices ? vertices->size() : 0,
@@ -21,13 +21,13 @@ namespace tomo
 
     if (vertices)
     {
-      BOOST_FOREACH( Vertex& vertex, *vertices )
+      BOOST_FOREACH( const Vertex& vertex, *vertices )
         os << vertex.v.x() << " " << vertex.v.y() << " " << vertex.v.z() << endl;
     }
 
     if (polygons)
     {
-      BOOST_FOREACH( Polygon& polygon, *polygons )
+      BOOST_FOREACH( const Polygon& polygon, *polygons )
       {
          os << polygon.size();
          BOOST_FOREACH( Vertex* vertex, polygon )

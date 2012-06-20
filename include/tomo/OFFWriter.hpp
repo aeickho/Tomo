@@ -7,6 +7,6 @@ namespace tomo
   class OFFWriter
   {
     public:
-      void write(std::string filename, Vertices* vertices = NULL, Polygons* polygons = NULL);
+      void write(std::string filename, const Vertices* vertices = NULL, const Polygons* polygons = NULL) const;
   };
 }

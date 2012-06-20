@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include "tomo/Vector.hpp"
+#include "tomo/Plane.hpp"
 
 namespace tomo
 {
@@ -15,7 +15,7 @@ namespace tomo
   {
   };
 
-  struct Slice 
+  struct Slice : public Plane
   {
  /*   SplitPlane plane_;
     std::vector<Isle> isles_;

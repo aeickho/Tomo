@@ -1,62 +1,118 @@
 #pragma once
 
-#include "tomo/SceneObject.hpp"
-#include "tomo/Vertex.hpp"
+#include "tomo/Compound.hpp"
 #include "tomo/Triangle.hpp"
-#include "tomo/KDTree.hpp"
 
 namespace tomo
-{ 
-  class TriangleKDTree : public KDTree<Triangle>
+{
+  namespace mesh_detail 
   {
-    public:
-      TriangleKDTree();
-      
-      // Traverses kd-tree along a ray recursively
-      float recKDTreeTraverse(Ray& ray, Node* node, float tnear, float tfar, bool& found) const;
+    template<class TRIANGLE>
+      struct MeshConcept : public Compound<TRIANGLE>
+    {
+      typedef KDNode<TRIANGLE> Node;
 
-    private:
-      // Method to define how KDTree is constructed 
-      void divideNode(Node* node, const BoundingBox& box, int depth);
-  };
+      bool intersect(Ray& _ray, Vec3f* _normal = NULL, Point2f* _texCoords = NULL) const
+      {
+        bool found = false;
+        recKDTreeTraverse(_ray,this->root_,_ray.tMin_,_ray.tMax_,found,_normal,_texCoords);
+        return found;
+      }
 
-  template<class TRIANGLE>
-  struct MeshConcept : public Compound<TRIANGLE>
-  {
-      virtual void read(const string& filename) = 0;
-      
-      bool intersect(Ray& _ray, Vec3f* _normal = NULL, TexCoords* _texCoords = NULL) const;
-    
-      void displayNormals();
-      
-      std::vector<Triangle>& triangles() { return triangles_; }
-      const std::vector<Triangle>& triangles() const { return triangles_; }
-    
-    protected:
-      void calcBoundingBox();
+      bool slice(Slice& _slice) const 
+      { 
+        return false; // TODO: Implement slicing algo
+      }
+
     private:
       std::vector<TRIANGLE> triangles_;
+
+      // Method to define how KDTree is constructed 
+      void divideNode(Node* node, const BoundingBox& box, int depth)
+      {
+        if (depth > 15 || node->objs.size() < 10)
+        {   // We have a leaf node!
+          node->left = NULL; node->right = NULL;
+          return;
+        }
+        node->left = new Node;
+        node->right = new Node;
+        node->axis = box.dominantAxis();
+
+        // TODO: Surface Area Heuristic here!
+        node->splitPos = 0.5*(box.min()[node->axis] + box.max()[node->axis]);
+        BoundingBox boxLeft, boxRight;
+        box.split(node->splitPos,node->axis,boxLeft,boxRight);
+
+        BOOST_FOREACH( Triangle* tri, node->objs )
+        {
+          int result = tri->intersect(node->splitPos,node->axis);
+          if (result & 1) node->left->objs.push_back(tri);
+          if (result & 2) node->right->objs.push_back(tri);
+        }
+        node->objs.clear();
+        divideNode(node->left,boxLeft,depth+1);
+        divideNode(node->right,boxRight,depth+1);
+
+      }
+
+      // Traverses kd-tree along a ray recursively
+      float recKDTreeTraverse(Ray& ray, Node* node, float tnear, float tfar, bool& found,
+          Vec3f* _normal = NULL, Point2f* _texCoords = NULL) const
+      {
+        if (node->isLeaf())
+        {
+          BOOST_FOREACH( Triangle* tri, node->objs )
+            if (tri != ray.primitive_) found |= (tri->intersect(ray,_normal,_texCoords));
+          return ray.tMax_;
+        }
+
+        int k = node->axis;
+        float d = (node->splitPos - ray.org_[k]) / ray.dir_[k];
+
+        KDNode<Triangle>* front = node->left;
+        KDNode<Triangle>* back  = node->right;
+        if (ray.dir_[k] < 0) std::swap(front,back); 
+
+        if (d <= tnear)
+        {
+          recKDTreeTraverse(ray,back,tnear,tfar,found);
+        } else
+          if (d >= tfar)
+          {
+            recKDTreeTraverse(ray,front,tnear,tfar,found);
+          } else
+          {
+            float t_hit = recKDTreeTraverse(ray,front,tnear,d,found);
+            if (t_hit <= d) return t_hit;
+            return recKDTreeTraverse(ray,back,d,tfar,found,_normal,_texCoords);
+          }
+        return INF;
+      }
+
+    };
+  }
+
+  struct VertexMesh : public mesh_detail::MeshConcept<VertexTriangle>
+  {
+    std::vector<Vertex> vertices_;
   };
 
-  struct VertexMesh : public Compound<VertexTriangle>
+  struct TriangleMesh : public mesh_detail::MeshConcept<Triangle>
   {
+    void read(const string& filename);
 
-  };
+    // Split a mesh into halves along a split plane
+    std::pair<TriangleMesh,TriangleMesh> split(const Plane& plane);
 
-  struct TriangleMesh : public Compound<Triangle>
-  {
+    protected:
 
-      // Split a mesh into halves along a split plane
-      std::pair<Mesh,Mesh> split(const Plane& plane);
-      
-     protected:
-
-      // Iterate over triangles and determine maximum  
+    // Iterate over triangles and determine maximum  
     private:
 
-      // Splits are triangle with splitting plane
-      // Adds triangles behind plane to behind and triangles in front of plane to front 
-      void splitTriangle(const Triangle& tri, const Plane& plane, Mesh& behind, Mesh& front);
+    // Splits are triangle with splitting plane
+    // Adds triangles behind plane to behind and triangles in front of plane to front 
+    void splitTriangle(const Triangle& tri, const Plane& plane, TriangleMesh& behind, TriangleMesh& front);
   };
 
 }

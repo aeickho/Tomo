@@ -1,6 +1,6 @@
 #pragma once
 
-#include "tomo/Vector.hpp"
+#include "tomo/Primitive.hpp"
 
 #include <vector>
 #include <set>
@@ -10,14 +10,22 @@ namespace tomo
   using std::vector;
   using std::set;
 
-  struct Vertex
+  struct Vertex : public Primitive
   {
     Vertex(Point3f _v = Point3f(), Vec3f _n = Vec3f()) { v(_v); n(_n); }
     void set(Point3f _v, Vec3f _n = Vec3f()) { v = _v; n = _n; }
 
+    bool intersect(Ray& _ray, Vec3f* _normal = NULL, Point2f* _texCoords = NULL) const 
+    {
+      return false;
+    }
+
+    Bounds bounds() const { return Bounds(v,v); }
+
     Point3f v;
     Vec3f n;
     bool hasNormal() { return (n.length() != 0.0f); }
+
   };
 
   typedef vector<Vertex> Vertices;

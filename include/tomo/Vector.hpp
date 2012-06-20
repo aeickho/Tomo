@@ -87,25 +87,32 @@ namespace tomo
     Vec( CoordType _x, CoordType _y, CoordType _z) : _Coords(_x,_y,_z) { }
     Vec( CoordType _x, CoordType _y, CoordType _z, CoordType _w ) : _Coords(_x,_y,_z,_w) { }
 
-    CoordType  sqrLength()        { return (*this)*(*this); }
+    CoordType  sqrLength()        { return this->dot(*this); }
     CoordType	 length() 			  	{ return    sqrt( sqrLength() ); }
     void 	     normalize() 	  		{ CoordType l = length(); if (l>0.0f) FOREACH_DIM this->a_[i] /= l; }
     Vec 	     normalized() const { Vec v(*this); v.normalize(); return v; }
 
-    Vec const cross(const Vec& v) 		
+    const Vec cross(const Vec& v) const
     { 
       BOOST_STATIC_ASSERT(DIMENSIONS == 3);
       return Vec(this->y()*v.z() - this->z()*v.y(), 
                  this->z()*v.x() - this->x()*v.z(), 
-                 this->x()*v.y() - this->y()*v.x() ); }
+                 this->x()*v.y() - this->y()*v.x() ); 
+    }
+
+    const CoordType dot( const Vec& v) const 
+    { 
+      CoordType sum = 0; 
+      FOREACH_DIM sum += v[i]*this->a_[i]; 
+      return sum; 
+    } 
 
     Vec operator- () const { Vec v(*this);  FOREACH_DIM v[i] = -v[i];  return v; }
     void operator *= ( CoordType f ) 	{  FOREACH_DIM this->a_[i] *= f; }
 
     friend Vec      operator*( const Vec& a, const CoordType f ) { Vec v(a); FOREACH_DIM v[i] *= f; return v; }
     friend Vec      operator*( const CoordType f, const Vec& a ) { return a*f; }
-    friend CoordType operator*( const Vec& a, const Vec& b) { CoordType sum = 0; FOREACH_DIM sum += a[i]*b[i]; return sum; } 
-    friend Vec      operator%( const Vec& a, const Vec& b) { Vec v; FOREACH_DIM v[i] = a[i]*b[i]; return v; } 
+    friend Vec      operator*( const Vec& a, const Vec& b) { Vec v; FOREACH_DIM v[i] = a[i]*b[i]; return v; } 
     friend Vec      operator-( const Vec& a, const Vec& b) { Vec v; FOREACH_DIM v[i] = a[i]-b[i]; return v; }
     friend Vec      operator+( const Vec& a, const Vec& b) { Vec v; FOREACH_DIM v[i] = a[i]+b[i]; return v; }
 /*

@@ -30,13 +30,13 @@ int main(int ac, char* av[])
   LOG_MSG << fmt("% % %") % v.x() % v.y() % v.z();
 
   Vec<3,float> w(2.0,2.0,2.0);
-  LOG_MSG << fmt("v * w = %") % (v * w);
+  LOG_MSG << fmt("v . w = %") % (v.dot(w));
 
   v += w;
   LOG_MSG << fmt("% % %") % v.x() % v.y() % v.z();
   v -= w;
   LOG_MSG << fmt("% % %") % v.x() % v.y() % v.z();
-  v = w % v;
+  v = w * v;
   LOG_MSG << fmt("% % %") % v.x() % v.y() % v.z();
 
   w *= 3.0;
