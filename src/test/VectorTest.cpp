@@ -7,6 +7,7 @@
 #include <boost/foreach.hpp>
 
 #include "tomo/Vector.hpp"
+#include "tomo/Color.hpp"
 #include "tbd/log.h"
 
 using namespace boost;
@@ -44,13 +45,15 @@ int main(int ac, char* av[])
   v.normalize();
   v = w.normalized();
 
-
   LOG_MSG << "Test: Vec<2,int>";
   Vec<2,int> u(1,1);
   LOG_MSG << fmt("% %") % u.x() % u.y();
-  v(42,42,42);
-  LOG_MSG << fmt("% %") % u.x() % u.y();
 
+  /// Color
+  Color4f c4f;
+  LOG_MSG << fmt("% % % %") % c4f.r() % c4f.g() % c4f.b() % c4f.a();
+
+  
 
 
   return EXIT_SUCCESS;

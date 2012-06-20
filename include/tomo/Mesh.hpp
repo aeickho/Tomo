@@ -7,15 +7,22 @@ namespace tomo
 {
   namespace mesh_detail 
   {
+    /** @brief Base class for meshes *
+     * @tparam TRIANGLE Triangle type
+     */
     template<class TRIANGLE>
-      struct MeshConcept : public Compound<TRIANGLE>
+    struct MeshConcept : public Compound<TRIANGLE>
     {
+      /// KDTree node type 
+      typedef KDNode<TRIANGLE> Node;
+      
+      /** @brief Load mesh from file (virtual) 
+       */
       virtual void read(const std::string& _filename) = 0;
 
-      typedef KDNode<TRIANGLE> Node;
-
+      /** @brief return triangles **/
       const std::vector<TRIANGLE>& triangles() const { return Compound<TRIANGLE>::objs_; }
-      
+
       bool intersect(Ray& _ray, Vec3f* _normal = NULL, Point2f* _texCoords = NULL) const
       {
         bool found = false;
@@ -30,7 +37,11 @@ namespace tomo
 
     private:
 
-      // Method to define how KDTree is constructed 
+      /** @brief Method to define how KDTree is constructed
+       *  @param _node  Node to be divided
+       *  @param _box   Node's BoundingBox
+       *  @param _depth Node depth
+       */
       void divideNode(Node* node, const BoundingBox& box, int depth)
       {
         if (depth > 15 || node->objs.size() < 10)
@@ -56,10 +67,17 @@ namespace tomo
         node->objs.clear();
         divideNode(node->left,boxLeft,depth+1);
         divideNode(node->right,boxRight,depth+1);
-
       }
 
-      // Traverses kd-tree along a ray recursively
+      /** @brief Traverses kd-tree along a ray recursively
+       * @param _ray        Ray which traverses KDTree
+       * @param _node       Current node
+       * @param _tnear      Near ray section
+       * @param _tfar       Far ray section
+       * @param _found      Flag which determines if a ray was found
+       * @param _normal     Normal of intersecting triangle
+       * @param _texCoords  Texture coordinates of intersecting triangle
+       */
       float recKDTreeTraverse(Ray& ray, Node* node, float tnear, float tfar, bool& found,
           Vec3f* _normal = NULL, Point2f* _texCoords = NULL) const
       {
@@ -96,26 +114,35 @@ namespace tomo
     };
   }
 
+  /** @brief Vertex mesh which consists of VertexTriangles and a vertex list 
+   */
   struct VertexMesh : public mesh_detail::MeshConcept<VertexTriangle>
   {
     std::vector<Vertex> vertices_;
   };
 
+  /** @brief Mesh which consists of individual triangles 
+   */
   struct TriangleMesh : public mesh_detail::MeshConcept<Triangle>
   {
     void read(const std::string& filename);
 
-    // Split a mesh into halves along a split plane
+    /** @brief Split a mesh into halves along a split plane
+     * @param _plane  Split plane
+     * @returns Two new TriangleMeshes which represent halves of the original mesh 
+     */
     std::pair<TriangleMesh,TriangleMesh> split(const Plane& plane);
 
-    protected:
-
-    // Iterate over triangles and determine maximum  
     private:
 
-    // Splits are triangle with splitting plane
-    // Adds triangles behind plane to behind and triangles in front of plane to front 
-    void splitTriangle(const Triangle& tri, const Plane& plane, TriangleMesh& behind, TriangleMesh& front);
+    /** @brief Splits are triangle with splitting plane
+     * @detail Adds triangles behind plane to behind and triangles in front of plane to front
+     * @param _tri    Triangle to be split
+     * @param _plane  Split plane
+     * @param _halves Halves of the mesh where the resulting triangles are inserted 
+     */
+    void splitTriangle(const Triangle& tri, const Plane& plane, std::pair<TriangleMesh,TriangleMesh>& _halves);
+
   };
 
 }

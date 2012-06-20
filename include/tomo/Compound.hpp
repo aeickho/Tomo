@@ -8,27 +8,37 @@
 
 namespace tomo
 {
-  template <class SUBOBJECT>
-  class Compound : public SlicableObject, public KDTree<SUBOBJECT>
+
+  /** @brief A Compound is object is a slicable object which consists of several primtives
+   * @detail Moreover, a compound holds a KDTree structure for fast intersection + traversal
+   * @tparam PRIMITIVE  Primitive type
+   */
+  template <class PRIMITIVE>
+  class Compound : public SlicableObject, public KDTree<PRIMITIVE>
   {
     public:
-      virtual void read(const std::string& _filename) = 0;
-
+      /* @brief Return bounds of bounding box
+       */
       Bounds bounds() const
       {
         return Bounds(boundingBox_.min(),boundingBox_.max());
       }
 
-
     protected:
+      /* @brief Determine extents of bounding box
+       */
       void calcBoundingBox()
       {
         boundingBox_ = BoundingBox();
-        BOOST_FOREACH ( SUBOBJECT& _obj , objs_ ) 
+        BOOST_FOREACH ( PRIMITIVE& _obj , objs_ ) 
           boundingBox_.extend(_obj.bounds());
       }
+
+      /// Bounds are caches by a bounding box
       BoundingBox boundingBox_;
-      std::vector<SUBOBJECT> objs_;
+      
+      /// Container for primitives
+      std::vector<PRIMITIVE> objs_;
   };
 }
 

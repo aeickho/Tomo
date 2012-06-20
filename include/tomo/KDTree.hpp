@@ -50,7 +50,6 @@ namespace tomo
   struct KDTree
   {
     KDTree() : root_(NULL) {}
-    ~KDTree() { clear(); }
 
   protected:
     typedef KDNode<T> Node;
