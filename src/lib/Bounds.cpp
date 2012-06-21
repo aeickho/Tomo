@@ -5,7 +5,7 @@ namespace tomo
     void Bounds::operator()(const Point3f& _min, const Point3f& _max)
     {
       min_ = _min; 
-      max_ = _max; 
+      max_ = _max;
       validate();
     }
 
@@ -25,9 +25,12 @@ namespace tomo
     
     void Bounds::validate()
     {
-      FOREACH_AXIS 
+      FOREACH_AXIS
+      {
+        if (min_[axis] != INF && max_[axis] != -INF)
         if (min_[axis] > max_[axis]) 
           std::swap(min_[axis],max_[axis]);
+      }
     }
 
     void Bounds::extend(const Bounds& _bounds)
@@ -35,9 +38,8 @@ namespace tomo
       FOREACH_AXIS
       {
         min_[axis] = std::min(_bounds.min_[axis],min_[axis]);
-        max_[axis] = std::min(_bounds.max_[axis],max_[axis]);
+        max_[axis] = std::max(_bounds.max_[axis],max_[axis]);
       }
-      validate();
     }
 
     Vec3f Bounds::size() const { return max_ - min_; }

@@ -35,7 +35,7 @@ namespace tomo
         return false; // TODO: Implement slicing algo
       }
 
-    private:
+      private:
 
       /** @brief Method to define how KDTree is constructed
        *  @param _node  Node to be divided

@@ -30,8 +30,10 @@ namespace tomo
       void calcBoundingBox()
       {
         boundingBox_ = BoundingBox();
-        BOOST_FOREACH ( PRIMITIVE& _obj , objs_ ) 
+        BOOST_FOREACH ( PRIMITIVE& _obj , objs_ )
           boundingBox_.extend(_obj.bounds());
+    
+        boundingBox_.validate();
       }
 
       /// Bounds are caches by a bounding box
