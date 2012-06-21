@@ -191,6 +191,22 @@ void GLWidget::paintGL()
       camera_.up().y(),
       camera_.up().z()
     );
+
+    glBegin(GL_LINES);
+    {
+      glColor4f(1.0,0.0,0.0,1.0);
+      glVertex3f(0.0,0.0,0.0);
+      glVertex3f(100.0,0.0,0.0);
+
+      glColor4f(0.0,1.0,0.0,1.0);
+      glVertex3f(0.0,0.0,0.0);
+      glVertex3f(0.0,100.0,0.0);
+
+      glColor4f(0.0,0.0,1.0,1.0);
+      glVertex3f(0.0,0.0,0.0);
+      glVertex3f(0.0,0.0,100.0);
+    }
+    glEnd();
   }
   // draw objects
   {
