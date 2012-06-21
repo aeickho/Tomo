@@ -25,7 +25,7 @@ namespace tomo
     std::pair<TriangleMesh,TriangleMesh> halves;
     
     BOOST_FOREACH ( Triangle& tri, objs_ )
-      splitTriangle(tri,splitPlane,halves.first,halves.second);
+      splitTriangle(tri,splitPlane,halves);
 
     halves.first.calcBoundingBox();
     halves.first.build(halves.first.objs_,halves.first.boundingBox_);    
@@ -35,7 +35,8 @@ namespace tomo
     return halves;
   }
 
-  void TriangleMesh::splitTriangle(const Triangle& tri, const Plane& plane, TriangleMesh& behind, TriangleMesh& front)
+  void TriangleMesh::splitTriangle(const Triangle& tri, const Plane& plane, 
+                std::pair<TriangleMesh,TriangleMesh>& _halves)
   {
     vector<Triangle> triangles;
     Point3f V[3]; 
@@ -51,7 +52,7 @@ namespace tomo
       signCount += int(signs[i] < 0);
     }
 
-    vector<Triangle> *q = &behind.objs_, *r = &front.objs_;
+    vector<Triangle> *q = &_halves.first.objs_, *r = &_halves.second.objs_;
     if (signCount >= 2) swap(q,r);
 
     if (signCount == 0 || signCount == 3) 

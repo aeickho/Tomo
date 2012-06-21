@@ -34,14 +34,23 @@ namespace tomo
       float c[4*4];
   };
 
+  /// DEFAULT_TYPE of coordinates is float
   typedef float DEFAULT_TYPE;
 
+/// Compiler macro to traverse through each dimension
 #define FOREACH_DIM for (int i = 0; i < DIMENSIONS; i++) 
 
+  /** @brief Base class of Point and Vec which basically hold a number of coordinates
+   * @tparam DIMENSIONS Number of dimensions
+   * @tparam COORD_TYPE Coordinate type
+   */
   template<int DIMENSIONS, typename COORD_TYPE = DEFAULT_TYPE>  
   struct Coords
   {
+    /// Coordinate value type
     typedef COORD_TYPE CoordType;
+    
+    /// Base constructor, all values are initially set to zero
     Coords() { FOREACH_DIM a_[i] = 0; }
     Coords( Coords& _coords ) { FOREACH_DIM a_[i] = _coords[i]; }
     Coords( const Coords& _coords ) { FOREACH_DIM a_[i] = _coords[i]; }
@@ -54,33 +63,46 @@ namespace tomo
     inline void operator()(CoordType _x, CoordType _y, CoordType _z) { x(_x); y(_y); z(_z); }
     inline void operator()(CoordType _x, CoordType _y, CoordType _z, CoordType _w) { x(_x); y(_y); z(_z); w(_w); }
     
+    /* @brief Return pointer */
     CoordType* p() { return a_; }
+    /* @brief Return const pointer */
     const CoordType* p() const { return a_; }
 
+    /// Methods to return coordinate values
     inline CoordType x() const { BOOST_STATIC_ASSERT(DIMENSIONS >= 1); return a_[0]; }
     inline CoordType y() const { BOOST_STATIC_ASSERT(DIMENSIONS >= 2); return a_[1]; }
     inline CoordType z() const { BOOST_STATIC_ASSERT(DIMENSIONS >= 3); return a_[2]; }
     inline CoordType w() const { BOOST_STATIC_ASSERT(DIMENSIONS >= 4); return a_[3]; }
     
+    /// Methods to set coordinate values 
     inline void x(const CoordType _x) { BOOST_STATIC_ASSERT(DIMENSIONS >= 1); a_[0] = _x; }
     inline void y(const CoordType _y) { BOOST_STATIC_ASSERT(DIMENSIONS >= 2); a_[1] = _y; }
     inline void z(const CoordType _z) { BOOST_STATIC_ASSERT(DIMENSIONS >= 3); a_[2] = _z; }
     inline void w(const CoordType _w) { BOOST_STATIC_ASSERT(DIMENSIONS >= 4); a_[3] = _w; }
 
+    /// Methods to access coordinate value in a certain dimension
     CoordType& operator[] (int i) { return a_[i]; }
     const CoordType& operator[] (int i) const { return a_[i]; }
 
     void operator += ( const Coords _c ) { FOREACH_DIM a_[i] += _c[i]; }
     void operator -= ( const Coords _c ) { FOREACH_DIM a_[i] -= _c[i]; } 
 
-  protected:
+    protected:
+    /// Array to store coordinate values
     CoordType a_[DIMENSIONS]; 
   };
 
+  /** @brief Template class to represent a vector
+   * @tparam DIMENSIONS Number of dimensions
+   * @tparam COORD_TYPE Coordinate type
+   */
   template<int DIMENSIONS, typename COORD_TYPE = DEFAULT_TYPE>  
   struct Vec : public Coords<DIMENSIONS,COORD_TYPE>
   {
+    /// Coordinate value type
     typedef COORD_TYPE CoordType;
+
+    /// Type of base class
     typedef Coords<DIMENSIONS,COORD_TYPE> _Coords;
     typedef COORD_TYPE AngleType;
 
@@ -121,6 +143,11 @@ namespace tomo
       spherical(_azimuth + azimuth(), _polar + polar(), _length + length() );
     }
 
+    /* @brief Calculates cross product by this and another Vec
+     * @param v   Second vector
+     * @returns Vector
+     * @details Number of dimension must be 3!
+     **/
     const Vec cross(const Vec& v) const
     { 
       BOOST_STATIC_ASSERT(DIMENSIONS == 3);
@@ -129,6 +156,10 @@ namespace tomo
                  this->x()*v.y() - this->y()*v.x() ); 
     }
 
+    /* @brief Calculates dot product by this and another Vec
+     * @param v   Second vector
+     * @returns CoordType value
+     **/
     const CoordType dot( const Vec& v) const 
     { 
       CoordType sum = 0; 
@@ -136,6 +167,7 @@ namespace tomo
       return sum; 
     } 
 
+    /// Vector operations
     Vec operator- () const { Vec v(*this);  FOREACH_DIM v[i] = -v[i];  return v; }
     void operator *= ( CoordType f ) 	{  FOREACH_DIM this->a_[i] *= f; }
 
@@ -145,7 +177,7 @@ namespace tomo
     friend Vec      operator-( const Vec& a, const Vec& b) { Vec v; FOREACH_DIM v[i] = a[i]-b[i]; return v; }
     friend Vec      operator+( const Vec& a, const Vec& b) { Vec v; FOREACH_DIM v[i] = a[i]+b[i]; return v; }
 /*
-    friend _Vec      operator*( const _Vec& a, const Matrix4f& M ) 
+    friend Vec      operator*( const Vec& a, const Matrix<DIMENSIONS+1,CoordType>& M ) 
     { 
       _Vec v;
       v.x = a.x * M.get(0,0) + a.y*M.get(1,0) + a.z*M.get(2,0) + M.get(3,0);
@@ -156,6 +188,10 @@ namespace tomo
 */
   };
 
+  /** @brief Template class to represent a point 
+   * @tparam DIMENSIONS Number of dimensions
+   * @tparam COORD_TYPE Coordinate type
+   */
   template<int DIMENSIONS, typename COORD_TYPE = DEFAULT_TYPE>  
   struct Point : public Coords<DIMENSIONS,COORD_TYPE>
   {
@@ -174,19 +210,13 @@ namespace tomo
     friend Point operator+( const Point& a, const Point& b) { Point p; FOREACH_DIM p[i] = a[i] + b[i]; return p; }
     friend Point operator+( const Point& a, const _Vec& b) { Point p; FOREACH_DIM p[i] = a[i] + b[i]; return p; }
 
+    /* @brief Transform point into a vector */
     _Vec vec() { _Vec v; FOREACH_DIM v[i] = this->a_[i]; return v; }
   };
 
 #undef FOREACH_DIM
 
-
-  struct TexCoords
-  {
-    TexCoords(float _u = 0.0, float _v = 0.0) : u(_u), v(_v) {}
-    float u,v;
-  };
-
-  typedef enum { X,Y,Z } Axis;
+  typedef enum { X,Y,Z,W } Axis;
 
   typedef Vec<2,int> Vec2i;
   typedef Point<2,int> Point2i;
