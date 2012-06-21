@@ -10,19 +10,19 @@ namespace tomo
    * @tparam DIMENSIONS Number of dimensions
    * @tparam COORD_TYPE Coordinate type
    */
-  template<int DIMENSIONS, typename COORD_TYPE = DEFAULT_TYPE>  
-  struct Point : public Coords<DIMENSIONS,COORD_TYPE>
+  template<int DIMENSIONS, typename COORD = DEFAULT_TYPE>  
+  struct Point : public Coords<DIMENSIONS,COORD>
   {
-    typedef COORD_TYPE CoordType;
-    typedef Vec<DIMENSIONS,COORD_TYPE> _Vec;
-    typedef Coords<DIMENSIONS,COORD_TYPE> _Coords;
+    typedef COORD Coord;
+    typedef Vec<DIMENSIONS,COORD> _Vec;
+    typedef Coords<DIMENSIONS,COORD> _Coords;
 
     Point() : _Coords() {}
     Point( Point& p ) : _Coords( p ) {}
     Point( const Point& p ) : _Coords( p ) {}
-    Point( CoordType _x, CoordType _y ) : _Coords(_x,_y) { }
-    Point( CoordType _x, CoordType _y, CoordType _z ) : _Coords(_x,_y,_z) { }
-    Point( CoordType _x, CoordType _y, CoordType _z, CoordType _w ) : _Coords(_x,_y,_z,_w) { }
+    Point( Coord _x, Coord _y ) : _Coords(_x,_y) { }
+    Point( Coord _x, Coord _y, Coord _z ) : _Coords(_x,_y,_z) { }
+    Point( Coord _x, Coord _y, Coord _z, Coord _w ) : _Coords(_x,_y,_z,_w) { }
 
     friend _Vec operator-( const Point& a, const Point& b) { _Vec v; TOMO_FOREACH_DIM v[i] = a[i]-b[i]; return v; }
     friend Point operator+( const Point& a, const Point& b) { Point p; TOMO_FOREACH_DIM p[i] = a[i] + b[i]; return p; }

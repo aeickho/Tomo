@@ -4,11 +4,15 @@
 
 namespace tomo
 {
-  template<class COLOR, class COORD, int DIMENSIONS=3> struct Light
+  template<class TRACKER, class COLOR> struct Light : TRACKER 
   {
+    /// tracker type
+    typedef TRACKER Tracker;
     typedef COLOR Color;
-    typedef COORD Coord;
-    typedef Point<DIMENSIONS,Coord> Point;
+    /// point type from tracker
+    typedef typename Tracker::Point Point;    
+    /// coordinate type from tracker
+    typedef typename Point::Coord Coord;
 
     void setup( 
         const Point& _pos, 

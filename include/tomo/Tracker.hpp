@@ -38,7 +38,7 @@ namespace tomo
           BOOST_ASSERT(0);
           break;
         case SPHERICAL:
-          direction_.sphericalMove(x,y,z);
+          direction_ += Vec(x,y,z);
           break;
       }
     }

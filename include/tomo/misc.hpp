@@ -3,6 +3,7 @@
 #include <tbd/property.h>
 #include <limits>
 #include <string>
+#include <cmath>
 
 namespace tomo 
 {

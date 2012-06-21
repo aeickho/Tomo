@@ -35,7 +35,7 @@ void GLWidget::initializeGL()
       // target to track (origin)
       Point(0.0,0.0,0.0),
       // set tracking position from spheric coordinates
-      Vec::fromSpherical(0.0, 35.0, mesh_.bounds().radius() * 1.5 )
+      PolarVec(0.0, 0.0, mesh_.bounds().radius() * 1.5/*, tomo::RAD()*/ )
       ),
     // near, far
     1.0, 100.0,

@@ -7,6 +7,7 @@
 #include "tomo/Tracker.hpp"
 #include "tomo/Light.hpp"
 #include "tomo/Color.hpp"
+#include "tomo/PolarVec.hpp"
 #include <QtOpenGL/QGLWidget>
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -16,10 +17,11 @@ class GLWidget : public QGLWidget
   Q_OBJECT
 public:
   typedef tomo::Color<4,float> Color;
-  typedef tomo::Light<Color,GLfloat,3> Light;
   typedef tomo::Point<3,float> Point;
   typedef tomo::Vec<3,float> Vec;
-  typedef tomo::Tracker<Point,Vec> Tracker; 
+  typedef tomo::PolarVec<float> PolarVec;
+  typedef tomo::Tracker<Point,PolarVec> Tracker; 
+  typedef tomo::Light<Tracker,Color> Light;
   typedef tomo::Camera<Tracker> Camera;
 
   explicit GLWidget(QWidget *parent = 0);

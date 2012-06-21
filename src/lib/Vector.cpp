@@ -1,5 +1,5 @@
 #include "tomo/Vector.hpp"
-
+#include <iostream>
 using namespace std; 
 
 namespace tomo
