@@ -4,6 +4,7 @@
 #include "tomo/Vector.hpp"
 #include <algorithm>
 #include <boost/foreach.hpp>
+
 LOG_INIT;
 
 GLWidget::GLWidget(QWidget *parent) :
@@ -26,21 +27,25 @@ void GLWidget::initializeGL()
 {
   mesh_.read("cow.off");
 
+  LOG_MSG << fmt("mesh_.bounds().radius() = %") % mesh_.bounds().radius();
+
   // setup camera
-  camera_.setup(
-    // longitude, latitude
-    0.0, 35.0,
+  camera_ = Camera(
+    Tracker(
+      // target to track (origin)
+      Point(0.0,0.0,0.0),
+      // set tracking position from spheric coordinates
+      Vec::fromSpherical(0.0, 35.0, mesh_.bounds().radius() * 1.5 )
+      ),
     // near, far
     1.0, 100.0,
-    // distance
-    mesh_.bounds().radius() * 1.5,
-    Point(0.0, 1.0, 0.0, 1.0)
+    Point(0.0, 1.0, 0.0)
   );
 
   // setup light source
   light_.setup(
     // position
-    Point(0.0, 100.0, 0.0, 1.0),
+    Point(0.0, 100.0, 0.0),
     // ambient color
     Color(0.1, 0.1, 0.1, 1.0),
     // diffuse color
@@ -87,7 +92,7 @@ void GLWidget::initializeGL()
   /* glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
      glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
      glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);*/
-//  glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient);
+  glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient);
   glLightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse);
   glLightfv(GL_LIGHT1, GL_POSITION, light_position);
   glLightModelfv(GL_LIGHT_MODEL_AMBIENT, model_ambient);
@@ -159,7 +164,7 @@ GLWidget::Point unProject(QPoint const & pos)
 
   GLdouble x,y,z;
   gluUnProject(winX, winY, winZ, modelView, projection, viewport, &x, &y, &z);
-  return GLWidget::Point(x,y,z,1.0);
+  return GLWidget::Point(x,y,z);
 }
 void GLWidget::paintGL()
 {
@@ -171,13 +176,14 @@ void GLWidget::paintGL()
 
   // realize camera
   {
-    /// @todo not necessary
-    camera_.update();
+    // LOG_MSG << fmt("eye    = %,%,%") % camera_.eye().x() % camera_.eye().y() % camera_.eye().z();
+    // LOG_MSG << fmt("center = %,%,%") % camera_.center().x() % camera_.center().y() % camera_.center().z();
+
     // realize coordinates
     gluLookAt(
-      camera_.pos().x(),
-      camera_.pos().y(),
-      camera_.pos().z(),
+      camera_.eye().x(),
+      camera_.eye().y(),
+      camera_.eye().z(),
       camera_.center().x(),
       camera_.center().y(),
       camera_.center().z(),
@@ -215,7 +221,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
   if (0 != (event->buttons() & Qt::LeftButton))
   {
-    camera_.drag( event->pos().x() - mousePosition_.x(), event->pos().y() - mousePosition_.y() );
+    camera_.track( event->pos().x() - mousePosition_.x(), event->pos().y() - mousePosition_.y(), 0 );
     update();
     mousePosition_ = event->pos();
   }
@@ -235,7 +241,7 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 }
 void GLWidget::wheelEvent(QWheelEvent* event)
 {
-  camera_.wheel( (double)event->delta()/100.0 );
+  camera_.track( 0, 0, (double)event->delta()/100.0 );
   update();
 }
 

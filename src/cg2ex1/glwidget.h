@@ -4,6 +4,7 @@
 #include "tomo/Mesh.hpp"
 #include "tomo/PointCloud.hpp"
 #include "tomo/Camera.hpp"
+#include "tomo/Tracker.hpp"
 #include "tomo/Light.hpp"
 #include "tomo/Color.hpp"
 #include <QtOpenGL/QGLWidget>
@@ -14,10 +15,12 @@ class GLWidget : public QGLWidget
 {
   Q_OBJECT
 public:
-  typedef tomo::SphericalCamera<4,float> Camera;
   typedef tomo::Color<4,float> Color;
-  typedef tomo::Light<Color,GLfloat,4> Light;
-  typedef tomo::Point<4,float> Point;
+  typedef tomo::Light<Color,GLfloat,3> Light;
+  typedef tomo::Point<3,float> Point;
+  typedef tomo::Vec<3,float> Vec;
+  typedef tomo::Tracker<Point,Vec> Tracker; 
+  typedef tomo::Camera<Tracker> Camera;
 
   explicit GLWidget(QWidget *parent = 0);
   enum SelectionMode { SELECT_KNEAREST, SELECT_RADIUS };

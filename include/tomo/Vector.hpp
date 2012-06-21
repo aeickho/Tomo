@@ -5,6 +5,9 @@
 #include <cmath>
 #include "tomo/misc.hpp"
 #include <boost/static_assert.hpp>
+#include "tbd/log.h"
+
+/// @todo [fightling] please separate Coord, Point and Vec in several hpp files!!
 
 namespace tomo
 {
@@ -79,6 +82,7 @@ namespace tomo
   {
     typedef COORD_TYPE CoordType;
     typedef Coords<DIMENSIONS,COORD_TYPE> _Coords;
+    typedef COORD_TYPE AngleType;
 
     Vec() : _Coords() {}
     Vec( Vec& v ) : _Coords( v ) {}
@@ -87,10 +91,35 @@ namespace tomo
     Vec( CoordType _x, CoordType _y, CoordType _z) : _Coords(_x,_y,_z) { }
     Vec( CoordType _x, CoordType _y, CoordType _z, CoordType _w ) : _Coords(_x,_y,_z,_w) { }
 
+    /// @todo [fightling] is length correct when w() != 1.0 ??
     CoordType  sqrLength()        { return this->dot(*this); }
     CoordType	 length() 			  	{ return    sqrt( sqrLength() ); }
     void 	     normalize() 	  		{ CoordType l = length(); if (l>0.0f) FOREACH_DIM this->a_[i] /= l; }
     Vec 	     normalized() const { Vec v(*this); v.normalize(); return v; }
+
+    AngleType azimuth() { return acos( this->z() / length() ); }
+    AngleType polar() { return atan( this->y() / this->x() ); }
+
+    static Vec fromSpherical( AngleType _azimuth, AngleType _polar, CoordType _length )
+    {
+      Vec vec;
+      vec.spherical(_azimuth, _polar, _length);
+      return vec;
+    }
+    void spherical( AngleType _azimuth, AngleType _polar, CoordType _length )
+    {
+      LOG_MSG << fmt("azimuth, polar, length = %,%,%") % _azimuth % _polar % _length;
+
+      /// @todo [fightling] just to reset w() in case of DIMENSIONS == 4 (better solition?)
+      FOREACH_DIM this->a_[i] = 0;
+      this->x( _length * cos( _polar / 180.0 * M_PI ) * cos( _azimuth / 180.0 * M_PI ) );
+      this->y( _length * sin( _polar / 180.0 * M_PI ) );
+      this->z( _length * cos( _polar / 180.0 * M_PI ) * sin( _azimuth / 180.0 * M_PI ) );
+    }
+    void sphericalMove( AngleType _azimuth, AngleType _polar, CoordType _length )
+    {
+      spherical(_azimuth + azimuth(), _polar + polar(), _length + length() );
+    }
 
     const Vec cross(const Vec& v) const
     { 

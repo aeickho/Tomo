@@ -1,56 +1,59 @@
 #pragma once
-#include "tomo/IMouse.hpp"
 #include <algorithm>
 
 namespace tomo
 {
-  /** @brief spherical camera
-   * @tparam DIMENSIONS number of dimensions of points
-   * @tparam COORD coordinate skalar type
-   */
-  template<int DIMENSIONS, class COORD> struct Tracker :
-      IMouse
+  template<class POINT,class VEC> struct Tracker
   {
-    /// coordinate type
-    typedef COORD Coord;
-    /// 3D point
-    typedef tomo::Point<DIMENSIONS,COORD> Point;
-    /// dimensions
-    static const int dimensions_ = DIMENSIONS;
-
-    /** @brief setup camera parameters
-     * @param _near minimum visible distance to object
-     * @param _far maximum visible distance from object
-     * @param _distance initial distance from object
-     */
-    void setup( const Point& _pos, Coord _near, Coord _far, Coord _distance )
+    /// point type
+    typedef POINT Point;
+    /// vector type
+    typedef VEC Vec;
+    
+    enum Mode
     {
-      pos_ = _pos;
-      near_ = _near;
-      far_ = _far;
-      distance_ = _distance;
-    }
+      ORTHOGONAL,
+      SPHERICAL
+    };
 
-    virtual void drag( int _x, int _y )
+    Tracker()
     {
-      pos_.x( pos_.x() + (Coord)_x );
-      pos_.y( pos_.y() + (Coord)_y );
     }
-
-    virtual void wheel( int _d )
+    Tracker( const Tracker& _tracker ) 
     {
-      distance_ = std::min(std::max(distance_ + (Coord)_d, near_),far_);
+      center_ = _tracker.center_;
+      direction_ = _tracker.direction_;
     }
-
-    /// point of interest
-    TBD_PROPERTY(Point,center);
-    /// distance of the camera from center
-    TBD_PROPERTY(Coord,distance);
-    /// near z-clipping / maximum zoom
-    TBD_PROPERTY(Coord,near);
-    /// far z-clipping / minimum zoom
-    TBD_PROPERTY(Coord,far);
-    /// positon in Cartesian coordiantes
-    TBD_PROPERTY(Point,pos);
+    Tracker( const Point& _center, const Vec& _direction ) :
+      center_(_center),
+      direction_(_direction)
+    {
+    }
+    void track( int x, int y, int z, Mode _mode = SPHERICAL )
+    {
+      switch( _mode )
+      {
+        case ORTHOGONAL:
+          /// @todo move orthogonal to direction()
+          BOOST_ASSERT(0);
+          break;
+        case SPHERICAL:
+          direction_.sphericalMove(x,y,z);
+          break;
+      }
+    }
+    /// get tracker position
+    Point eye() const
+    {
+      return center_ + direction_;
+    }
+    void eye( const Point& _pos )
+    {
+      direction_ = _pos - center_;
+    }
+    /// target position
+    TBD_PROPERTY_REF(Point,center);
+    /// tracker's postion relatively to target
+    TBD_PROPERTY_REF(Vec,direction);
   };
 }
