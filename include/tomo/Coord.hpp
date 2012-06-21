@@ -87,7 +87,7 @@ namespace tomo
 
   //typedef Matrix<float> Matrix4f;
 
-  #define COORDS(C) C.x(),C.y(),C.y() 
+  #define COORDS(C) C.x(),C.y(),C.z() 
 }
 
 #endif /* _COORD_HPP */
