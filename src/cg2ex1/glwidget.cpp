@@ -35,7 +35,7 @@ void GLWidget::initializeGL()
       // target to track (origin)
       Point(0.0,0.0,0.0),
       // set tracking position from spheric coordinates
-      PolarVec(0.0, 0.0, mesh_.bounds().radius() * 1.5/*, tomo::RAD()*/ )
+      PolarVec(-45.0, 45.0, mesh_.bounds().radius() * 1.5/*, tomo::RAD()*/ ) 
       ),
     // near, far
     1.0, 100.0,
@@ -193,19 +193,24 @@ void GLWidget::paintGL()
     );
   }
 
+  // rotate world coordinate system from XZ to XY
+  glRotatef(-90.0,1,0,0);
+  glRotatef(-180.0,0,0,1);
+
   // draw axis
   {
+    glLineWidth(3.0);
     glBegin(GL_LINES);
     {
-      glColor4f(1.0,0.0,0.0,1.0);
+      glColor3f(1.0,0.0,0.0);
       glVertex3f(0.0,0.0,0.0);
       glVertex3f(100.0,0.0,0.0);
 
-      glColor4f(0.0,1.0,0.0,1.0);
+      glColor3f(0.0,1.0,0.0);
       glVertex3f(0.0,0.0,0.0);
       glVertex3f(0.0,100.0,0.0);
 
-      glColor4f(0.0,0.0,1.0,1.0);
+      glColor3f(0.0,0.0,1.0);
       glVertex3f(0.0,0.0,0.0);
       glVertex3f(0.0,0.0,100.0);
     }
@@ -217,13 +222,46 @@ void GLWidget::paintGL()
     glBegin(GL_QUADS);
     {
       glColor4f(1.0,1.0,0.0,0.8);
-      glVertex3f(-5.0,-mesh_.bounds().size().y()/2.0,-5.0);
-      glVertex3f(5.0,-mesh_.bounds().size().y()/2.0,-5.0);
-      glVertex3f(5.0,-mesh_.bounds().size().y()/2.0,5.0);
-      glVertex3f(-5.0,-mesh_.bounds().size().y()/2.0,5.0);
+      glVertex3f(-5.0,-5.0,-mesh_.bounds().size().z()/2.0);
+      glVertex3f(-5.0,5.0,-mesh_.bounds().size().z()/2.0);
+      glVertex3f(5.0,5.0,-mesh_.bounds().size().z()/2.0);
+      glVertex3f(5.0,-5.0,-mesh_.bounds().size().z()/2.0);
     }
     glEnd();
   }
+
+/*
+  // draw grid
+  {
+    for (int i = -5; i <= 5; i++)
+    {
+      // Draw sub lines
+      for (int j = 1; j < 5; j++)
+      {
+        glColor3f(0.2,0.2,0.2);
+        glVertex3f(-5.0,-5.0,-mesh_.bounds().size().z()/2.0);
+        glVertex3f(-5.0,5.0,-mesh_.bounds().size().z()/2.0);
+        glVertex3f(5.0,5.0,-mesh_.bounds().size().z()/2.0);
+        glVertex3f(5.0,-5.0,-mesh_.bounds().size().z()/2.0);
+      }
+
+      // lines X axis
+      glBegin(GL_LINES);
+      {
+        
+      }
+      glEnd();
+      
+      // lines Y axis
+      glBegin(GL_LINES);
+      {
+      }
+      glEnd();
+    }
+  }
+*/
+
+
 
   // draw objects
   {
