@@ -182,11 +182,11 @@ void GLWidget::paintGL()
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_LIGHTING);
     glBegin(GL_QUADS);
-    //red color
+    
     glColor3f(0.0,0.0,0.0);
     glVertex2f(-1.0,-1.0);
     glVertex2f(1.0,-1.0);
-    //blue color
+    
     glColor3f(54.0/255.0,110.0/255.0,201.0/255.0);
     glVertex2f(1.0, 1.0);
     glVertex2f(-1.0, 1.0);
