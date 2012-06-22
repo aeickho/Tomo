@@ -198,28 +198,6 @@ void GLWidget::paintGL()
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);    
-
-/*
-    glMatrixMode(GL_PROJECTION);
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_LIGHTING);
-    glPushMatrix();
-    glLoadIdentity();
-    glBegin(GL_QUADS);
-    {
-      glColor3f(1.0,0.0,0.0);
-      glVertex2f(-1.0,1.0);
-      glVertex2f(-1.0,-1.0);
-      glColor3f(0.0,0.0,1.0);
-      glVertex2f(1.0,-1.0);
-      glVertex2f(1.0,-1.0);
-    }
-    glEnd();
-    glEnable(GL_LIGHTING);
-    glEnable(GL_DEPTH_TEST);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    */
   }
 
   glPointSize(pointSize_);
