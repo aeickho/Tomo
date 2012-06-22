@@ -171,10 +171,60 @@ void GLWidget::paintGL()
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  // draw background
+  {
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+    glBegin(GL_QUADS);
+    //red color
+    glColor3f(0.0,0.0,0.0);
+    glVertex2f(-1.0,-1.0);
+    glVertex2f(1.0,-1.0);
+    //blue color
+    glColor3f(54.0/255.0,110.0/255.0,201.0/255.0);
+    glVertex2f(1.0, 1.0);
+    glVertex2f(-1.0, 1.0);
+    glEnd();
+
+    glEnable(GL_LIGHTING);
+    glEnable(GL_DEPTH_TEST);
+
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);    
+
+/*
+    glMatrixMode(GL_PROJECTION);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+    glPushMatrix();
+    glLoadIdentity();
+    glBegin(GL_QUADS);
+    {
+      glColor3f(1.0,0.0,0.0);
+      glVertex2f(-1.0,1.0);
+      glVertex2f(-1.0,-1.0);
+      glColor3f(0.0,0.0,1.0);
+      glVertex2f(1.0,-1.0);
+      glVertex2f(1.0,-1.0);
+    }
+    glEnd();
+    glEnable(GL_LIGHTING);
+    glEnable(GL_DEPTH_TEST);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    */
+  }
+
   glPointSize(pointSize_);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-
 
   // realize camera
   {
@@ -211,7 +261,7 @@ void GLWidget::paintGL()
   {
     glBegin(GL_QUADS);
     {
-      glColor4f(1.0,1.0,0.0,0.8);
+      glColor4f(0.5,0.5,0.5,0.8);
       glVertex3f(bedXmin,bedYmin,bedZ);
       glVertex3f(bedXmax,bedYmin,bedZ);
       glVertex3f(bedXmax,bedYmax,bedZ);
