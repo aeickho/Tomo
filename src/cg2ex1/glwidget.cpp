@@ -191,7 +191,10 @@ void GLWidget::paintGL()
       camera_.up().y(),
       camera_.up().z()
     );
+  }
 
+  // draw axis
+  {
     glBegin(GL_LINES);
     {
       glColor4f(1.0,0.0,0.0,1.0);
@@ -208,6 +211,20 @@ void GLWidget::paintGL()
     }
     glEnd();
   }
+
+  // draw bed 
+  {
+    glBegin(GL_QUADS);
+    {
+      glColor4f(1.0,1.0,0.0,0.8);
+      glVertex3f(-5.0,-mesh_.bounds().size().y()/2.0,-5.0);
+      glVertex3f(5.0,-mesh_.bounds().size().y()/2.0,-5.0);
+      glVertex3f(5.0,-mesh_.bounds().size().y()/2.0,5.0);
+      glVertex3f(-5.0,-mesh_.bounds().size().y()/2.0,5.0);
+    }
+    glEnd();
+  }
+
   // draw objects
   {
     tomo::Vec3f c = 0.5*(mesh_.bounds().max().vec() + mesh_.bounds().min().vec());
