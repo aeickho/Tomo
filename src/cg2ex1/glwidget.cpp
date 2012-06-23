@@ -300,7 +300,7 @@ void GLWidget::paintGL()
       {
         for (int i = 0; tick*i <= bedXsize/2; i++)
         {
-          glColor4f(0.6,0.2,0.2,(i%10)?0.4:0.8);
+          glColor4f(0.2,0.6,0.2,(i%10)?0.4:0.8);
           glVertex3f(tick*i, bedYmin, bedZ);
           glVertex3f(tick*i, bedYmax, bedZ);
           glVertex3f(-tick*i, bedYmin, bedZ);
@@ -314,7 +314,7 @@ void GLWidget::paintGL()
       {
         for (int i = bedYmin; i <= bedYsize/2; i++)
         {
-          glColor4f(0.2,0.6,0.2,(i%10)?0.4:0.8);
+          glColor4f(0.6,0.0,0.2,(i%10)?0.4:0.8);
           glVertex3f(bedXmin, tick*i, bedZ);
           glVertex3f(bedXmax, tick*i, bedZ);
           glVertex3f(bedXmin, -tick*i, bedZ);
