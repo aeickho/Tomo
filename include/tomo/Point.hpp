@@ -27,7 +27,7 @@ namespace tomo
     friend _Vec operator-( const Point& a, const Point& b) { _Vec v; TOMO_FOREACH_DIM v[i] = a[i]-b[i]; return v; }
     friend Point operator+( const Point& a, const Point& b) { Point p; TOMO_FOREACH_DIM p[i] = a[i] + b[i]; return p; }
     friend Point operator+( const Point& a, const _Vec& b) { Point p; TOMO_FOREACH_DIM p[i] = a[i] + b[i]; return p; }
-
+    operator const Coord*() const { return this->a_; }
     /* @brief Transform point into a vector */
     _Vec vec() { _Vec v; TOMO_FOREACH_DIM v[i] = this->a_[i]; return v; }
   };
