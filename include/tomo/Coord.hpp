@@ -3,44 +3,45 @@
 
 #include "tomo/misc.hpp"
 #include <boost/static_assert.hpp>
+#include <sstream>
 
 namespace tomo
 {
   class Matrix4f
   {
-    public:
-      Matrix4f() 
-      { 
-        for (int i = 0; i < 4; i++) 
-          for (int j = 0; j < 4; j++)
-            set(i,j,(i == j) ? 1.0f : 0.0f);	
-      };
+  public:
+    Matrix4f()
+    {
+      for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
+          set(i,j,(i == j) ? 1.0f : 0.0f);
+    };
 
       void  set(int _x, int _y, float v) { c[_x*4+_y] = v; } 
       float get(int _x, int _y) { return c[_x*4+_y]; }
 
-      void  print();
+    void  print();
 
-    private:
-      float c[4*4];
+  private:
+    float c[4*4];
   };
 
   /// DEFAULT_TYPE of coordinates is float
   typedef float DEFAULT_TYPE;
 
 /// Compiler macro to traverse through each dimension
-#define TOMO_FOREACH_DIM for (int i = 0; i < DIMENSIONS; i++) 
+#define TOMO_FOREACH_DIM for (int i = 0; i < DIMENSIONS; i++)
 
   /** @brief Base class of Point and Vec which basically hold a number of coordinates
    * @tparam DIMENSIONS Number of dimensions
    * @tparam COORD_TYPE Coordinate type
    */
-  template<int DIMENSIONS, typename COORD_TYPE = DEFAULT_TYPE>  
+  template<int DIMENSIONS, typename COORD_TYPE = DEFAULT_TYPE>
   struct Coords
   {
     /// Coordinate value type
     typedef COORD_TYPE CoordType;
-    
+
     /// Base constructor, all values are initially set to zero
     Coords() { TOMO_FOREACH_DIM a_[i] = 0; }
     Coords( Coords& _coords ) { TOMO_FOREACH_DIM a_[i] = _coords[i]; }
@@ -48,12 +49,17 @@ namespace tomo
     Coords( CoordType _x, CoordType _y) { this->operator()(_x,_y); }
     Coords( CoordType _x, CoordType _y, CoordType _z) { this->operator()(_x,_y,_z); }
     Coords( CoordType _x, CoordType _y, CoordType _z, CoordType _w) { this->operator()(_x,_y,_z,_w); }
-   
-    inline void operator()(const Coords _coords) { TOMO_FOREACH_DIM a_[i] = _coords[i]; } 
+    /// add a dimension to existing vector
+    Coords( const Coords<DIMENSIONS-1,COORD_TYPE>& _coords, CoordType _c )
+    {
+      TOMO_FOREACH_DIM a_[i] = (i<DIMENSIONS-1)?_coords[i]:_c;
+    }
+
+    inline void operator()(const Coords _coords) {TOMO_FOREACH_DIM a_[i] = _coords[i]; }
     inline void operator()(CoordType _x, CoordType _y) { x(_x); y(_y); }
     inline void operator()(CoordType _x, CoordType _y, CoordType _z) { x(_x); y(_y); z(_z); }
     inline void operator()(CoordType _x, CoordType _y, CoordType _z, CoordType _w) { x(_x); y(_y); z(_z); w(_w); }
-    
+
     /* @brief Return pointer */
     CoordType* p() { return a_; }
     /* @brief Return const pointer */
@@ -77,17 +83,26 @@ namespace tomo
 
     void operator += ( const Coords _c ) { TOMO_FOREACH_DIM a_[i] += _c[i]; }
     void operator -= ( const Coords _c ) { TOMO_FOREACH_DIM a_[i] -= _c[i]; } 
+    operator string() const
+    {
+      std::stringstream ss;
+      ss << "(%";
+      for( int i=0; i<DIMENSIONS-1; i++ )
+        ss << ",%";
+      ss << ")";
+      return ss.str();
+    }
 
-    protected:
+  protected:
     /// Array to store coordinate values
-    CoordType a_[DIMENSIONS]; 
+    CoordType a_[DIMENSIONS];
   };
 
   typedef enum { X,Y,Z,W } Axis;
 
   //typedef Matrix<float> Matrix4f;
 
-  #define COORDS(C) C.x(),C.y(),C.z() 
+#define COORDS(C) C.x(),C.y(),C.z()
 }
 
 #endif /* _COORD_HPP */
