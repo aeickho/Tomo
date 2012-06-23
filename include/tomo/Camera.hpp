@@ -11,10 +11,10 @@ namespace tomo
     /// point type from tracker
     typedef typename Tracker::Point Point;    
     /// coordinate type from tracker
-    typedef typename Point::CoordType CoordType;
+    typedef typename Point::Coord Coord;
 
     Camera() {}
-    Camera( const Tracker& _tracker, CoordType _near, CoordType _far, const Point& _up ) :
+    Camera( const Tracker& _tracker, Coord _near, Coord _far, const Point& _up ) :
       Tracker(_tracker),
       up_(_up),
       near_(_near),
@@ -25,8 +25,8 @@ namespace tomo
     /// camera orientation
     TBD_PROPERTY_REF(Point,up);
     /// near plane
-    TBD_PROPERTY(CoordType,near);
+    TBD_PROPERTY(Coord,near);
     /// far plane
-    TBD_PROPERTY(CoordType,far);
+    TBD_PROPERTY(Coord,far);
   };
 }

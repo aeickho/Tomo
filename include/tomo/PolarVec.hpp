@@ -2,22 +2,19 @@
 #define _POLARVEC_HPP
 
 #include "tomo/Vec.hpp"
+#include "tbd/log.h"
 
 namespace tomo
 {
   template<class COORD> struct PolarVec 
   {
-    typedef Vec<3,COORD> Vec;
+    typedef tomo::Vec<3,COORD> Vec;
+    typedef tomo::Vec<4,COORD> Vec4;
     /// coordinate type
     typedef COORD Coord;
     static const int dimensions_ = 3;
 
     PolarVec() {}
-    /** @brief create polar vector with angles in degrees
-     * @param _longitude longitude position
-     * @param _latitude latitude position
-     * @param _radius radial distance
-     */
     PolarVec( Coord _longitude, Coord _latitude, Coord _radius ) :
       longitude_(_longitude),
       latitude_(_latitude),
@@ -26,7 +23,7 @@ namespace tomo
     }
     operator Vec() const
     {
-//      BOOST_STATIC_ASSERT(dimensions_==3);
+      BOOST_STATIC_ASSERT(dimensions_==3);
       Coord _latitude = deg2rad(latitude());
       Coord _longitude = deg2rad(longitude());
       return radius()*Vec(
@@ -35,11 +32,16 @@ namespace tomo
                sin(_latitude) * sin(_longitude)
              );
     }
+    operator Vec4() const
+    {
+      return Vec4(*this,1.0);
+    }
     const PolarVec& operator+=( const PolarVec& _vec )
     {
       longitude( longitude() + _vec.longitude() );
       latitude( std::min<Coord>(179.99,std::max<Coord>(0.01,latitude() + _vec.latitude())) );
       radius( std::max<Coord>(0,radius() + _vec.radius()) );
+//      LOG_MSG << fmt("(long,lat,radius) %,%,%") % longitude() % latitude() % radius();
       return *this;
     }
 

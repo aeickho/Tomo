@@ -26,6 +26,7 @@ namespace tomo
     Vec( Coord _x, Coord _y ) : _Coords(_x,_y) { }
     Vec( Coord _x, Coord _y, Coord _z) : _Coords(_x,_y,_z) { }
     Vec( Coord _x, Coord _y, Coord _z, Coord _w ) : _Coords(_x,_y,_z,_w) { }
+    Vec( const Coords<DIMENSIONS-1,COORD>& _coords, Coord _c ) : _Coords(_coords, _c) {}
 
     /// @todo [fightling] is length correct when w() != 1.0 ??
     Coord sqrLength() const

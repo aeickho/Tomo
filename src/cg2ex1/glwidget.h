@@ -17,8 +17,8 @@ class GLWidget : public QGLWidget
   Q_OBJECT
 public:
   typedef tomo::Color<4,float> Color;
-  typedef tomo::Point<3,float> Point;
-  typedef tomo::Vec<3,float> Vec;
+  typedef tomo::Point<4,float> Point;
+  typedef tomo::Vec<4,float> Vec;
   typedef tomo::PolarVec<float> PolarVec;
   typedef tomo::Tracker<Point,PolarVec> Tracker; 
   typedef tomo::Light<Tracker,Color> Light;

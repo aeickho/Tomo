@@ -21,4 +21,3 @@ namespace tomo
 
   #define FOREACH_AXIS for(int axis = 0; axis < 3; axis++)
 }
-
