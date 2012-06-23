@@ -124,7 +124,7 @@ inline void drawBed()
 
 }
 
-template<class POINT, class COLOR> void drawArrow( const std::string& _label, const POINT& _p1, const POINT& _p2, const COLOR& _color, GLfloat _width=1.0, GLfloat _arrowR=2.0, GLfloat _arrowH=1.0 )
+template<class POINT, class COLOR> void drawArrow( const std::string& _label, const POINT& _p1, const POINT& _p2, const COLOR& _color, GLfloat _width=1.0, GLfloat _arrowR=1.0, GLfloat _arrowH=2.0 )
 {
   glLineWidth(_width);
   glBegin(GL_LINES);
@@ -138,13 +138,16 @@ template<class POINT, class COLOR> void drawArrow( const std::string& _label, co
   glPushMatrix();
   {
     glTranslatef(COORDS(_p2));
-    glPushMatrix();
-    {
-      glRotate(_p2-_p1);
-      glColor4fv(_color);
-      glutSolidCone(_arrowH, _arrowR, 16.0, 1.0);
-    }
-    glPopMatrix();
+    glRotate(_p2-_p1);
+    glColor4fv(_color);
+    glTranslatef(0.0,0.0,-_arrowH);
+    glutSolidCone(_arrowR, _arrowH, 16.0, 1.0);
+  }
+  glPopMatrix();
+
+  glPushMatrix();
+  {
+    glTranslatef(COORDS(_p2));
     glRotatef(90.0,1.0,0.0,0.0);
     glScalef(0.02,0.02,0.02);
     BOOST_FOREACH(char ch, _label)
