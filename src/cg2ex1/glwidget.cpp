@@ -4,6 +4,7 @@
 #include "tomo/Vector.hpp"
 #include <algorithm>
 #include <boost/foreach.hpp>
+#include <GL/glut.h>
 
 LOG_INIT;
 
@@ -25,7 +26,7 @@ GLWidget::GLWidget(QWidget *parent) :
 }
 void GLWidget::initializeGL()
 {
-  mesh_.read("cow.off");
+ mesh_.read("yoda.off");
 
   LOG_MSG << fmt("mesh_.bounds().radius() = %") % mesh_.bounds().radius();
 
@@ -35,10 +36,10 @@ void GLWidget::initializeGL()
       // target to track (origin)
       Point(0.0,0.0,0.0),
       // set tracking position from spheric coordinates
-      PolarVec(0.0, 0.0, mesh_.bounds().radius() * 1.5/*, tomo::RAD()*/ )
+      PolarVec(-45.0, 45.0, mesh_.bounds().radius() * 1.5/*, tomo::RAD()*/ ) 
       ),
     // near, far
-    1.0, 100.0,
+    1.0, 1000.0,
     Point(0.0, 1.0, 0.0)
   );
 
@@ -78,7 +79,7 @@ void GLWidget::initializeGL()
 
   glEnable(GL_LIGHTING);
   // calculate normals clockwise
-  glFrontFace(GL_CW);
+//  glFrontFace(GL_CW);
 
   // light and material
   glEnable(GL_COLOR_MATERIAL);
@@ -88,7 +89,7 @@ void GLWidget::initializeGL()
   GLfloat LightAmbient[]= { 0.1f, 0.1f, 0.1f, 1.0f };
   GLfloat LightDiffuse[]= { 1.0f, 1.0f, 1.0f, 1.0f };
   GLfloat model_ambient[] = { 0.3, 0.3, 0.3 };
-  GLfloat light_position[] = { 0.0, 100.0, 0.0, 1.0 };
+  GLfloat light_position[] = { 0.0, 0.0, -1000.0,  1.0 };
   /* glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
      glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
      glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);*/
@@ -170,6 +171,35 @@ void GLWidget::paintGL()
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  // draw background
+  {
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+    glBegin(GL_QUADS);
+    
+    glColor3f(0.0,0.0,0.0);
+    glVertex2f(-1.0,-1.0);
+    glVertex2f(1.0,-1.0);
+    
+    glColor3f(54.0/255.0,110.0/255.0,201.0/255.0);
+    glVertex2f(1.0, 1.0);
+    glVertex2f(-1.0, 1.0);
+    glEnd();
+
+    glEnable(GL_LIGHTING);
+    glEnable(GL_DEPTH_TEST);
+
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);    
+  }
+
   glPointSize(pointSize_);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
@@ -193,40 +223,139 @@ void GLWidget::paintGL()
     );
   }
 
-  // draw axis
-  {
-    glBegin(GL_LINES);
-    {
-      glColor4f(1.0,0.0,0.0,1.0);
-      glVertex3f(0.0,0.0,0.0);
-      glVertex3f(100.0,0.0,0.0);
-
-      glColor4f(0.0,1.0,0.0,1.0);
-      glVertex3f(0.0,0.0,0.0);
-      glVertex3f(0.0,100.0,0.0);
-
-      glColor4f(0.0,0.0,1.0,1.0);
-      glVertex3f(0.0,0.0,0.0);
-      glVertex3f(0.0,0.0,100.0);
-    }
-    glEnd();
-  }
+  // rotate world coordinate system from XZ to XY
+  glRotatef(-90.0,1,0,0);
+  glRotatef(-180.0,0,0,1);
 
   // draw bed 
+  GLfloat bedXsize = 210;
+  GLfloat bedYsize = 210;
+  GLfloat bedXmin = -bedXsize/2;
+  GLfloat bedXmax = bedXsize/2;
+  GLfloat bedYmin = -bedYsize/2;
+  GLfloat bedYmax = bedYsize/2;
+  GLfloat bedZ = -mesh_.bounds().size().z()/2.0; 
+  GLfloat bedZmax = bedZ + 210;
   {
     glBegin(GL_QUADS);
     {
-      glColor4f(1.0,1.0,0.0,0.8);
-      glVertex3f(-5.0,-mesh_.bounds().size().y()/2.0,-5.0);
-      glVertex3f(5.0,-mesh_.bounds().size().y()/2.0,-5.0);
-      glVertex3f(5.0,-mesh_.bounds().size().y()/2.0,5.0);
-      glVertex3f(-5.0,-mesh_.bounds().size().y()/2.0,5.0);
+      glColor4f(0.5,0.5,0.5,0.8);
+      glVertex3f(bedXmin,bedYmin,bedZ);
+      glVertex3f(bedXmax,bedYmin,bedZ);
+      glVertex3f(bedXmax,bedYmax,bedZ);
+      glVertex3f(bedXmin,bedYmax,bedZ);
     }
     glEnd();
   }
 
-  // draw objects
+  // draw axis
   {
+    GLfloat alpha=0.7;
+    glLineWidth(3.0);
+    glBegin(GL_LINES);
+    {
+      glColor4f(1.0,0.0,0.0,alpha);
+      glVertex3f(0.0,0.0,0.0);
+      glVertex3f(bedXmax,0.0,0.0);
+
+      glColor4f(0.0,1.0,0.0,alpha);
+      glVertex3f(0.0,0.0,0.0);
+      glVertex3f(0.0,bedYmax,0.0);
+
+      glColor4f(0.0,0.0,1.0,alpha);
+      glVertex3f(0.0,0.0,0.0);
+      glVertex3f(0.0,0.0,bedZmax);
+    }
+    glEnd();
+
+    glPushMatrix();
+    {
+      glTranslatef(0.0, 0.0, bedZmax); 
+      glColor4f(0.0, 0.0, 1.0,alpha);
+      glutSolidCone(1.0, 2.0, 16.0, 1.0); 
+      glTranslatef(0.0, 0.0, -bedZmax);
+      glTranslatef(bedXmax, 0.0, 0.0); 
+      glRotatef(90.0, 0.0, 1.0, 0.0);
+      glColor4f(1.0, 0.0, 0.0, alpha);
+      glutSolidCone(1.0, 2.0, 16.0, 1.0); 
+      glRotatef(-90.0, 0.0, 1.0, 0.0);
+      glTranslatef(-bedXmax, 0.0, 0.0); 
+      glTranslatef(0.0, bedYmax, 0.0); 
+      glRotatef(-90.0, 1.0, 0.0, 0.0);
+      glColor4f(0.0,1.0,0.0,alpha);
+      glutSolidCone(1.0,2.0,16.0,1.0); 
+    }
+    glPopMatrix();
+  }
+
+
+  // draw grid
+  {
+    glDisable(GL_LIGHTING);
+    GLfloat tick=1.0;
+    {
+      // lines X axis
+      glLineWidth( 1.0 );
+      glBegin(GL_LINES);
+      {
+        for (int i = 0; tick*i <= bedXsize/2; i++)
+        {
+          glColor4f(0.6,0.2,0.2,(i%10)?0.4:0.8);
+          glVertex3f(tick*i, bedYmin, bedZ);
+          glVertex3f(tick*i, bedYmax, bedZ);
+          glVertex3f(-tick*i, bedYmin, bedZ);
+          glVertex3f(-tick*i, bedYmax, bedZ);
+        }
+      }
+      glEnd();
+
+      // lines Y axis
+      glBegin(GL_LINES);
+      {
+        for (int i = bedYmin; i <= bedYsize/2; i++)
+        {
+          glColor4f(0.2,0.6,0.2,(i%10)?0.4:0.8);
+          glVertex3f(bedXmin, tick*i, bedZ);
+          glVertex3f(bedXmax, tick*i, bedZ);
+          glVertex3f(bedXmin, -tick*i, bedZ);
+          glVertex3f(bedXmax, -tick*i, bedZ);
+        }
+      }
+      glEnd();
+    }
+    glEnable(GL_LIGHTING);
+  }
+
+  // draw axis label
+  {
+    glPushMatrix();
+    glLineWidth( 3.0 );
+    glTranslatef(bedXmax,0.0,3.0);
+    glRotatef(90.0,1.0,0.0,0.0);
+    glScalef(0.05,0.05,0.05);
+    glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,'x');
+    glPopMatrix();
+
+    glPushMatrix();
+    glLineWidth( 3.0 );
+    glTranslatef(0.0,bedYmax,3.0);
+    glRotatef(90.0,1.0,0.0,0.0);
+    glScalef(0.05,0.05,0.05);
+    glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,'y');
+    glPopMatrix();
+
+    glPushMatrix();
+    glLineWidth( 3.0 );
+    glTranslatef(3.0,0.0,bedZmax);
+    glRotatef(90.0,1.0,0.0,0.0);
+    glScalef(0.05,0.05,0.05);
+    glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,'z');
+    glPopMatrix();
+  }
+
+
+  // draw objects
+/*  {
     tomo::Vec3f c = 0.5*(mesh_.bounds().max().vec() + mesh_.bounds().min().vec());
     glTranslatef(-c.x(),-c.y(),-c.z());
     glColor3f(0.8,0.8,0.8);
@@ -239,6 +368,7 @@ void GLWidget::paintGL()
     }
     glEnd();
   }
+  */
   // draw selection
   {
     glPointSize(pointSize_*4.0);

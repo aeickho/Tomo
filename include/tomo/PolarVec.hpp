@@ -29,16 +29,16 @@ namespace tomo
 //      BOOST_STATIC_ASSERT(dimensions_==3);
       Coord _latitude = deg2rad(latitude());
       Coord _longitude = deg2rad(longitude());
-      return Vec(
-               radius() * cos(_latitude) * cos(_longitude),
-               radius() * sin(_latitude),
-               radius() * cos(_latitude) * sin(_longitude)
+      return radius()*Vec(
+               sin(_latitude) * cos(_longitude),
+               cos(_latitude),
+               sin(_latitude) * sin(_longitude)
              );
     }
     const PolarVec& operator+=( const PolarVec& _vec )
     {
       longitude( longitude() + _vec.longitude() );
-      latitude( std::min<Coord>(89.99,std::max<Coord>(-89.99,latitude() + _vec.latitude())) );
+      latitude( std::min<Coord>(179.99,std::max<Coord>(0.01,latitude() + _vec.latitude())) );
       radius( std::max<Coord>(0,radius() + _vec.radius()) );
       return *this;
     }
