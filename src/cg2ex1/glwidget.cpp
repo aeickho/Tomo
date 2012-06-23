@@ -228,12 +228,12 @@ void GLWidget::paintGL()
   glRotatef(-180.0,0,0,1);
 
   // draw bed 
-  GLfloat bedWidth = 210;
-  GLfloat bedHeight = 210;
-  GLfloat bedXmin = -bedWidth/2;
-  GLfloat bedXmax = bedWidth/2;
-  GLfloat bedYmin = -bedHeight/2;
-  GLfloat bedYmax = bedHeight/2;
+  GLfloat bedXsize = 210;
+  GLfloat bedYsize = 210;
+  GLfloat bedXmin = -bedXsize/2;
+  GLfloat bedXmax = bedXsize/2;
+  GLfloat bedYmin = -bedYsize/2;
+  GLfloat bedYmax = bedYsize/2;
   GLfloat bedZ = -mesh_.bounds().size().z()/2.0; 
   GLfloat bedZmax = bedZ + 210;
   {
@@ -249,7 +249,6 @@ void GLWidget::paintGL()
   }
 
   // draw axis
-  
   {
     GLfloat alpha=0.7;
     glLineWidth(3.0);
@@ -299,7 +298,7 @@ void GLWidget::paintGL()
       glLineWidth( 1.0 );
       glBegin(GL_LINES);
       {
-        for (int i = 0; tick*i <= bedWidth/2; i++)
+        for (int i = 0; tick*i <= bedXsize/2; i++)
         {
           glColor4f(0.6,0.2,0.2,(i%10)?0.4:0.8);
           glVertex3f(tick*i, bedYmin, bedZ);
@@ -309,11 +308,11 @@ void GLWidget::paintGL()
         }
       }
       glEnd();
-     
+
       // lines Y axis
       glBegin(GL_LINES);
       {
-        for (int i = bedYmin; i <= bedHeight/22; i++)
+        for (int i = bedYmin; i <= bedYsize/2; i++)
         {
           glColor4f(0.2,0.6,0.2,(i%10)?0.4:0.8);
           glVertex3f(bedXmin, tick*i, bedZ);
@@ -327,11 +326,36 @@ void GLWidget::paintGL()
     glEnable(GL_LIGHTING);
   }
 
+  // draw axis label
+  {
+    glPushMatrix();
+    glLineWidth( 3.0 );
+    glTranslatef(bedXmax,0.0,3.0);
+    glRotatef(90.0,1.0,0.0,0.0);
+    glScalef(0.05,0.05,0.05);
+    glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,'x');
+    glPopMatrix();
 
+    glPushMatrix();
+    glLineWidth( 3.0 );
+    glTranslatef(0.0,bedYmax,3.0);
+    glRotatef(90.0,1.0,0.0,0.0);
+    glScalef(0.05,0.05,0.05);
+    glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,'y');
+    glPopMatrix();
+
+    glPushMatrix();
+    glLineWidth( 3.0 );
+    glTranslatef(3.0,0.0,bedZmax);
+    glRotatef(90.0,1.0,0.0,0.0);
+    glScalef(0.05,0.05,0.05);
+    glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,'z');
+    glPopMatrix();
+  }
 
 
   // draw objects
-  {
+/*  {
     tomo::Vec3f c = 0.5*(mesh_.bounds().max().vec() + mesh_.bounds().min().vec());
     glTranslatef(-c.x(),-c.y(),-c.z());
     glColor3f(0.8,0.8,0.8);
@@ -344,6 +368,7 @@ void GLWidget::paintGL()
     }
     glEnd();
   }
+  */
   // draw selection
   {
     glPointSize(pointSize_*4.0);
