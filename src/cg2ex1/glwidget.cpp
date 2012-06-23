@@ -355,7 +355,7 @@ void GLWidget::paintGL()
 
 
   // draw objects
-/*  {
+  {
     tomo::Vec3f c = 0.5*(mesh_.bounds().max().vec() + mesh_.bounds().min().vec());
     glTranslatef(-c.x(),-c.y(),-c.z());
     glColor3f(0.8,0.8,0.8);
@@ -368,7 +368,7 @@ void GLWidget::paintGL()
     }
     glEnd();
   }
-  */
+  
   // draw selection
   {
     glPointSize(pointSize_*4.0);
