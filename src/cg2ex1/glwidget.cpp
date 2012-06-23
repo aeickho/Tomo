@@ -173,16 +173,10 @@ void GLWidget::paintGL()
   glRotatef(-180.0,0,0,1);
 
   drawBed();
-
-  glEnable(GL_LIGHTING);
-  {
-    drawLight(light_);
-    drawObject(mesh_);
-  }
-  glDisable(GL_LIGHTING);
-
+  drawLight(light_);
+  drawObject(mesh_);
   drawAxis();
-
+  drawTracker("light",light_);
   drawSelection(selection_,Color(1.0,0.0,1.0));
 }
 
@@ -213,10 +207,7 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 }
 void GLWidget::wheelEvent(QWheelEvent* event)
 {
-  if( event->modifiers() == Qt::ControlModifier )
-   light_.track( 0, 0, (double)event->delta()/100.0 );
-  else
-   camera_.track( 0, 0, (double)event->delta()/100.0 );
+  camera_.track( 0, 0, (double)event->delta()/100.0 );
   update();
 }
 

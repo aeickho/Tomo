@@ -146,7 +146,7 @@ template<class POINT, class COLOR> void drawArrow( const std::string& _label, co
     }
     glPopMatrix();
     glRotatef(90.0,1.0,0.0,0.0);
-    glScalef(0.05,0.05,0.05);
+    glScalef(0.02,0.02,0.02);
     BOOST_FOREACH(char ch, _label)
       glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,ch);
   }
@@ -155,6 +155,7 @@ template<class POINT, class COLOR> void drawArrow( const std::string& _label, co
 
 inline void drawAxis()
 {
+  glDisable(GL_LIGHTING);
   glDisable(GL_DEPTH_TEST);
   {
     int length = 10.0;
@@ -174,6 +175,14 @@ template<class LIGHT> void drawLight( LIGHT _light)
   // move light
   glLightfv(GL_LIGHT1, GL_POSITION, _light.eye());
   glEnable(GL_LIGHTING);
+}
+
+template<class TRACKER> void drawTracker( const std::string& _name, TRACKER _tracker)
+{
+  glDisable(GL_LIGHTING);
+  glDisable(GL_DEPTH_TEST);
+  drawArrow(_name, _tracker.eye(), _tracker.center(), _tracker.ambient(), 2.0);
+  glEnable(GL_DEPTH_TEST);
 }
 
 inline void drawObject( tomo::TriangleMesh& mesh )
@@ -197,6 +206,7 @@ inline void drawObject( tomo::TriangleMesh& mesh )
 
 template<class POINT, class COLOR> void drawSelection( const POINT& _selection, const COLOR& _color )
 {
+  glDisable(GL_LIGHTING);
   glPointSize(4.0);
   glBegin(GL_POINTS);
   {
