@@ -48,16 +48,6 @@ namespace tomo
     TBD_PROPERTY(Coord,longitude);
     TBD_PROPERTY(Coord,latitude);
     TBD_PROPERTY(Coord,radius);
-
-  protected:
-    static inline Coord deg2rad( Coord _value )
-    {
-      return _value * M_PI / 180.0;
-    }
-    static inline Coord rad2deg( Coord _value )
-    {
-      return _value * 180.0 / M_PI;
-    }
   };
 }
 

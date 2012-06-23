@@ -20,4 +20,13 @@ namespace tomo
   #define EPSILON 0.000001
 
   #define FOREACH_AXIS for(int axis = 0; axis < 3; axis++)
+
+  template<class COORD> COORD deg2rad( COORD _value )
+  {
+    return _value * (COORD)(M_PI / 180.0);
+  }
+  template<class COORD> COORD rad2deg( COORD _value )
+  {
+    return _value * (COORD)(180.0 / M_PI);
+  }
 }
