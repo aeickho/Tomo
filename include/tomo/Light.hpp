@@ -21,12 +21,12 @@ namespace tomo
     {
       pos_ = _pos;
       ambient_ = _ambient;
+      diffuse_ = _diffuse;
       specular_ = _specular;
       intensity_ = _intensity;
       shadows_ = _shadows;
       radius_ = _radius;
     }
-
 
     TBD_PROPERTY_REF(Point,pos);
     TBD_PROPERTY_REF(Color,ambient);
