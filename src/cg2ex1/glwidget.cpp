@@ -27,7 +27,7 @@ GLWidget::GLWidget(QWidget *parent) :
 }
 void GLWidget::initializeGL()
 {
- mesh_.read("yoda.off");
+  mesh_.read("cow.off");
 
   LOG_MSG << fmt("mesh_.bounds().radius() = %") % mesh_.bounds().radius();
 
@@ -175,8 +175,9 @@ void GLWidget::paintGL()
   drawBed();
   drawLight(light_);
   drawObject(mesh_);
+  drawTracker("light",light_, Color(1.0,1.0,1.0,0.8));
+  drawTracker("cam",camera_, Color(0.0,0.0,0.0,0.8));
   drawAxis();
-  drawTracker("light",light_);
   drawSelection(selection_,Color(1.0,0.0,1.0));
 }
 
