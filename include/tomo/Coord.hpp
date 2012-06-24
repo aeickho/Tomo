@@ -4,6 +4,7 @@
 #include "tomo/misc.hpp"
 #include <boost/static_assert.hpp>
 #include <sstream>
+#include <tbd/log.h>
 
 namespace tomo
 {
@@ -83,12 +84,12 @@ namespace tomo
 
     void operator += ( const Coords _c ) { TOMO_FOREACH_DIM a_[i] += _c[i]; }
     void operator -= ( const Coords _c ) { TOMO_FOREACH_DIM a_[i] -= _c[i]; } 
-    operator string() const
+    operator std::string() const
     {
       std::stringstream ss;
-      ss << "(%";
-      for( int i=0; i<DIMENSIONS-1; i++ )
-        ss << ",%";
+      ss << "(" << a_[0];
+      for( int i=1; i<DIMENSIONS; i++ )
+        ss << "," << a_[i];
       ss << ")";
       return ss.str();
     }
@@ -97,7 +98,13 @@ namespace tomo
     /// Array to store coordinate values
     CoordType a_[DIMENSIONS];
   };
-
+  namespace
+  {
+    template<int DIMENSIONS, class COORD> inline fmt operator%(fmt _fmt, const tomo::Coords<DIMENSIONS,COORD>& _coords)
+    {
+      return _fmt % (std::string)_coords;
+    }
+  }
   typedef enum { X,Y,Z,W } Axis;
 
   //typedef Matrix<float> Matrix4f;

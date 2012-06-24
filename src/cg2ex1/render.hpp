@@ -2,18 +2,31 @@
 #include <tomo/Mesh.hpp>
 #include <cmath>
 
+/** @brief executes glRotate() for the given angles
+ * @tparam COORD coordinate and angle type
+ * @param _phi rotation arround the z-axis
+ * @param _theta rotation arround the y-axis
+ */
 template<class COORD> void glRotate(COORD _phi, COORD _theta)
 {
   glRotatef(_phi, 0.0, 0.0, 1.0);
   glRotatef(_theta, 0.0, 1.0, 0.0);
 }
 
-template<class POINT> void glRotate(const POINT& _direction)
+/** @brief rotate in the given direction
+ * @tparam VEC point type including POINT::Coord as coord type
+ * @param _direction vector which points in the desired direction
+ */
+template<class VEC> void glRotate(const VEC& _direction)
 {
-  typedef typename POINT::Coord Coord;
+  // get coordinate type from vector type
+  typedef typename VEC::Coord Coord;
+  // pre-calculate vector length
   Coord length = _direction.length();
+  // calculate phi and theta (@link http://de.wikipedia.org/wiki/Kugelkoordinaten#.C3.9Cbliche_Konvention) 
   Coord phi = tomo::rad2deg( atan2(_direction.y(), _direction.x()) );
   Coord theta = (0.0 != length) ? tomo::rad2deg(acos( (_direction.z() / length) )) : 0.0;
+  // rotate GL world 
   glRotate(phi,theta);
 }
 
@@ -180,11 +193,33 @@ template<class LIGHT> void drawLight( LIGHT _light)
   glEnable(GL_LIGHTING);
 }
 
-template<class TRACKER> void drawTracker( const std::string& _name, TRACKER _tracker)
+template<int DIMENSIONS, class COORD> fmt operator%(fmt _fmt, const tomo::Point<DIMENSIONS,COORD>& _point)
+{
+  return _fmt % (std::string)_point;
+}
+
+template<int DIMENSIONS, class COORD> fmt operator%(fmt _fmt, const tomo::Coords<DIMENSIONS,COORD>& _coords)
+{
+  return _fmt % (std::string)_coords;
+}
+
+template<int DIMENSIONS, class COORD> fmt operator%(fmt _fmt, const tomo::Vec<DIMENSIONS,COORD>& _vec)
+{
+  return _fmt % (std::string)_vec;
+}
+
+template<class COORD> fmt& operator%(fmt _fmt, const tomo::PolarVec<COORD>& _pvec)
+{
+  return _fmt % (std::string)_pvec;
+}
+
+template<class TRACKER, class COLOR> void drawTracker( const std::string& _name, TRACKER _tracker, const COLOR& _color, typename TRACKER::Coord _width=1.0)
 {
   glDisable(GL_LIGHTING);
   glDisable(GL_DEPTH_TEST);
-  drawArrow(_name, _tracker.eye(), _tracker.center(), _tracker.ambient(), 2.0);
+  drawArrow(_name, _tracker.eye(), _tracker.center(), _color, _width);
+//  typename TRACKER::Point eye = _tracker.eye();
+  LOG_MSG << fmt("eye = %, center = %") % _tracker.eye() % _tracker.center();
   glEnable(GL_DEPTH_TEST);
 }
 
