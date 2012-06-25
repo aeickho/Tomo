@@ -132,46 +132,13 @@
         <property name="fieldGrowthPolicy">
          <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
         </property>
-        <item row="4" column="0">
-         <widget class="QCheckBox" name="checkLight">
+        <item row="2" column="0">
+         <widget class="QCheckBox" name="checkObjects">
           <property name="text">
-           <string>Light</string>
+           <string>Objects</string>
           </property>
           <property name="checked">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="0">
-         <widget class="GLWidget" name="glWidget_2" native="true"/>
-        </item>
-        <item row="5" column="0">
-         <widget class="QCheckBox" name="checkAxis">
-          <property name="text">
-           <string>Axis</string>
-          </property>
-          <property name="checked">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="0">
-         <widget class="QCheckBox" name="checkCoords">
-          <property name="text">
-           <string>Coords</string>
-          </property>
-          <property name="checked">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="0">
-         <widget class="QCheckBox" name="checkLabels">
-          <property name="text">
-           <string>Labels</string>
-          </property>
-          <property name="checked">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -185,13 +152,43 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
-         <widget class="QCheckBox" name="checkObjects">
+        <item row="4" column="0">
+         <widget class="QCheckBox" name="checkLight">
           <property name="text">
-           <string>Objects</string>
+           <string>Light</string>
           </property>
           <property name="checked">
-           <bool>true</bool>
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QCheckBox" name="checkAxis">
+          <property name="text">
+           <string>Axis</string>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="0">
+         <widget class="QCheckBox" name="checkLabels">
+          <property name="text">
+           <string>Labels</string>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="0">
+         <widget class="QCheckBox" name="checkCoords">
+          <property name="text">
+           <string>Coords</string>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
           </property>
          </widget>
         </item>
