@@ -17,5 +17,6 @@ private slots:
   void setKNearest();
   void setSelectionMode();
   void setVertexId();
+  void updateConfig();
 };
 

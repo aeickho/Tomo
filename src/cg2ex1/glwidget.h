@@ -25,6 +25,18 @@ public:
   typedef tomo::Tracker<Point,PolarVec> CameraTracker; 
   typedef tomo::Camera<CameraTracker> Camera;
 
+  struct Config 
+  {
+    bool drawObjects_;
+    bool drawCamera_;
+    bool drawLight_;
+    bool drawAxis_;
+    bool drawLabels_;
+    bool drawCoords_;
+  };
+
+  Config config_;
+
   explicit GLWidget(QWidget *parent = 0);
   enum SelectionMode { SELECT_KNEAREST, SELECT_RADIUS };
 protected:
@@ -55,7 +67,6 @@ public:
   Camera camera_;
   /// light parameters
   Light light_;
-  /// perspective
 public slots:
   /// triggered by the animation timer
   virtual void tick();

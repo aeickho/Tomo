@@ -170,24 +170,29 @@ void GLWidget::paintGL()
 
   drawBed();
   drawLight(light_);
-  drawObject(mesh_);
-  drawTracker("light",light_, Color(1.0,1.0,1.0,0.8));
-  drawTracker("cam",camera_, Color(0.0,0.0,0.0,0.8));
-  drawAxis();
+  if( config_.drawObjects_ )
+    drawObject(mesh_);
+  if( config_.drawLight_ )
+    drawTracker("light",light_, Color(1.0,1.0,1.0,0.8), config_.drawLabels_, config_.drawCoords_);
+  if( config_.drawCamera_ )
+    drawTracker("cam",camera_, Color(0.0,0.0,0.0,0.8), config_.drawLabels_, config_.drawCoords_);
+  if( config_.drawAxis_ )
+    drawAxis(config_.drawLabels_, config_.drawCoords_);
   drawSelection(selection_,Color(1.0,0.0,1.0));
 }
-
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
-  if (0 != (event->buttons() & Qt::LeftButton))
+  if (0 != (event->buttons() & Qt::RightButton))
   {
-    if( event->modifiers() == Qt::ControlModifier )
-      light_.track( event->pos().x() - mousePosition_.x(), event->pos().y() - mousePosition_.y(), 0 );
-    else
-      camera_.track( event->pos().x() - mousePosition_.x(), event->pos().y() - mousePosition_.y(), 0 );
+    light_.track( event->pos().x() - mousePosition_.x(), event->pos().y() - mousePosition_.y(), 0 );
     update();
-    mousePosition_ = event->pos();
   }
+  else if (0 != (event->buttons() & Qt::LeftButton))
+  {
+    camera_.track( event->pos().x() - mousePosition_.x(), event->pos().y() - mousePosition_.y(), 0 );
+    update();
+  } 
+  mousePosition_ = event->pos();
 }
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
@@ -207,4 +212,6 @@ void GLWidget::wheelEvent(QWheelEvent* event)
   camera_.track( 0, 0, (double)event->delta()/100.0 );
   update();
 }
+
+
 

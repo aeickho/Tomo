@@ -15,6 +15,8 @@ MainWindow::MainWindow(QMainWindow *parent) : QMainWindow(parent)
   connect(spinRadius,SIGNAL(valueChanged(double)), this, SLOT(setRadius()));
   connect(spinPointSize,SIGNAL(valueChanged(double)), this, SLOT(setPointSize()));
   connect(btnRenderKDTree,SIGNAL(clicked()), this, SLOT(setDrawKDTree()));
+
+  updateConfig();
 }
 
 MainWindow::~MainWindow()
@@ -65,5 +67,16 @@ void MainWindow::setSelectionMode()
 {
   glWidget->selectionMode_ = (btnRadius->isChecked()) ? GLWidget::SELECT_RADIUS : GLWidget::SELECT_KNEAREST;
   setVertexId();
+}
+
+void MainWindow::updateConfig()
+{
+  glWidget->config_.drawObjects_ = checkObjects->isChecked();
+  glWidget->config_.drawCamera_ = checkCamera->isChecked();
+  glWidget->config_.drawLight_ = checkLight->isChecked();
+  glWidget->config_.drawLabels_ = checkLabels->isChecked();
+  glWidget->config_.drawCoords_ = checkCoords->isChecked();
+  glWidget->config_.drawAxis_ = checkAxis->isChecked();
+  glWidget->update();
 }
 
