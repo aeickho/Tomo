@@ -11,7 +11,11 @@ namespace tomo
     * @tparam DEFAULT_COORD_ONE if true, conversion to 4D-vector will 
     *         append a 1.0 and if false a 0.0 as forth coordinate
     */
-  template<class COORD, bool ALLOW_NEG_RADIUS=false, bool DEFAULT_COORD_ONE=false> struct PolarVec 
+  template<
+    class COORD,
+          bool ALLOW_NEG_RADIUS=false, 
+          bool DEFAULT_COORD_ONE=false
+            > struct PolarVec 
   {
     /// coordinate type
     typedef COORD Coord;

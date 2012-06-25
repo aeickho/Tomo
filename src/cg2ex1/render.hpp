@@ -59,9 +59,10 @@ inline void drawBackground()
 // realize camera
 template<class CAMERA> void realizeCamera(const CAMERA& _camera)
 {
-  // LOG_MSG << fmt("eye    = %,%,%") % camera_.eye().x() % camera_.eye().y() % camera_.eye().z();
-  // LOG_MSG << fmt("center = %,%,%") % camera_.center().x() % camera_.center().y() % camera_.center().z();
+  // LOG_MSG << fmt("eye    = %,%,%") % _camera.eye().x() % _camera.eye().y() % _camera.eye().z();
+  // LOG_MSG << fmt("center = %,%,%") % _camera.center().x() % _camera.center().y() % _camera.center().z();
 
+  glMatrixMode(GL_MODELVIEW);
   // realize coordinates
   gluLookAt(
     _camera.eye().x(),
@@ -137,7 +138,7 @@ inline void drawBed()
 
 }
 
-template<class POINT, class COLOR> void drawArrow( const std::string& _label, const POINT& _p1, const POINT& _p2, const COLOR& _color, GLfloat _width=1.0, GLfloat _arrowR=1.0, GLfloat _arrowH=2.0 )
+template<class POINT, class COLOR> void drawArrow( const std::string& _label, const POINT& _p1, const POINT& _p2, const COLOR& _color, bool _drawLabel, bool _drawCoords, GLfloat _width=1.0, GLfloat _arrowR=1.0, GLfloat _arrowH=2.0 )
 {
   glLineWidth(_width);
   glBegin(GL_LINES);
@@ -163,27 +164,36 @@ template<class POINT, class COLOR> void drawArrow( const std::string& _label, co
     glTranslatef(COORDS(_p2));
     glRotatef(90.0,1.0,0.0,0.0);
     glScalef(0.01,0.01,0.01);
-    BOOST_FOREACH(char ch, _label)
-      glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,ch);
-    glScalef(0.5,0.5,0.5);
-    BOOST_FOREACH(char ch, (std::string)_p2)
-      glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,ch);
+    if( _drawLabel )
+    {
+      BOOST_FOREACH(char ch, _label)
+        glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,ch);
+    }
+    if( _drawCoords )
+    {
+      glScalef(0.5,0.5,0.5);
+      BOOST_FOREACH(char ch, (std::string)_p2)
+        glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,ch);
+    }
    }
   glPopMatrix();
 
-  glPushMatrix();
+  if( _drawCoords )
   {
-    glTranslatef(COORDS(_p1));
-    glRotatef(90.0,1.0,0.0,0.0);
-    glScalef(0.01,0.01,0.01);
-    glScalef(0.5,0.5,0.5);
-    BOOST_FOREACH(char ch, (std::string)_p1)
-      glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,ch);
-   }
+    glPushMatrix();
+    {
+      glTranslatef(COORDS(_p1));
+      glRotatef(90.0,1.0,0.0,0.0);
+      glScalef(0.01,0.01,0.01);
+      glScalef(0.5,0.5,0.5);
+      BOOST_FOREACH(char ch, (std::string)_p1)
+        glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,ch);
+     }
+  }
   glPopMatrix();
 }
 
-inline void drawAxis()
+inline void drawAxis(bool _drawLabel, bool _drawCoords)
 {
   glMatrixMode(GL_MODELVIEW);
   glDisable(GL_LIGHTING);
@@ -193,9 +203,9 @@ inline void drawAxis()
     // draw axis
     GLfloat axisAlpha=0.7;
     {
-      drawArrow("x", GLWidget::Point(0.0,0.0,0.0), GLWidget::Point(length,0.0,0.0), GLWidget::Color(1.0,0.0,0.0,axisAlpha), 2.0);
-      drawArrow("y", GLWidget::Point(0.0,0.0,0.0), GLWidget::Point(0.0,length,0.0), GLWidget::Color(0.0,1.0,0.0,axisAlpha), 2.0);
-      drawArrow("z", GLWidget::Point(0.0,0.0,0.0), GLWidget::Point(0.0,0.0,length), GLWidget::Color(0.0,0.0,1.0,axisAlpha), 2.0);
+      drawArrow("x", GLWidget::Point(0.0,0.0,0.0), GLWidget::Point(length,0.0,0.0), GLWidget::Color(1.0,0.0,0.0,axisAlpha), _drawLabel, _drawCoords, 2.0);
+      drawArrow("y", GLWidget::Point(0.0,0.0,0.0), GLWidget::Point(0.0,length,0.0), GLWidget::Color(0.0,1.0,0.0,axisAlpha), _drawLabel, _drawCoords, 2.0);
+      drawArrow("z", GLWidget::Point(0.0,0.0,0.0), GLWidget::Point(0.0,0.0,length), GLWidget::Color(0.0,0.0,1.0,axisAlpha), _drawLabel, _drawCoords, 2.0);
     }
   }
   glEnable(GL_DEPTH_TEST);
@@ -210,12 +220,12 @@ template<class LIGHT> void drawLight( LIGHT _light)
 }
 
 
-template<class TRACKER, class COLOR> void drawTracker( const std::string& _name, TRACKER _tracker, const COLOR& _color, typename TRACKER::Coord _width=1.0)
+template<class TRACKER, class COLOR> void drawTracker( const std::string& _name, TRACKER _tracker, const COLOR& _color, bool _drawLabel, bool _drawCoords, typename TRACKER::Coord _width=1.0)
 {
   glMatrixMode(GL_MODELVIEW);
   glDisable(GL_LIGHTING);
   glDisable(GL_DEPTH_TEST);
-  drawArrow(_name, _tracker.eye(), _tracker.center(), _color, _width);
+  drawArrow(_name, _tracker.eye(), _tracker.center(), _color, _drawLabel, _drawCoords, _width);
   glEnable(GL_DEPTH_TEST);
 }
 
