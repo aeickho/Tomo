@@ -5,13 +5,13 @@
 
 namespace tomo
 {
-  /** @brief polar 3D vector defined by th two angles phi, theta and 
+  /** @brief polar 3D vector defined by th two angles phi, theta and a radial distance
     * @tparam COORD coordinate type
     * @tparam ALLOW_NEG_RADIUS allow negative radius
     * @tparam DEFAULT_COORD_ONE if true, conversion to 4D-vector will 
     *         append a 1.0 and if false a 0.0 as forth coordinate
     */
-  template<class COORD, bool ALLOW_NEG_RADIUS=false, bool DEFAULT_COORD_ONE=true> struct PolarVec 
+  template<class COORD, bool ALLOW_NEG_RADIUS=false, bool DEFAULT_COORD_ONE=false> struct PolarVec 
   {
     /// coordinate type
     typedef COORD Coord;
@@ -24,8 +24,8 @@ namespace tomo
     /// default constructor
     PolarVec() {}
     /** constructor which takes angles and radius
-      * @param _longitude longitude (or phi) angle
-      * @param _latitude latitude (or theta) angle
+      * @param _phi Phi angle (90°-longitude)
+      * @param _theta theta angle (latitude)
       * @param _radius length of the vector
       */
     PolarVec( Coord _longitude, Coord _latitude, Coord _radius ) :
@@ -39,16 +39,17 @@ namespace tomo
     operator Vec() const
     {
       // get radian latitude
-      Coord _latitude = deg2rad(latitude());
+      Coord phi = deg2rad(longitude());
       // get radian longitude
-      Coord _longitude = deg2rad(longitude());
+      Coord theta = deg2rad(latitude());
       // calculate and return cartesian vector
       return radius()*Vec(
-               sin(_latitude) * cos(_longitude),
-               cos(_latitude),
-               sin(_latitude) * sin(_longitude)
+               sin(theta) * cos(phi),
+               sin(theta) * sin(phi),
+               cos(theta)
              );
     }
+
     /** @brief return cartesian 4D vector from polar vector
       * @details depending on DEFAULT_COORD_ONE the additional coordinate 
       * will be 1.0 or 0.0
@@ -73,7 +74,7 @@ namespace tomo
     }
     operator std::string() const
     {
-      return Vec();
+      return operator Vec();
     }
 
     TBD_PROPERTY(Coord,longitude);

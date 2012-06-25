@@ -54,7 +54,6 @@ inline void drawBackground()
 
   glMatrixMode(GL_PROJECTION);
   glPopMatrix();
-  glMatrixMode(GL_MODELVIEW);
 }
 
 // realize camera
@@ -80,6 +79,7 @@ template<class CAMERA> void realizeCamera(const CAMERA& _camera)
 
 inline void drawBed()
 {
+  glMatrixMode(GL_MODELVIEW);
   // draw bed
   GLfloat bedXsize = 210;
   GLfloat bedYsize = 210;
@@ -143,7 +143,7 @@ template<class POINT, class COLOR> void drawArrow( const std::string& _label, co
   glBegin(GL_LINES);
   {
     glColor4fv(_color);
-    glVertex4fv(_p1);
+    glVertex3fv(_p1);
     glVertex3fv(_p2);
   }
   glEnd();
@@ -162,15 +162,30 @@ template<class POINT, class COLOR> void drawArrow( const std::string& _label, co
   {
     glTranslatef(COORDS(_p2));
     glRotatef(90.0,1.0,0.0,0.0);
-    glScalef(0.02,0.02,0.02);
+    glScalef(0.01,0.01,0.01);
     BOOST_FOREACH(char ch, _label)
       glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,ch);
-  }
+    glScalef(0.5,0.5,0.5);
+    BOOST_FOREACH(char ch, (std::string)_p2)
+      glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,ch);
+   }
+  glPopMatrix();
+
+  glPushMatrix();
+  {
+    glTranslatef(COORDS(_p1));
+    glRotatef(90.0,1.0,0.0,0.0);
+    glScalef(0.01,0.01,0.01);
+    glScalef(0.5,0.5,0.5);
+    BOOST_FOREACH(char ch, (std::string)_p1)
+      glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,ch);
+   }
   glPopMatrix();
 }
 
 inline void drawAxis()
 {
+  glMatrixMode(GL_MODELVIEW);
   glDisable(GL_LIGHTING);
   glDisable(GL_DEPTH_TEST);
   {
@@ -188,47 +203,29 @@ inline void drawAxis()
 
 template<class LIGHT> void drawLight( LIGHT _light)
 {
+  glMatrixMode(GL_MODELVIEW);
   // move light
   glLightfv(GL_LIGHT1, GL_POSITION, _light.eye());
   glEnable(GL_LIGHTING);
 }
 
-template<int DIMENSIONS, class COORD> fmt operator%(fmt _fmt, const tomo::Point<DIMENSIONS,COORD>& _point)
-{
-  return _fmt % (std::string)_point;
-}
-
-template<int DIMENSIONS, class COORD> fmt operator%(fmt _fmt, const tomo::Coords<DIMENSIONS,COORD>& _coords)
-{
-  return _fmt % (std::string)_coords;
-}
-
-template<int DIMENSIONS, class COORD> fmt operator%(fmt _fmt, const tomo::Vec<DIMENSIONS,COORD>& _vec)
-{
-  return _fmt % (std::string)_vec;
-}
-
-template<class COORD> fmt& operator%(fmt _fmt, const tomo::PolarVec<COORD>& _pvec)
-{
-  return _fmt % (std::string)_pvec;
-}
 
 template<class TRACKER, class COLOR> void drawTracker( const std::string& _name, TRACKER _tracker, const COLOR& _color, typename TRACKER::Coord _width=1.0)
 {
+  glMatrixMode(GL_MODELVIEW);
   glDisable(GL_LIGHTING);
   glDisable(GL_DEPTH_TEST);
   drawArrow(_name, _tracker.eye(), _tracker.center(), _color, _width);
-//  typename TRACKER::Point eye = _tracker.eye();
-  LOG_MSG << fmt("eye = %, center = %") % _tracker.eye() % _tracker.center();
   glEnable(GL_DEPTH_TEST);
 }
 
 inline void drawObject( tomo::TriangleMesh& mesh )
 {
+  glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   {
-    tomo::Vec3f c = 0.5*(mesh.bounds().max().vec() + mesh.bounds().min().vec());
-    glTranslatef(-c.x(),-c.y(),-c.z());
+    tomo::Vec3f c = mesh.bounds().center();
+    glTranslatef(-c.x(),-c.y(),0.0);
     glColor3f(0.8,0.8,0.8);
     glBegin(GL_TRIANGLES);
     BOOST_FOREACH( const tomo::Triangle& tri, mesh.triangles() )
@@ -244,6 +241,7 @@ inline void drawObject( tomo::TriangleMesh& mesh )
 
 template<class POINT, class COLOR> void drawSelection( const POINT& _selection, const COLOR& _color )
 {
+  glMatrixMode(GL_MODELVIEW);
   glDisable(GL_LIGHTING);
   glPointSize(4.0);
   glBegin(GL_POINTS);

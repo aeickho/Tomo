@@ -20,9 +20,10 @@ public:
   typedef tomo::Point<4,float> Point;
   typedef tomo::Vec<4,float> Vec;
   typedef tomo::PolarVec<float> PolarVec;
-  typedef tomo::Tracker<Point,PolarVec> Tracker; 
-  typedef tomo::Light<Tracker,Color> Light;
-  typedef tomo::Camera<Tracker> Camera;
+  typedef tomo::Tracker<Point,PolarVec,true> LightTracker; 
+  typedef tomo::Light<LightTracker,Color> Light;
+  typedef tomo::Tracker<Point,PolarVec> CameraTracker; 
+  typedef tomo::Camera<CameraTracker> Camera;
 
   explicit GLWidget(QWidget *parent = 0);
   enum SelectionMode { SELECT_KNEAREST, SELECT_RADIUS };

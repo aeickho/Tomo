@@ -24,10 +24,11 @@ namespace tomo
     Vec() : Coords() {}
     Vec( Vec& v ) : Coords( v ) {}
     Vec( const Vec& v ) : Coords( v ) {}
+    Vec( const Coords& c ) : Coords( c ) {}
     Vec( Coord _x, Coord _y ) : Coords(_x,_y) { }
     Vec( Coord _x, Coord _y, Coord _z) : Coords(_x,_y,_z) { }
     Vec( Coord _x, Coord _y, Coord _z, Coord _w ) : Coords(_x,_y,_z,_w) { }
-    Vec( const tomo::Coords<DIMENSIONS-1,COORD>& _coords, Coord _c ) : Coords(_coords, _c) {}
+    Vec( const tomo::Coords<DIMENSIONS-1,COORD>& _coords, Coord _c=1.0 ) : Coords(_coords, _c) {}
 
     /// @todo [fightling] is length correct when w() != 1.0 ??
     Coord sqrLength() const

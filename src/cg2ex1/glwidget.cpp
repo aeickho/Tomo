@@ -27,26 +27,26 @@ GLWidget::GLWidget(QWidget *parent) :
 }
 void GLWidget::initializeGL()
 {
-  mesh_.read("cow.off");
+  mesh_.read("yoda.off");
 
   LOG_MSG << fmt("mesh_.bounds().radius() = %") % mesh_.bounds().radius();
 
   // setup camera
   camera_ = Camera(
-    Tracker(
+    CameraTracker(
       // target to track (origin)
-      Point(0.0,0.0,0.0),
+      mesh_.bounds().center(),
       // set tracking position from spheric coordinates
       PolarVec(-45.0, 45.0, mesh_.bounds().radius() * 1.5) 
       ),
     // near, far
     1.0, 1000.0,
-    Point(0.0, 1.0, 0.0)
+    Point(0.0, 0.0, 1.0)
   );
 
   // setup light source
   light_ = Light(
-    Tracker(
+    LightTracker(
       // target to track (origin)
       Point(0.0,0.0,0.0),
       // set tracking position from spheric coordinates
@@ -167,10 +167,6 @@ void GLWidget::paintGL()
   glLoadIdentity();
 
   realizeCamera(camera_);
-
-  // rotate world coordinate system from XZ to XY
-  glRotatef(-90.0,1,0,0);
-  glRotatef(-180.0,0,0,1);
 
   drawBed();
   drawLight(light_);
