@@ -1,10 +1,11 @@
 #ifndef _VEC_HPP
 #define _VEC_HPP
 
-#include "tomo/Coord.hpp"
+#include <tomo/Coord.hpp>
+#include <tbd/log.h>
 #include <boost/static_assert.hpp>
-#include <algorithm>
 #include <boost/mpl/int.hpp>
+#include <algorithm>
 
 namespace tomo
 {
@@ -18,14 +19,16 @@ namespace tomo
     /// Coordinate value type
     typedef COORD Coord;
     /// Type of base class
-    typedef Coords<DIMENSIONS,COORD> _Coords;
+    typedef Coords<DIMENSIONS,COORD> Coords;
 
-    Vec() : _Coords() {}
-    Vec( Vec& v ) : _Coords( v ) {}
-    Vec( const Vec& v ) : _Coords( v ) {}
-    Vec( Coord _x, Coord _y ) : _Coords(_x,_y) { }
-    Vec( Coord _x, Coord _y, Coord _z) : _Coords(_x,_y,_z) { }
-    Vec( Coord _x, Coord _y, Coord _z, Coord _w ) : _Coords(_x,_y,_z,_w) { }
+    Vec() : Coords() {}
+    Vec( Vec& v ) : Coords( v ) {}
+    Vec( const Vec& v ) : Coords( v ) {}
+    Vec( const Coords& c ) : Coords( c ) {}
+    Vec( Coord _x, Coord _y ) : Coords(_x,_y) { }
+    Vec( Coord _x, Coord _y, Coord _z) : Coords(_x,_y,_z) { }
+    Vec( Coord _x, Coord _y, Coord _z, Coord _w ) : Coords(_x,_y,_z,_w) { }
+    Vec( const tomo::Coords<DIMENSIONS-1,COORD>& _coords, Coord _c=1.0 ) : Coords(_coords, _c) {}
 
     /// @todo [fightling] is length correct when w() != 1.0 ??
     Coord sqrLength() const
@@ -112,6 +115,10 @@ namespace tomo
       TOMO_FOREACH_DIM v[i] = a[i]+b[i];
       return v;
     }
+    operator std::string() const
+    {
+      return Coords::operator std::string();
+    }
     /*
         friend Vec      operator*( const Vec& a, const Matrix<DIMENSIONS+1,Coord>& M )
         {
@@ -123,6 +130,13 @@ namespace tomo
         }
     */
   };
+  namespace 
+  {
+    template<int DIMENSIONS, class COORD> inline fmt operator%(fmt _fmt, const tomo::Vec<DIMENSIONS,COORD>& _vec)
+    {
+      return _fmt % (std::string)_vec;
+    }
+  }
 
   typedef Vec<2,int> Vec2i;
   typedef Vec<2,double> Vec2d;

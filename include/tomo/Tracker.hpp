@@ -3,12 +3,20 @@
 
 namespace tomo
 {
-  template<class POINT,class VEC> struct Tracker
+  template<
+    class POINT, class VEC,
+          bool XNEG=false, 
+          bool YNEG=false, 
+          bool ZNEG=false
+            > struct Tracker
   {
     /// point type
     typedef POINT Point;
     /// vector type
     typedef VEC Vec;
+    static const bool xNeg_ = XNEG;
+    static const bool yNeg_ = YNEG;
+    static const bool zNeg_ = ZNEG;
     
     enum Mode
     {
@@ -38,13 +46,17 @@ namespace tomo
           BOOST_ASSERT(0);
           break;
         case SPHERICAL:
-          direction_ += Vec(x,y,z);
+          direction_ += Vec(
+              xNeg_?-x:x, 
+              yNeg_?-y:y,
+              zNeg_?-z:z);
           break;
       }
     }
     /// get tracker position
     Point eye() const
     {
+      LOG_MSG << fmt("center% + direction% = eye%") % center_ % (std::string)direction_ % (std::string)(center_ + direction_);
       return center_ + direction_;
     }
     void eye( const Point& _pos )

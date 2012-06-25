@@ -14,21 +14,24 @@ namespace tomo
     /// coordinate type from tracker
     typedef typename Point::Coord Coord;
 
-    void setup( 
-        const Point& _pos, 
-        const Color& _ambient, const Color& _diffuse, const Color& _specular, 
-        const Coord _intensity, Coord _shadows, Coord _radius )
+    Light() {}
+    Light( const Tracker& _tracker,
+        const Color& _ambient, 
+        const Color& _diffuse, 
+        const Color& _specular, 
+        const Coord _intensity, 
+        Coord _shadows, 
+        Coord _radius ) :
+      Tracker(_tracker),
+      ambient_(_ambient),
+      diffuse_(_diffuse),
+      specular_(_specular),
+      intensity_(_intensity),
+      shadows_(_shadows),
+      radius_(_radius)
     {
-      pos_ = _pos;
-      ambient_ = _ambient;
-      specular_ = _specular;
-      intensity_ = _intensity;
-      shadows_ = _shadows;
-      radius_ = _radius;
     }
 
-
-    TBD_PROPERTY_REF(Point,pos);
     TBD_PROPERTY_REF(Color,ambient);
     TBD_PROPERTY_REF(Color,diffuse);
     TBD_PROPERTY_REF(Color,specular);

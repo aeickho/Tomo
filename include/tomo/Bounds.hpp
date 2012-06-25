@@ -21,6 +21,8 @@ namespace tomo
     Vec3f size() const;
     float radius() const { return size().length()/2; }
     
+    Point3f center() { return 0.5*(max().vec() + min().vec()); }
+    
     TBD_PROPERTY_MON(Point3f,min,validate);
     TBD_PROPERTY_MON(Point3f,max,validate);
   };

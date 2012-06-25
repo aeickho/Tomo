@@ -3,6 +3,7 @@
 
 #include "tomo/Coord.hpp"
 #include <boost/static_assert.hpp>
+#include <tbd/log.h>
 
 namespace tomo
 {
@@ -14,24 +15,35 @@ namespace tomo
   struct Point : public Coords<DIMENSIONS,COORD>
   {
     typedef COORD Coord;
-    typedef Vec<DIMENSIONS,COORD> _Vec;
-    typedef Coords<DIMENSIONS,COORD> _Coords;
+    typedef Vec<DIMENSIONS,COORD> Vec;
+    typedef Coords<DIMENSIONS,COORD> Coords;
 
-    Point() : _Coords() {}
-    Point( Point& p ) : _Coords( p ) {}
-    Point( const Point& p ) : _Coords( p ) {}
-    Point( Coord _x, Coord _y ) : _Coords(_x,_y) { }
-    Point( Coord _x, Coord _y, Coord _z ) : _Coords(_x,_y,_z) { }
-    Point( Coord _x, Coord _y, Coord _z, Coord _w ) : _Coords(_x,_y,_z,_w) { }
+    Point() : Coords() {}
+    Point( const Point& p ) : Coords( p ) {}
+    Point( Coord _x, Coord _y ) : Coords(_x,_y) { }
+    Point( Coord _x, Coord _y, Coord _z ) : Coords(_x,_y,_z) { }
+    Point( Coord _x, Coord _y, Coord _z, Coord _w ) : Coords(_x,_y,_z,_w) { }
+    Point( const Coords& c ) : Coords(c) {}
+    Point( const tomo::Coords<DIMENSIONS-1,COORD>& _coords, Coord _c=1.0 ) : Coords(_coords, _c) {}
 
-    friend _Vec operator-( const Point& a, const Point& b) { _Vec v; TOMO_FOREACH_DIM v[i] = a[i]-b[i]; return v; }
+    friend Vec operator-( const Point& a, const Point& b) { Vec v; TOMO_FOREACH_DIM v[i] = a[i]-b[i]; return v; }
     friend Point operator+( const Point& a, const Point& b) { Point p; TOMO_FOREACH_DIM p[i] = a[i] + b[i]; return p; }
-    friend Point operator+( const Point& a, const _Vec& b) { Point p; TOMO_FOREACH_DIM p[i] = a[i] + b[i]; return p; }
-
+    friend Point operator+( const Point& a, const Vec& b) { Point p; TOMO_FOREACH_DIM p[i] = a[i] + b[i]; return p; }
+    operator const Coord*() const { return this->a_; }
     /* @brief Transform point into a vector */
-    _Vec vec() { _Vec v; TOMO_FOREACH_DIM v[i] = this->a_[i]; return v; }
+    Vec vec() { Vec v; TOMO_FOREACH_DIM v[i] = this->a_[i]; return v; }
+    operator std::string() const
+    {
+      return Coords::operator std::string();
+    }
   };
-
+  namespace 
+  {
+    template<int DIMENSIONS, class COORD> inline fmt operator%(fmt _fmt, const tomo::Point<DIMENSIONS,COORD>& _point)
+    {
+      return _fmt % (std::string)_point;
+    }
+  }
   typedef Point<2,int> Point2i;
   typedef Point<2,double> Point2d;
 

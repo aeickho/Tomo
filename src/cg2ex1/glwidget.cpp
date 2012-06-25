@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <boost/foreach.hpp>
 #include <GL/glut.h>
+#include "render.hpp"
 
 LOG_INIT;
 
@@ -26,27 +27,31 @@ GLWidget::GLWidget(QWidget *parent) :
 }
 void GLWidget::initializeGL()
 {
- mesh_.read("yoda.off");
+  mesh_.read("yoda.off");
 
   LOG_MSG << fmt("mesh_.bounds().radius() = %") % mesh_.bounds().radius();
 
   // setup camera
   camera_ = Camera(
-    Tracker(
+    CameraTracker(
       // target to track (origin)
-      Point(0.0,0.0,0.0),
+      mesh_.bounds().center(),
       // set tracking position from spheric coordinates
-      PolarVec(-45.0, 45.0, mesh_.bounds().radius() * 1.5/*, tomo::RAD()*/ ) 
+      PolarVec(-45.0, 45.0, mesh_.bounds().radius() * 1.5) 
       ),
     // near, far
     1.0, 1000.0,
-    Point(0.0, 1.0, 0.0)
+    Point(0.0, 0.0, 1.0)
   );
 
   // setup light source
-  light_.setup(
-    // position
-    Point(0.0, 100.0, 0.0),
+  light_ = Light(
+    LightTracker(
+      // target to track (origin)
+      Point(0.0,0.0,0.0),
+      // set tracking position from spheric coordinates
+      PolarVec(-45.0, 45.0, mesh_.bounds().radius() * 10) 
+      ),
     // ambient color
     Color(0.1, 0.1, 0.1, 1.0),
     // diffuse color
@@ -62,8 +67,8 @@ void GLWidget::initializeGL()
   );
 
   // Set up the rendering context, define display lists etc.:
-  glClearColor(1.0, 1.0, 1.0, 1.0);
-  glEnable(GL_DEPTH_TEST);
+//glClearColor(1.0, 1.0, 1.0, 1.0);
+//glEnable(GL_DEPTH_TEST);
   //glDepthFunc(GL_LEQUAL);
 
   glEnable(GL_BLEND);
@@ -77,34 +82,18 @@ void GLWidget::initializeGL()
 
   glEnable(GL_CULL_FACE);
 
-  glEnable(GL_LIGHTING);
-  // calculate normals clockwise
-//  glFrontFace(GL_CW);
-
-  // light and material
-  glEnable(GL_COLOR_MATERIAL);
-  //  GLfloat mat_ambient[] = {0.5, 0.5, 0.5, 1.0};
-  //  GLfloat mat_specular[] = {0.6, 0.6, 0.6, 1.0};
-  //  GLfloat mat_shininess[] = { 3.0 };
-  GLfloat LightAmbient[]= { 0.1f, 0.1f, 0.1f, 1.0f };
-  GLfloat LightDiffuse[]= { 1.0f, 1.0f, 1.0f, 1.0f };
-  GLfloat model_ambient[] = { 0.3, 0.3, 0.3 };
-  GLfloat light_position[] = { 0.0, 0.0, -1000.0,  1.0 };
-  /* glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
-     glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-     glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);*/
-  glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient);
-  glLightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse);
-  glLightfv(GL_LIGHT1, GL_POSITION, light_position);
-  glLightModelfv(GL_LIGHT_MODEL_AMBIENT, model_ambient);
-  glShadeModel(GL_SMOOTH);
-  glEnable(GL_LIGHT1);
-
-  /*  glLightfv(GL_LIGHT1, GL_DIFFUSE, light_.diffuse() );
-    glLightfv(GL_LIGHT1, GL_POSITION, light_.pos() );
-    glLightModefv(GL_LIGHT_MODEL_AMBIENT, light_.ambient() );
-  */
-
+  // set light
+  {
+    //glEnable(GL_LIGHTING);
+  
+    // light and material
+    glEnable(GL_COLOR_MATERIAL);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, light_.diffuse());
+    glLightfv(GL_LIGHT1, GL_POSITION, light_.eye());
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, light_.ambient());
+    glShadeModel(GL_SMOOTH);
+    glEnable(GL_LIGHT1);
+  }
   glEnable(GL_NORMALIZE);
 
   // fix outlines z-fighting withthe quads
@@ -171,167 +160,31 @@ void GLWidget::paintGL()
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  drawBackground();
+
   glPointSize(pointSize_);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
+  realizeCamera(camera_);
 
-  // realize camera
-  {
-    // LOG_MSG << fmt("eye    = %,%,%") % camera_.eye().x() % camera_.eye().y() % camera_.eye().z();
-    // LOG_MSG << fmt("center = %,%,%") % camera_.center().x() % camera_.center().y() % camera_.center().z();
-
-    // realize coordinates
-    gluLookAt(
-      camera_.eye().x(),
-      camera_.eye().y(),
-      camera_.eye().z(),
-      camera_.center().x(),
-      camera_.center().y(),
-      camera_.center().z(),
-      camera_.up().x(),
-      camera_.up().y(),
-      camera_.up().z()
-    );
-  }
-
-  // rotate world coordinate system from XZ to XY
-  glRotatef(-90.0,1,0,0);
-  glRotatef(-180.0,0,0,1);
-
-  // draw bed 
-  GLfloat bedWidth = 210;
-  GLfloat bedHeight = 210;
-  GLfloat bedXmin = -bedWidth/2;
-  GLfloat bedXmax = bedWidth/2;
-  GLfloat bedYmin = -bedHeight/2;
-  GLfloat bedYmax = bedHeight/2;
-  GLfloat bedZ = -mesh_.bounds().size().z()/2.0; 
-  GLfloat bedZmax = bedZ + 210;
-  {
-    glBegin(GL_QUADS);
-    {
-      glColor4f(1.0,1.0,0.0,0.8);
-      glVertex3f(bedXmin,bedYmin,bedZ);
-      glVertex3f(bedXmax,bedYmin,bedZ);
-      glVertex3f(bedXmax,bedYmax,bedZ);
-      glVertex3f(bedXmin,bedYmax,bedZ);
-    }
-    glEnd();
-  }
-
-  // draw axis
-  
-  {
-    GLfloat alpha=0.7;
-    glLineWidth(3.0);
-    glBegin(GL_LINES);
-    {
-      glColor4f(1.0,0.0,0.0,alpha);
-      glVertex3f(0.0,0.0,0.0);
-      glVertex3f(bedXmax,0.0,0.0);
-
-      glColor4f(0.0,1.0,0.0,alpha);
-      glVertex3f(0.0,0.0,0.0);
-      glVertex3f(0.0,bedYmax,0.0);
-
-      glColor4f(0.0,0.0,1.0,alpha);
-      glVertex3f(0.0,0.0,0.0);
-      glVertex3f(0.0,0.0,bedZmax);
-    }
-    glEnd();
-
-    glPushMatrix();
-    {
-      glTranslatef(0.0, 0.0, bedZmax); 
-      glColor4f(0.0, 0.0, 1.0,alpha);
-      glutSolidCone(1.0, 2.0, 16.0, 1.0); 
-      glTranslatef(0.0, 0.0, -bedZmax);
-      glTranslatef(bedXmax, 0.0, 0.0); 
-      glRotatef(90.0, 0.0, 1.0, 0.0);
-      glColor4f(1.0, 0.0, 0.0, alpha);
-      glutSolidCone(1.0, 2.0, 16.0, 1.0); 
-      glRotatef(-90.0, 0.0, 1.0, 0.0);
-      glTranslatef(-bedXmax, 0.0, 0.0); 
-      glTranslatef(0.0, bedYmax, 0.0); 
-      glRotatef(-90.0, 1.0, 0.0, 0.0);
-      glColor4f(0.0,1.0,0.0,alpha);
-      glutSolidCone(1.0,2.0,16.0,1.0); 
-    }
-    glPopMatrix();
-  }
-
-
-  // draw grid
-  {
-    glDisable(GL_LIGHTING);
-    GLfloat tick=1.0;
-    {
-      // lines X axis
-      glLineWidth( 1.0 );
-      glBegin(GL_LINES);
-      {
-        for (int i = 0; tick*i <= bedWidth/2; i++)
-        {
-          glColor4f(0.6,0.2,0.2,(i%10)?0.4:0.8);
-          glVertex3f(tick*i, bedYmin, bedZ);
-          glVertex3f(tick*i, bedYmax, bedZ);
-          glVertex3f(-tick*i, bedYmin, bedZ);
-          glVertex3f(-tick*i, bedYmax, bedZ);
-        }
-      }
-      glEnd();
-     
-      // lines Y axis
-      glBegin(GL_LINES);
-      {
-        for (int i = bedYmin; i <= bedHeight/22; i++)
-        {
-          glColor4f(0.2,0.6,0.2,(i%10)?0.4:0.8);
-          glVertex3f(bedXmin, tick*i, bedZ);
-          glVertex3f(bedXmax, tick*i, bedZ);
-          glVertex3f(bedXmin, -tick*i, bedZ);
-          glVertex3f(bedXmax, -tick*i, bedZ);
-        }
-      }
-      glEnd();
-    }
-    glEnable(GL_LIGHTING);
-  }
-
-
-
-
-  // draw objects
-  {
-    tomo::Vec3f c = 0.5*(mesh_.bounds().max().vec() + mesh_.bounds().min().vec());
-    glTranslatef(-c.x(),-c.y(),-c.z());
-    glColor3f(0.8,0.8,0.8);
-    glBegin(GL_TRIANGLES);
-    BOOST_FOREACH( const tomo::Triangle& tri, mesh_.triangles() )
-    {
-      glNormal3f(COORDS(tri.normal()));
-      for (int i  = 0; i < 3; i++)
-        glVertex3fv(tri.v[i].p());
-    }
-    glEnd();
-  }
-  // draw selection
-  {
-    glPointSize(pointSize_*4.0);
-    glBegin(GL_POINTS);
-    {
-      glColor3f(1.0,0.0,0.0);
-      glVertex3f(selection_.x(),selection_.y(),selection_.z());
-    }
-    glEnd();
-  }
+  drawBed();
+  drawLight(light_);
+  drawObject(mesh_);
+  drawTracker("light",light_, Color(1.0,1.0,1.0,0.8));
+  drawTracker("cam",camera_, Color(0.0,0.0,0.0,0.8));
+  drawAxis();
+  drawSelection(selection_,Color(1.0,0.0,1.0));
 }
+
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
   if (0 != (event->buttons() & Qt::LeftButton))
   {
-    camera_.track( event->pos().x() - mousePosition_.x(), event->pos().y() - mousePosition_.y(), 0 );
+    if( event->modifiers() == Qt::ControlModifier )
+      light_.track( event->pos().x() - mousePosition_.x(), event->pos().y() - mousePosition_.y(), 0 );
+    else
+      camera_.track( event->pos().x() - mousePosition_.x(), event->pos().y() - mousePosition_.y(), 0 );
     update();
     mousePosition_ = event->pos();
   }
