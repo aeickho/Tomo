@@ -42,6 +42,7 @@ namespace tomo
       Coord phi = deg2rad(longitude());
       // get radian longitude
       Coord theta = deg2rad(latitude());
+//      LOG_MSG << fmt("longitude = %, latitude = %, cos(theta) = %") % longitude() % latitude() % cos(theta);
       // calculate and return cartesian vector
       return radius()*Vec(
                sin(theta) * cos(phi),
@@ -69,7 +70,7 @@ namespace tomo
       // add latitude 
       latitude_ = std::min<Coord>(179.99,std::max<Coord>(0.01,latitude_ + _vec.latitude_));
       // add radius
-      radius_ += _vec.radius_;//std::max<Coord>(0,radius_ + _vec.radius_) ;
+      radius_ = ALLOW_NEG_RADIUS ? _vec.radius_ : std::max<Coord>(0.0,radius_ + _vec.radius_);
       return *this;
     }
     operator std::string() const
