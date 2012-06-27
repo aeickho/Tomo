@@ -56,7 +56,6 @@ namespace tomo
     /// get tracker position
     Point eye() const
     {
-      //LOG_MSG << fmt("center% + direction% = eye%") % center_ % (std::string)direction_ % (std::string)(center_ + direction_);
       return center_ + direction_;
     }
     void eye( const Point& _pos )

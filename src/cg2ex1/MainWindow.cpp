@@ -77,6 +77,7 @@ void MainWindow::updateConfig()
   glWidget->config_.drawLabels_ = checkLabels->isChecked();
   glWidget->config_.drawCoords_ = checkCoords->isChecked();
   glWidget->config_.drawAxis_ = checkAxis->isChecked();
+  glWidget->config_.lockLight_ = checkLockLight->isChecked();
   glWidget->update();
 }
 

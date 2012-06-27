@@ -14,7 +14,7 @@ namespace tomo
   template<
     class COORD,
           bool ALLOW_NEG_RADIUS=false, 
-          bool DEFAULT_COORD_ONE=false
+          bool DEFAULT_COORD_ONE=true
             > struct PolarVec 
   {
     /// coordinate type
@@ -27,6 +27,26 @@ namespace tomo
     static const int dimensions_ = 3;
     /// default constructor
     PolarVec() {}
+    PolarVec( const Vec& _vec )
+    {
+      operator=(_vec);
+    }
+    PolarVec( const Vec4& _vec )
+    {
+      if( _vec.w() != 0.0 )
+        operator=(Vec(_vec.x()/_vec.w(),_vec.y()/_vec.w(),_vec.z()/_vec.w()));
+      else
+        operator=(Vec(_vec.x(),_vec.y(),_vec.z()));
+    }
+    const PolarVec& operator=( const Vec& _vec )
+    {
+      radius_ = _vec.length();
+      // calculate phi and theta 
+      // (@link http://de.wikipedia.org/wiki/Kugelkoordinaten#.C3.9Cbliche_Konvention) 
+      longitude_ = tomo::rad2deg( atan2(_vec.y(), _vec.x()) );
+      latitude_ = (0.0 != radius_) ? tomo::rad2deg(acos( (_vec.z() / radius_) )) : 0.0;
+      return *this;
+    }
     /** constructor which takes angles and radius
       * @param _phi Phi angle (90°-longitude)
       * @param _theta theta angle (latitude)
@@ -46,7 +66,6 @@ namespace tomo
       Coord phi = deg2rad(longitude());
       // get radian longitude
       Coord theta = deg2rad(latitude());
-//      LOG_MSG << fmt("longitude = %, latitude = %, cos(theta) = %") % longitude() % latitude() % cos(theta);
       // calculate and return cartesian vector
       return radius()*Vec(
                sin(theta) * cos(phi),
@@ -88,7 +107,7 @@ namespace tomo
   };
   namespace
   {
-    template<class COORD> inline fmt& operator%(fmt _fmt, const tomo::PolarVec<COORD>& _pvec)
+    template<class COORD> inline fmt operator%(fmt _fmt, const tomo::PolarVec<COORD>& _pvec)
     {
       return _fmt % (std::string)_pvec;
     }

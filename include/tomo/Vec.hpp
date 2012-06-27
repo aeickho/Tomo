@@ -115,10 +115,6 @@ namespace tomo
       TOMO_FOREACH_DIM v[i] = a[i]+b[i];
       return v;
     }
-    operator std::string() const
-    {
-      return Coords::operator std::string();
-    }
     /*
         friend Vec      operator*( const Vec& a, const Matrix<DIMENSIONS+1,Coord>& M )
         {
@@ -130,13 +126,6 @@ namespace tomo
         }
     */
   };
-  namespace 
-  {
-    template<int DIMENSIONS, class COORD> inline fmt operator%(fmt _fmt, const tomo::Vec<DIMENSIONS,COORD>& _vec)
-    {
-      return _fmt % (std::string)_vec;
-    }
-  }
 
   typedef Vec<2,int> Vec2i;
   typedef Vec<2,double> Vec2d;

@@ -98,13 +98,6 @@ namespace tomo
     /// Array to store coordinate values
     CoordType a_[DIMENSIONS];
   };
-  namespace
-  {
-    template<int DIMENSIONS, class COORD> inline fmt operator%(fmt _fmt, const tomo::Coords<DIMENSIONS,COORD>& _coords)
-    {
-      return _fmt % (std::string)_coords;
-    }
-  }
   typedef enum { X,Y,Z,W } Axis;
 
   //typedef Matrix<float> Matrix4f;
@@ -112,4 +105,9 @@ namespace tomo
 #define COORDS(C) C.x(),C.y(),C.z()
 }
 
+template<int DIMENSIONS, class COORD> 
+inline fmt operator%( fmt _fmt, const tomo::Coords<DIMENSIONS,COORD>& _coords)
+{
+  return _fmt % (std::string)_coords;
+}
 #endif /* _COORD_HPP */

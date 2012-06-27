@@ -59,9 +59,6 @@ inline void drawBackground()
 // realize camera
 template<class CAMERA> void realizeCamera(const CAMERA& _camera)
 {
-  // LOG_MSG << fmt("eye    = %,%,%") % _camera.eye().x() % _camera.eye().y() % _camera.eye().z();
-  // LOG_MSG << fmt("center = %,%,%") % _camera.center().x() % _camera.center().y() % _camera.center().z();
-
   glMatrixMode(GL_MODELVIEW);
   // realize coordinates
   gluLookAt(
@@ -138,7 +135,16 @@ inline void drawBed()
 
 }
 
-template<class POINT, class COLOR> void drawArrow( const std::string& _label, const POINT& _p1, const POINT& _p2, const COLOR& _color, bool _drawLabel, bool _drawCoords, GLfloat _width=1.0, GLfloat _arrowR=1.0, GLfloat _arrowH=2.0 )
+template<class POINT, class COLOR> void drawArrow( 
+    const std::string& _label, 
+    const POINT& _p1, 
+    const POINT& _p2, 
+    const COLOR& _color, 
+    bool _drawLabel, 
+    bool _drawCoords, 
+    GLfloat _width=1.0, 
+    GLfloat _arrowR=1.0, 
+    GLfloat _arrowH=2.0 )
 {
   glLineWidth(_width);
   glBegin(GL_LINES);
@@ -215,7 +221,8 @@ template<class LIGHT> void drawLight( LIGHT _light)
 {
   glMatrixMode(GL_MODELVIEW);
   // move light
-  glLightfv(GL_LIGHT1, GL_POSITION, _light.eye());
+  glLightfv(GL_LIGHT1, GL_POSITION, _light.eye4());
+  //glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, _light.center());
   glEnable(GL_LIGHTING);
 }
 

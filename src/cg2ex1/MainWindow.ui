@@ -16,7 +16,11 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="GLWidget" name="glWidget" native="true"/>
+     <widget class="GLWidget" name="glWidget" native="true">
+      <property name="focusPolicy">
+       <enum>Qt::WheelFocus</enum>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -195,6 +199,29 @@
        </layout>
       </widget>
      </item>
+     <item row="2" column="1">
+      <widget class="QGroupBox" name="groupBox_2">
+       <property name="title">
+        <string>Positions</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QCheckBox" name="checkLockLight">
+          <property name="text">
+           <string>Lock Light</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushLight2Cam">
+          <property name="text">
+           <string>Light = Cam</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
     </layout>
    </widget>
   </widget>
@@ -205,6 +232,9 @@
    <extends>QWidget</extends>
    <header>src/cg2ex1/glwidget.h</header>
    <container>1</container>
+   <slots>
+    <slot>light2cam()</slot>
+   </slots>
   </customwidget>
  </customwidgets>
  <resources/>
@@ -334,6 +364,38 @@
     <hint type="destinationlabel">
      <x>423</x>
      <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkLockLight</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>updateConfig()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>84</x>
+     <y>326</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushLight2Cam</sender>
+   <signal>pressed()</signal>
+   <receiver>glWidget</receiver>
+   <slot>light2cam()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>84</x>
+     <y>357</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>408</x>
+     <y>303</y>
     </hint>
    </hints>
   </connection>

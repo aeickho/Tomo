@@ -41,7 +41,7 @@ ADD_EXECUTABLE(cg2ex1
   ${cg2ex1_HEADERS_MOC}
   ${cg2ex1_FORMS_HEADERS}
   )
-TARGET_LINK_LIBRARIES(cg2ex1 tomo -lQtOpenGL -lQtGui -lQtCore -lGLU -lGL -lpthread )
+TARGET_LINK_LIBRARIES(cg2ex1 tomo -lQtOpenGL -lQtGui -lQtCore -lGLU -lGL -lpthread -lrt)
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 
 #Tests
@@ -49,10 +49,10 @@ ADD_EXECUTABLE(mediantest ./src/test/mediantest.cpp)
 TARGET_LINK_LIBRARIES(mediantest boost_program_options tomo)
 
 ADD_EXECUTABLE(pointCloudTest ./src/test/pointCloudTest.cpp)
-TARGET_LINK_LIBRARIES(pointCloudTest boost_program_options tomo)
+TARGET_LINK_LIBRARIES(pointCloudTest boost_program_options tomo rt)
 
 ADD_EXECUTABLE(VectorTest ./src/test/VectorTest.cpp)
-TARGET_LINK_LIBRARIES(VectorTest boost_program_options)
+TARGET_LINK_LIBRARIES(VectorTest boost_program_options rt)
 
 #ADD_DEFINITIONS(-g -O2 -fsigned-char -freg-struct-return -Wall -W -Wshadow -Wpointer-arith -Wcast-qual -Winline)
 #ADD_DEFINITIONS(-g -O3 -fsigned-char -fopenmp -freg-struct-return -Wall -fPIC)

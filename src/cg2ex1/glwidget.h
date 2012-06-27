@@ -17,12 +17,12 @@ class GLWidget : public QGLWidget
   Q_OBJECT
 public:
   typedef tomo::Color<4,float> Color;
-  typedef tomo::Point<4,float> Point;
-  typedef tomo::Vec<4,float> Vec;
-  typedef tomo::PolarVec<float> PolarVec;
-  typedef tomo::Tracker<Point,PolarVec,true> LightTracker; 
+  typedef tomo::Point<3,float> Point;
+  typedef tomo::Vec<3,float> Vec;
+  typedef tomo::PolarVec<float,false> PolarVec;
+  typedef tomo::Tracker<Point,PolarVec,false,true> LightTracker; 
   typedef tomo::Light<LightTracker,Color> Light;
-  typedef tomo::Tracker<Point,PolarVec> CameraTracker; 
+  typedef tomo::Tracker<Point,PolarVec,true,true> CameraTracker; 
   typedef tomo::Camera<CameraTracker> Camera;
 
   struct Config 
@@ -33,6 +33,7 @@ public:
     bool drawAxis_;
     bool drawLabels_;
     bool drawCoords_;
+    bool lockLight_;
   };
 
   Config config_;
@@ -43,6 +44,7 @@ protected:
   virtual void mouseMoveEvent(QMouseEvent *event);
   virtual void mousePressEvent(QMouseEvent *event);
   virtual void wheelEvent(QWheelEvent *event);
+  virtual void keyPressEvent(QKeyEvent* even);
   virtual void initializeGL();
   virtual void resizeGL(int w, int h);
   virtual void paintGL();
@@ -70,6 +72,7 @@ public:
 public slots:
   /// triggered by the animation timer
   virtual void tick();
+  virtual void light2cam();
 };
 
 #endif // GLWIDGET_H

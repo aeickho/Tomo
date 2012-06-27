@@ -6,6 +6,7 @@
 #include <boost/foreach.hpp>
 #include <GL/glut.h>
 #include "render.hpp"
+#include <tbd/dump.h>
 
 LOG_INIT;
 
@@ -27,44 +28,46 @@ GLWidget::GLWidget(QWidget *parent) :
 }
 void GLWidget::initializeGL()
 {
+  LOG_MSG << "GO";
   mesh_.read("yoda.off");
+  LOG_MSG << "OG";
 
   LOG_MSG << fmt("mesh_.bounds().radius() = %") % mesh_.bounds().radius();
 
   // setup camera
   camera_ = Camera(
-    CameraTracker(
-      // target to track (origin)
-      mesh_.bounds().center(),
-      // set tracking position from spheric coordinates
-      PolarVec(-45.0, 45.0, mesh_.bounds().radius() * 1.5) 
-      ),
-    // near, far
-    1.0, 1000.0,
-    Point(0.0, 0.0, 1.0)
-  );
+              CameraTracker(
+                // target to track (origin)
+                mesh_.bounds().center(),
+                // set tracking position from spheric coordinates
+                PolarVec(-45.0, 45.0, mesh_.bounds().radius() * 1.5)
+              ),
+              // near, far
+              1.0, 1000.0,
+              Point(0.0, 0.0, 1.0)
+            );
 
   // setup light source
   light_ = Light(
-    LightTracker(
-      // target to track (origin)
-      Point(0.0,0.0,0.0),
-      // set tracking position from spheric coordinates
-      PolarVec(-45.0, 45.0, mesh_.bounds().radius() * 10) 
-      ),
-    // ambient color
-    Color(0.1, 0.1, 0.1, 1.0),
-    // diffuse color
-    Color(1.0, 1.0, 1.0, 1.0),
-    // specular color,
-    Color(0.6, 0.6, 0.6, 1.0),
-    // intensity
-    1.0,
-    // shadows
-    0.0,
-    // radius
-    1.0
-  );
+             LightTracker(
+               // target to track (origin)
+               Point(0.0,0.0,0.0),
+               // set tracking position from spheric coordinates
+               PolarVec(-45.0, 45.0, mesh_.bounds().radius() * 10)
+             ),
+             // ambient color
+             Color(0.1, 0.1, 0.1, 1.0),
+             // diffuse color
+             Color(1.0, 1.0, 1.0, 1.0),
+             // specular color,
+             Color(0.6, 0.6, 0.6, 1.0),
+             // intensity
+             1.0,
+             // shadows
+             0.0,
+             // radius
+             1.0
+           );
 
   // Set up the rendering context, define display lists etc.:
 //glClearColor(1.0, 1.0, 1.0, 1.0);
@@ -85,7 +88,7 @@ void GLWidget::initializeGL()
   // set light
   {
     //glEnable(GL_LIGHTING);
-  
+
     // light and material
     glEnable(GL_COLOR_MATERIAL);
     glLightfv(GL_LIGHT1, GL_DIFFUSE, light_.diffuse());
@@ -182,16 +185,17 @@ void GLWidget::paintGL()
 }
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
-  if (0 != (event->buttons() & Qt::RightButton))
+  if (event->buttons() & Qt::LeftButton)
   {
-    light_.track( event->pos().x() - mousePosition_.x(), event->pos().y() - mousePosition_.y(), 0 );
+    if( event->modifiers() & Qt::ControlModifier )
+      light_.track( event->pos().x() - mousePosition_.x(), event->pos().y() - mousePosition_.y(), 0 );
+    else if( config_.lockLight_ )
+      light_.track( -(event->pos().x() - mousePosition_.x()), -(event->pos().y() - mousePosition_.y()), 0 );
+
+    if( !(event->modifiers() & Qt::ControlModifier) ) 
+      camera_.track( event->pos().x() - mousePosition_.x(), event->pos().y() - mousePosition_.y(), 0 );
     update();
   }
-  else if (0 != (event->buttons() & Qt::LeftButton))
-  {
-    camera_.track( event->pos().x() - mousePosition_.x(), event->pos().y() - mousePosition_.y(), 0 );
-    update();
-  } 
   mousePosition_ = event->pos();
 }
 void GLWidget::mousePressEvent(QMouseEvent *event)
@@ -212,6 +216,46 @@ void GLWidget::wheelEvent(QWheelEvent* event)
   camera_.track( 0, 0, (double)event->delta()/100.0 );
   update();
 }
+void GLWidget::keyPressEvent(QKeyEvent* event)
+{
+  int step = 1;
+  if( event->modifiers() & Qt::ShiftModifier )
+    step *= 10;
 
+  int x=0, y=0, z=0;
+  switch( event->key() )
+  {
+  case Qt::Key_PageUp:
+    z = -step;
+    break;
+  case Qt::Key_Up:
+    y = -step;
+    break;
+  case Qt::Key_Left:
+    x = -step;
+    break;
+  case Qt::Key_PageDown:
+    z = step;
+    break;
+  case Qt::Key_Down:
+    y = step;
+    break;
+  case Qt::Key_Right:
+    x = step;
+    break;
+  }
+  if( event->modifiers() & Qt::ControlModifier )
+    light_.track(x, y, z);
+  else
+    camera_.track(x, y, z);
+  update();
+  QGLWidget::keyPressEvent(event);
+}
 
+void GLWidget::light2cam()
+{
+  LOG_MSG << "light2cam";
+  light_.eye(-camera_.eye());
+  update();
+}
 
