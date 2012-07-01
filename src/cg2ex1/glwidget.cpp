@@ -28,11 +28,8 @@ GLWidget::GLWidget(QWidget *parent) :
 }
 void GLWidget::initializeGL()
 {
-  LOG_MSG << "GO";
   mesh_.read("yoda.off");
-  LOG_MSG << "OG";
-
-  LOG_MSG << fmt("mesh_.bounds().radius() = %") % mesh_.bounds().radius();
+  mesh_.initDL();
 
   // setup camera
   camera_ = Camera(
@@ -174,7 +171,7 @@ void GLWidget::paintGL()
   drawBed();
   drawLight(light_);
   if( config_.drawObjects_ )
-    drawObject(mesh_);
+    mesh_.drawDL();
   if( config_.drawLight_ )
     drawTracker("light",light_, Color(1.0,1.0,1.0,0.8), config_.drawLabels_, config_.drawCoords_);
   if( config_.drawCamera_ )

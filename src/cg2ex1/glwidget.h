@@ -12,6 +12,27 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
+template<class OBJECT> 
+struct DisplayListed : OBJECT 
+{
+  DisplayListed() : displayList_(0) { }
+  void initDL()
+  {
+    if( !displayList_ )
+    {
+      displayList_ = glGenLists(1);
+      glNewList(displayList_,GL_COMPILE);
+      drawObject(*this);
+      glEndList();
+    }
+  }
+  void drawDL()
+  {
+    glCallList(displayList_);
+  }
+  GLuint displayList_;
+};
+
 class GLWidget : public QGLWidget
 {
   Q_OBJECT
@@ -53,7 +74,7 @@ protected:
   void paintSelection();
 public:
   /// @todo replace with an vector<tomo::SceneObjects>
-  tomo::TriangleMesh mesh_;
+  DisplayListed<tomo::TriangleMesh> mesh_;
   /// @brief selection parameters
   float pointSize_;
   float radius_;
