@@ -52,29 +52,41 @@ namespace tomo
     }
 
     /** @brief Calculates cross product by this and another Vec
-     * @param v   Second vector
-     * @returns Vector
+     * @param _left first vector
+     * @param _right second vector
+     * @returns cross product vector
      * @details Number of dimension must be 3!
      **/
-    const Vec cross(const Vec& v) const
+    friend Vec cross_(const Vec& _left, const Vec& _right)
     {
       BOOST_STATIC_ASSERT(DIMENSIONS == 3);
-      return Vec(this->y()*v.z() - this->z()*v.y(),
-                 this->z()*v.x() - this->x()*v.z(),
-                 this->x()*v.y() - this->y()*v.x() );
+      return Vec(_left.y() * _right.z() - _left.z() * _right.y(),
+                 _left.z() * _right.x() - _left.x() * _right.z(),
+                 _left.x() * _right.y() - _left.y() * _right.x() );
+    }
+    /// @deprecated use friend function instead 
+    Vec cross(const Vec& v) const
+    {
+      return cross_( *this, v );
     }
 
     /** @brief Calculates dot product by this and another Vec
-     * @param v   Second vector
+     * @param _left first vector
+     * @param _right second vector
      * @returns Coord value
      **/
-    const Coord dot( const Vec& v) const
+    friend Coord dot_( const Vec& _left, const Vec& _right)
     {
       Coord sum = 0;
-      TOMO_FOREACH_DIM sum += v[i]*this->a_[i];
+      TOMO_FOREACH_DIM 
+        sum += _left[i] * _right[i];
       return sum;
     }
-
+    /// @deprecated use friend function instead 
+    Coord dot( const Vec& v) const
+    {
+      return dot_( *this, v );
+    }
     /// Vector operations
     Vec operator- () const
     {
