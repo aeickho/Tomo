@@ -1,57 +1,46 @@
 #pragma once
 #include <algorithm>
+#include "Point.hpp"
+#include "PolarVec.hpp"
 
 namespace tomo
 {
   template<
-    class POINT, class VEC,
-          bool XNEG=false, 
-          bool YNEG=false, 
-          bool ZNEG=false
-            > struct Tracker
+        class COORD,
+        bool XNEG=false,
+        bool YNEG=false,
+        bool ZNEG=false
+        > struct Tracker
   {
+    typedef COORD Coord;
     /// point type
-    typedef POINT Point;
+    typedef Point<3,Coord> Point;
     /// vector type
-    typedef VEC Vec;
+    typedef Vec<3,Coord> Vec;
+    typedef PolarVec<Coord> PolarVec;
     static const bool xNeg_ = XNEG;
     static const bool yNeg_ = YNEG;
     static const bool zNeg_ = ZNEG;
-    
-    enum Mode
-    {
-      ORTHOGONAL,
-      SPHERICAL
-    };
 
     Tracker()
     {
     }
-    Tracker( const Tracker& _tracker ) 
+    Tracker( const Tracker& _tracker )
     {
       center_ = _tracker.center_;
       direction_ = _tracker.direction_;
     }
-    Tracker( const Point& _center, const Vec& _direction ) :
+    Tracker( const Point& _center, const PolarVec& _direction ) :
       center_(_center),
       direction_(_direction)
     {
     }
-    void track( int x, int y, int z, Mode _mode = SPHERICAL )
+    void track( int x, int y, int z )
     {
-      switch( _mode )
-      {
-        case ORTHOGONAL:
-          /// @todo move orthogonal to direction()
-          BOOST_ASSERT(0);
-          break;
-        case SPHERICAL:
-          direction_ += Vec(
-              xNeg_?-x:x, 
-              yNeg_?-y:y,
-              zNeg_?-z:z);
-          break;
-      }
+      direction_ += PolarVec(
+                      xNeg_?-x:x,
+                      yNeg_?-y:y,
+                      zNeg_?-z:z);
     }
     /// get tracker position
     Point eye() const
@@ -65,6 +54,6 @@ namespace tomo
     /// target position
     TBD_PROPERTY_REF(Point,center);
     /// tracker's postion relatively to target
-    TBD_PROPERTY_REF(Vec,direction);
+    TBD_PROPERTY_REF(PolarVec,direction);
   };
 }

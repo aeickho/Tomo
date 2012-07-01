@@ -101,6 +101,12 @@ namespace tomo
       return operator Vec();
     }
 
+    Coord x() const { return ((Vec)*this).x(); }
+    Coord y() const { return ((Vec)*this).y(); }
+    Coord z() const { return ((Vec)*this).z(); }
+    Vec normalized() const { return ((Vec)*this).normalized(); }
+
+
     TBD_PROPERTY(Coord,longitude);
     TBD_PROPERTY(Coord,latitude);
     TBD_PROPERTY(Coord,radius);

@@ -82,8 +82,8 @@ namespace tomo
     CoordType& operator[] (int i) { return a_[i]; }
     const CoordType& operator[] (int i) const { return a_[i]; }
 
-    void operator += ( const Coords _c ) { TOMO_FOREACH_DIM a_[i] += _c[i]; }
-    void operator -= ( const Coords _c ) { TOMO_FOREACH_DIM a_[i] -= _c[i]; } 
+    Coords operator += ( Coords _c ) { TOMO_FOREACH_DIM a_[i] += _c[i]; return *this; }
+    Coords operator -= ( Coords _c ) { TOMO_FOREACH_DIM a_[i] -= _c[i]; return *this; } 
     operator std::string() const
     {
       std::stringstream ss;

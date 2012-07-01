@@ -41,9 +41,9 @@ public:
   typedef tomo::Point<3,float> Point;
   typedef tomo::Vec<3,float> Vec;
   typedef tomo::PolarVec<float,false> PolarVec;
-  typedef tomo::Tracker<Point,PolarVec,false,true> LightTracker; 
+  typedef tomo::Tracker<float,false,true> LightTracker; 
   typedef tomo::Light<LightTracker,Color> Light;
-  typedef tomo::Tracker<Point,PolarVec,true,true> CameraTracker; 
+  typedef tomo::Tracker<float,true,true> CameraTracker; 
   typedef tomo::Camera<CameraTracker> Camera;
 
   struct Config 

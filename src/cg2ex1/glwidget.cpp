@@ -41,7 +41,7 @@ void GLWidget::initializeGL()
               ),
               // near, far
               1.0, 1000.0,
-              Point(0.0, 0.0, 1.0)
+              Vec(0.0, 0.0, 1.0)
             );
 
   // setup light source
@@ -79,6 +79,7 @@ void GLWidget::initializeGL()
 
   glEnable(GL_POINT_SMOOTH);
   glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+  glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 
   glEnable(GL_CULL_FACE);
 
@@ -184,13 +185,21 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
   if (event->buttons() & Qt::LeftButton)
   {
-    if( event->modifiers() & Qt::ControlModifier )
-      light_.track( event->pos().x() - mousePosition_.x(), event->pos().y() - mousePosition_.y(), 0 );
-    else if( config_.lockLight_ )
-      light_.track( -(event->pos().x() - mousePosition_.x()), -(event->pos().y() - mousePosition_.y()), 0 );
+    if( event->modifiers() & Qt::ShiftModifier ) 
+    {
+      camera_.strafe((event->pos().x() - mousePosition_.x())/2.0);
+      camera_.lift((event->pos().y() - mousePosition_.y())/2.0); 
+    }
+    else
+    {
+      if( event->modifiers() & Qt::ControlModifier )
+        light_.track( event->pos().x() - mousePosition_.x(), event->pos().y() - mousePosition_.y(), 0 );
+      else if( config_.lockLight_ )
+        light_.track( -(event->pos().x() - mousePosition_.x()), -(event->pos().y() - mousePosition_.y()), 0 );
 
-    if( !(event->modifiers() & Qt::ControlModifier) ) 
-      camera_.track( event->pos().x() - mousePosition_.x(), event->pos().y() - mousePosition_.y(), 0 );
+      if( !(event->modifiers() & Qt::ControlModifier) ) 
+        camera_.track( event->pos().x() - mousePosition_.x(), event->pos().y() - mousePosition_.y(), 0 );
+    }
     update();
   }
   mousePosition_ = event->pos();
