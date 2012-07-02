@@ -25,7 +25,7 @@ namespace tomo
 
     Vec right() const
     {
-      return cross_((Vec)Tracker::direction(),up_);
+      return cross((Vec)Tracker::direction(),up_);
     }
 
     void strafe( Coord _right )
@@ -34,7 +34,7 @@ namespace tomo
     }
     void lift( Coord _up )
     {
-      Vec ortho_up = cross_(right(),Tracker::direction());
+      Vec ortho_up = cross(right(),Tracker::direction());
       Tracker::center( Tracker::center() + ortho_up.normalized() * _up );
     }
 

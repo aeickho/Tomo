@@ -20,6 +20,11 @@ namespace tomo
       return false;
     }
 
+    SplitPlaneIntersect intersect(Axis _axis, float _splitPos, const Bounds& _boundsLeft, const Bounds& _boundsRight) const
+    {
+      return Primitive::intersect(_axis,_splitPos,_boundsLeft,_boundsRight);
+    }
+
     Bounds bounds() const { return Bounds(v,v); }
 
     Point3f v;

@@ -13,16 +13,8 @@ namespace tomo
 
     bool intersect(Ray& _ray, Vec3f* _normal = NULL, Point2f* _texCoords = NULL) const;
     
-    /** @brief Split bounding box in two halves 
-     */
-    void split(float splitPos, Axis axis, BoundingBox& boxLeft, BoundingBox& boxRight) const;
-
 
     Bounds bounds() const { return Bounds(min(),max()); }
-
-    /** @brief Return axis which largest extent
-     */
-    Axis dominantAxis() const;
     
     /** @brief Test if point is in box
      */

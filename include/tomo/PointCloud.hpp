@@ -25,6 +25,10 @@ namespace tomo
   class PointCloud : public Compound<Vertex>
   {
     public:
+      typedef KDNode<Vertex> Node; 
+      typedef std::vector<Vertex*> PrimCont;
+      typedef std::vector<Node> NodeCont;
+
       PointCloud();
 
       void read(const string& filename);
@@ -44,13 +48,13 @@ namespace tomo
 
       Vertices vertices_;
 
-      void collect(KDNode<Vertex>* node, const BoundingBox& box, PointSet& pointSet);
+      void collect(Node* node, const BoundingBox& box, PointSet& pointSet);
 
       TBD_PROPERTY(bool,drawKDTree);
       TBD_PROPERTY(bool,drawBoundingBox);
     
     private:
-      virtual void divideNode(KDNode<Vertex>* node, const BoundingBox& box, int depth);
+      float splitPos(const PrimCont& _primList, const NodeInner& _inner, const Bounds& _bounds) const;
       float nodeDistance(const Point3f& p, const BoundingBox& box) const;
   };
 }

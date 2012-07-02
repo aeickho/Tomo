@@ -54,6 +54,9 @@ TARGET_LINK_LIBRARIES(pointCloudTest boost_program_options tomo rt)
 ADD_EXECUTABLE(VectorTest ./src/test/VectorTest.cpp)
 TARGET_LINK_LIBRARIES(VectorTest boost_program_options rt)
 
+ADD_EXECUTABLE(MeshTest ./src/test/MeshTest.cpp)
+TARGET_LINK_LIBRARIES(MeshTest tomo boost_program_options rt)
+
 #ADD_DEFINITIONS(-g -O2 -fsigned-char -freg-struct-return -Wall -W -Wshadow -Wpointer-arith -Wcast-qual -Winline)
 #ADD_DEFINITIONS(-g -O3 -fsigned-char -fopenmp -freg-struct-return -Wall -fPIC)
 ADD_DEFINITIONS(-g -O3 -fsigned-char -Wall -fPIC)

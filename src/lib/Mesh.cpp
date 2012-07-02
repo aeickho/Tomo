@@ -48,7 +48,7 @@ namespace tomo
 
     for (int i = 0; i < 3; i++)
     {
-      signs[i] = (V[i] - plane.center_).dot(plane.normal_);
+      signs[i] = dot(V[i] - plane.center_,plane.normal_);
       signCount += int(signs[i] < 0);
     }
 
@@ -68,8 +68,8 @@ namespace tomo
 
     Vec3f A = V[u] - V[k], B = V[v] - V[k]; 
     Point3f iPoint[2];
-    iPoint[0] = V[k] + A*(plane.normal_.dot(plane.center_ - V[k]) / A.dot(plane.normal_));
-    iPoint[1] = V[k] + B*(plane.normal_.dot(plane.center_ - V[k]) / B.dot(plane.normal_));
+    iPoint[0] = V[k] + A*(dot(plane.normal_,plane.center_ - V[k]) / dot(A,plane.normal_));
+    iPoint[1] = V[k] + B*(dot(plane.normal_,plane.center_ - V[k]) / dot(A,plane.normal_));
 
     q->push_back(Triangle(V[k],iPoint[0],iPoint[1],tri.normal()));
     r->push_back(Triangle(V[u],V[v],iPoint[0],tri.normal()));

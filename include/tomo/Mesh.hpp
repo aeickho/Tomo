@@ -26,7 +26,7 @@ namespace tomo
       bool intersect(Ray& _ray, Vec3f* _normal = NULL, Point2f* _texCoords = NULL) const
       {
         bool found = false;
-        recKDTreeTraverse(_ray,this->root_,_ray.tMin_,_ray.tMax_,found,_normal,_texCoords);
+        recKDTreeTraverse(_ray,this->root(),_ray.tMin_,_ray.tMax_,found,_normal,_texCoords);
         return found;
       }
 
@@ -36,39 +36,6 @@ namespace tomo
       }
 
       private:
-
-      /** @brief Method to define how KDTree is constructed
-       *  @param _node  Node to be divided
-       *  @param _box   Node's BoundingBox
-       *  @param _depth Node depth
-       */
-      void divideNode(Node* node, const BoundingBox& box, int depth)
-      {
-        if (depth > 15 || node->objs.size() < 10)
-        {   // We have a leaf node!
-          node->left = NULL; node->right = NULL;
-          return;
-        }
-        node->left = new Node;
-        node->right = new Node;
-        node->axis = box.dominantAxis();
-
-        // TODO: Surface Area Heuristic here!
-        node->splitPos = 0.5*(box.min()[node->axis] + box.max()[node->axis]);
-        BoundingBox boxLeft, boxRight;
-        box.split(node->splitPos,node->axis,boxLeft,boxRight);
-
-        BOOST_FOREACH( Triangle* tri, node->objs )
-        {
-          int result = tri->intersect(node->splitPos,node->axis);
-          if (result & 1) node->left->objs.push_back(tri);
-          if (result & 2) node->right->objs.push_back(tri);
-        }
-        node->objs.clear();
-        divideNode(node->left,boxLeft,depth+1);
-        divideNode(node->right,boxRight,depth+1);
-      }
-
       /** @brief Traverses kd-tree along a ray recursively
        * @param _ray        Ray which traverses KDTree
        * @param _node       Current node
@@ -78,21 +45,21 @@ namespace tomo
        * @param _normal     Normal of intersecting triangle
        * @param _texCoords  Texture coordinates of intersecting triangle
        */
-      float recKDTreeTraverse(Ray& ray, Node* node, float tnear, float tfar, bool& found,
+      float recKDTreeTraverse(Ray& ray, const Node* node, float tnear, float tfar, bool& found,
           Vec3f* _normal = NULL, Point2f* _texCoords = NULL) const
       {
         if (node->isLeaf())
         {
-          BOOST_FOREACH( Triangle* tri, node->objs )
+          BOOST_FOREACH( const Triangle* tri, node->leaf_.primitives(this->primLists_) )
             if (tri != ray.primitive_) found |= (tri->intersect(ray,_normal,_texCoords));
           return ray.tMax_;
         }
 
-        int k = node->axis;
-        float d = (node->splitPos - ray.org_[k]) / ray.dir_[k];
+        int k = node->inner_.axis();
+        float d = (node->inner_.splitPos() - ray.org_[k]) / ray.dir_[k];
 
-        KDNode<Triangle>* front = node->left;
-        KDNode<Triangle>* back  = node->right;
+        const KDNode<Triangle>* front = node->inner_.left(this->nodes_);
+        const KDNode<Triangle>* back  = node->inner_.right(this->nodes_);
         if (ray.dir_[k] < 0) std::swap(front,back); 
 
         if (d <= tnear)

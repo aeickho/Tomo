@@ -52,24 +52,6 @@ namespace tomo
     return false;  
   }
 
-  Axis BoundingBox::dominantAxis() const
-  {
-    Vec3f d = size(); 
-    if (d.x() > d.y())
-    { 	if (d.x() > d.z()) return X;
-    } else
-      if (d.y() > d.z()) return Y;
-    return Z;
-  }
-
-  void BoundingBox::split(float splitPos, Axis axis, BoundingBox& boxLeft, BoundingBox& boxRight) const
-  {
-    boxLeft(min(),max());
-    boxRight(min(),max());
-    boxLeft.max()[axis] = splitPos;
-    boxRight.min()[axis] = splitPos;
-  }
-
 /*  void BoundingBox::draw(Color color) const
   {
     float x  = min.x(), y  = min.y(), z  = min.z();

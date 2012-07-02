@@ -18,9 +18,9 @@ namespace tomo
 	bool Sphere::intersect(Ray& _ray, Vec3f* _normal, Point2f* _texCoords) const
 	{
 		Vec3f o = _ray.org_ - center_;
-		float a = _ray.dir_.dot( _ray.dir_ ) ;
-		float b = 2.0f * (_ray.dir_.dot(o));
-		float c = o.dot(o) - radius()*radius();
+		float a = dot(_ray.dir_,_ray.dir_);
+		float b = 2.0f * dot(_ray.dir_,o);
+		float c = dot(o,o) - radius()*radius();
 		float disc = b*b - 4*a*c;
 
 		if (disc < 0) return false;

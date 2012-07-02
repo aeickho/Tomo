@@ -17,24 +17,24 @@ namespace tomo
     {
       Vec3f A = v1() - v0(), 
             B = v2() - v0();
-      Vec3f p = _ray.dir_.cross(B);
+      Vec3f p = cross(_ray.dir_,B);
 
       // d = Determinant
-      float d = A.dot(p);
+      float d = dot(A,p);
       if (d > -EPSILON && d < EPSILON) return false;
 
       float inv_d = 1.0f / d;
 
       Vec3f tV = _ray.org_ - v0();
 
-      float u = tV.dot(p) * inv_d;
+      float u = dot(tV,p) * inv_d;
       if (u < 0.0 || u > 1.0) return false;
 
-      Vec3f q = tV.cross(A);
-      float v = _ray.dir_.dot(q) * inv_d;
+      Vec3f q = cross(tV,A);
+      float v =  dot(_ray.dir_,q) * inv_d;
       if (v < 0.0 || u + v > 1.0) return false;
 
-      float t = B.dot(q) *  inv_d;
+      float t = dot(B,q) *  inv_d;
 
       if (_ray.intersection(this->pointer(),t))
       {
@@ -43,21 +43,17 @@ namespace tomo
         return true;
       }
       return false;
-    }  
+    }
+
+    SplitPlaneIntersect intersect(Axis _axis, float _splitPos, const Bounds& _boundsLeft, const Bounds& _boundsRight) const
+    {
+      // TODO implement better split plane intersection function
+      return Primitive::intersect(_axis,_splitPos,_boundsLeft,_boundsRight);
+    }
 
     bool slice(Slice& _slice) const
     {
       return false;
-    }
-
-    int intersect(float splitPos, int axis)
-    {
-      float minPos = std::min(v0()[axis],std::min(v1()[axis],v2()[axis]));
-      float maxPos = std::max(v0()[axis],std::max(v1()[axis],v2()[axis]));
-
-      if (maxPos < splitPos) return 1;
-      if (minPos > splitPos) return 2; 
-      return 3;
     }
 
     Bounds bounds() const
@@ -87,7 +83,7 @@ namespace tomo
     {
       v[0] = _v0; v[1] = _v1; v[2] = _v2; n_ = _n;
       if (_n.sqrLength() == 0.0 )
-        n_ = (v[2] - v[0]).cross(v[1] - v[0]);
+        n_ = cross(v[2] - v[0],v[1] - v[0]);
     }
 
     const Point3f& v0() const { return v[0]; }

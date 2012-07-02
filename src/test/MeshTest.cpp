@@ -54,9 +54,9 @@ int main(int ac, char* av[])
 
   LOG->level(2);
 
-  tomo::Mesh mesh;
+  tomo::TriangleMesh mesh;
   mesh.read(inputFile);
-
+/*
   cout << endl;
   for (int slice = 0; slice < nSlices; slice++)
   {
@@ -89,7 +89,7 @@ int main(int ac, char* av[])
     stringstream ss; ss << "test" << slice << ".ppm";
     image.save_ppm(ss.str());
   }
-
+*/
   return EXIT_SUCCESS;
 }
 

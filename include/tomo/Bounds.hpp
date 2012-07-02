@@ -22,7 +22,15 @@ namespace tomo
     float radius() const { return size().length()/2; }
     
     Point3f center() { return 0.5*(max().vec() + min().vec()); }
-    
+
+    /** @brief Split bounding box in two halves 
+     */
+    void split(float splitPos, Axis axis, Bounds& boxLeft, Bounds& boxRight) const;
+
+    /** @brief Return axis which largest extent
+     */
+    Axis dominantAxis() const;
+
     TBD_PROPERTY_MON(Point3f,min,validate);
     TBD_PROPERTY_MON(Point3f,max,validate);
   };
