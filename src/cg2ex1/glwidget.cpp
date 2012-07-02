@@ -50,7 +50,7 @@ void GLWidget::initializeGL()
                // target to track (origin)
                Point(0.0,0.0,0.0),
                // set tracking position from spheric coordinates
-               PolarVec(-45.0, 45.0, mesh_.bounds().radius() * 10)
+               PolarVec(-45.0, 45.0, mesh_.bounds().radius() * -10)
              ),
              // ambient color
              Color(0.1, 0.1, 0.1, 1.0),
@@ -65,6 +65,8 @@ void GLWidget::initializeGL()
              // radius
              1.0
            );
+
+  printRange_ = PrintBounds(Vec(210,210,210));
 
   // Set up the rendering context, define display lists etc.:
 //glClearColor(1.0, 1.0, 1.0, 1.0);
@@ -108,6 +110,8 @@ void GLWidget::initializeGL()
   timer_->setSingleShot(false);
   connect(timer_, SIGNAL(timeout()), this, SLOT(tick()));
   timer_->start(1000/fps);
+
+  light2cam();
 }
 void GLWidget::tick()
 {
@@ -169,8 +173,10 @@ void GLWidget::paintGL()
 
   realizeCamera(camera_);
 
-  drawBed();
+  drawBed(printRange_);
+  drawGrid(printRange_);
   drawLight(light_);
+  drawPrintRange(printRange_);
   if( config_.drawObjects_ )
     mesh_.drawDL();
   if( config_.drawLight_ )

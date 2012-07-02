@@ -30,7 +30,7 @@
      <x>0</x>
      <y>0</y>
      <width>847</width>
-     <height>29</height>
+     <height>27</height>
     </rect>
    </property>
   </widget>
@@ -209,6 +209,9 @@
          <widget class="QCheckBox" name="checkLockLight">
           <property name="text">
            <string>Lock Light</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
           </property>
          </widget>
         </item>

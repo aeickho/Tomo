@@ -8,6 +8,7 @@
 #include "tomo/Light.hpp"
 #include "tomo/Color.hpp"
 #include "tomo/PolarVec.hpp"
+#include "tomo/PrintBounds.hpp"
 #include <QtOpenGL/QGLWidget>
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -45,6 +46,7 @@ public:
   typedef tomo::Light<LightTracker,Color> Light;
   typedef tomo::Tracker<float,true,true> CameraTracker; 
   typedef tomo::Camera<CameraTracker> Camera;
+  typedef tomo::PrintBounds PrintBounds;
 
   struct Config 
   {
@@ -90,6 +92,7 @@ public:
   Camera camera_;
   /// light parameters
   Light light_;
+  PrintBounds printRange_;
 public slots:
   /// triggered by the animation timer
   virtual void tick();

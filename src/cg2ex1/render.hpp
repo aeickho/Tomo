@@ -1,5 +1,6 @@
 #include <tomo/misc.hpp>
 #include <tomo/Mesh.hpp>
+#include <tomo/PrintBounds.hpp>
 #include <cmath>
 
 /** @brief executes glRotate() for the given angles
@@ -23,10 +24,10 @@ template<class VEC> void glRotate(const VEC& _direction)
   typedef typename VEC::Coord Coord;
   // pre-calculate vector length
   Coord length = _direction.length();
-  // calculate phi and theta (@link http://de.wikipedia.org/wiki/Kugelkoordinaten#.C3.9Cbliche_Konvention) 
+  // calculate phi and theta (@link http://de.wikipedia.org/wiki/Kugelkoordinaten#.C3.9Cbliche_Konvention)
   Coord phi = tomo::rad2deg( atan2(_direction.y(), _direction.x()) );
   Coord theta = (0.0 != length) ? tomo::rad2deg(acos( (_direction.z() / length) )) : 0.0;
-  // rotate GL world 
+  // rotate GL world
   glRotate(phi,theta);
 }
 
@@ -74,77 +75,101 @@ template<class CAMERA> void realizeCamera(const CAMERA& _camera)
   );
 }
 
-
-inline void drawBed()
+inline void drawBed( const tomo::PrintBounds& _bounds )
 {
   glMatrixMode(GL_MODELVIEW);
-  // draw bed
-  GLfloat bedXsize = 210;
-  GLfloat bedYsize = 210;
-  GLfloat bedXmin = -bedXsize/2;
-  GLfloat bedXmax = bedXsize/2;
-  GLfloat bedYmin = -bedYsize/2;
-  GLfloat bedYmax = bedYsize/2;
-  GLfloat bedZ = 0;//-mesh_.bounds().size().z()/2.0;
+  // draw _bounds.min().
+  glBegin(GL_QUADS);
   {
-    glBegin(GL_QUADS);
+    glColor4f(0.5,0.5,0.5,0.8);
+    glVertex3f(_bounds.min().x(), _bounds.min().y(), _bounds.min().z());
+    glVertex3f(_bounds.max().x(), _bounds.min().y(), _bounds.min().z());
+    glVertex3f(_bounds.max().x(), _bounds.max().y(), _bounds.min().z());
+    glVertex3f(_bounds.min().x(), _bounds.max().y(), _bounds.min().z());
+  }
+  glEnd();
+}
+
+inline void drawPrintRange( const tomo::PrintBounds& _bounds )
+{
+  // draw printable range
+  glBegin(GL_QUADS);
+  {
+    glColor4f(1.0,1.0,1.0,0.1);
+    glVertex3f(_bounds.max().x(), _bounds.min().y(), _bounds.min().z());
+    glVertex3f(_bounds.min().x(), _bounds.min().y(), _bounds.min().z());
+    glVertex3f(_bounds.min().x(), _bounds.min().y(), _bounds.max().z());
+    glVertex3f(_bounds.max().x(), _bounds.min().y(), _bounds.max().z());
+
+    glVertex3f(_bounds.max().x(), _bounds.max().y(), _bounds.min().z());
+    glVertex3f(_bounds.max().x(), _bounds.min().y(), _bounds.min().z());
+    glVertex3f(_bounds.max().x(), _bounds.min().y(), _bounds.max().z());
+    glVertex3f(_bounds.max().x(), _bounds.max().y(), _bounds.max().z());
+
+    glVertex3f(_bounds.min().x(), _bounds.max().y(), _bounds.min().z());
+    glVertex3f(_bounds.max().x(), _bounds.max().y(), _bounds.min().z());
+    glVertex3f(_bounds.max().x(), _bounds.max().y(), _bounds.max().z());
+    glVertex3f(_bounds.min().x(), _bounds.max().y(), _bounds.max().z());
+
+    glVertex3f(_bounds.min().x(), _bounds.min().y(), _bounds.min().z());
+    glVertex3f(_bounds.min().x(), _bounds.max().y(), _bounds.min().z());
+    glVertex3f(_bounds.min().x(), _bounds.max().y(), _bounds.max().z());
+    glVertex3f(_bounds.min().x(), _bounds.min().y(), _bounds.max().z());
+
+    glVertex3f(_bounds.min().x(), _bounds.min().y(), _bounds.max().z());
+    glVertex3f(_bounds.min().x(), _bounds.max().y(), _bounds.max().z());
+    glVertex3f(_bounds.max().x(), _bounds.max().y(), _bounds.max().z());
+    glVertex3f(_bounds.max().x(), _bounds.min().y(), _bounds.max().z());
+  }
+  glEnd();
+}
+
+inline void drawGrid( const tomo::PrintBounds& _bounds )
+{
+  // draw grid
+  GLfloat tick=1.0;
+  {
+    // lines X axis
+    glLineWidth( 1.0 );
+    glBegin(GL_LINES);
     {
-      glColor4f(0.5,0.5,0.5,0.8);
-      glVertex3f(bedXmin,bedYmin,bedZ);
-      glVertex3f(bedXmax,bedYmin,bedZ);
-      glVertex3f(bedXmax,bedYmax,bedZ);
-      glVertex3f(bedXmin,bedYmax,bedZ);
+      for (int i = 0; tick*i <= _bounds.size().x()/2; i++)
+      {
+        glColor4f(0.2,0.6,0.2,(i%10)?0.4:0.8);
+        glVertex3f(tick*i, _bounds.min().y(), _bounds.min().z());
+        glVertex3f(tick*i, _bounds.max().y(), _bounds.min().z());
+        glVertex3f(-tick*i, _bounds.min().y(), _bounds.min().z());
+        glVertex3f(-tick*i, _bounds.max().y(), _bounds.min().z());
+      }
+    }
+    glEnd();
+
+    // lines Y axis
+    glBegin(GL_LINES);
+    {
+      for (int i = _bounds.min().y(); i <= _bounds.size().y()/2; i++)
+      {
+        glColor4f(0.6,0.0,0.2,(i%10)?0.4:0.8);
+        glVertex3f(_bounds.min().x(), tick*i, _bounds.min().z());
+        glVertex3f(_bounds.max().x(), tick*i, _bounds.min().z());
+        glVertex3f(_bounds.min().x(), -tick*i, _bounds.min().z());
+        glVertex3f(_bounds.max().x(), -tick*i, _bounds.min().z());
+      }
     }
     glEnd();
   }
-
-  // draw grid
-  {
-    GLfloat tick=1.0;
-    {
-      // lines X axis
-      glLineWidth( 1.0 );
-      glBegin(GL_LINES);
-      {
-        for (int i = 0; tick*i <= bedXsize/2; i++)
-        {
-          glColor4f(0.2,0.6,0.2,(i%10)?0.4:0.8);
-          glVertex3f(tick*i, bedYmin, bedZ);
-          glVertex3f(tick*i, bedYmax, bedZ);
-          glVertex3f(-tick*i, bedYmin, bedZ);
-          glVertex3f(-tick*i, bedYmax, bedZ);
-        }
-      }
-      glEnd();
-
-      // lines Y axis
-      glBegin(GL_LINES);
-      {
-        for (int i = bedYmin; i <= bedYsize/2; i++)
-        {
-          glColor4f(0.6,0.0,0.2,(i%10)?0.4:0.8);
-          glVertex3f(bedXmin, tick*i, bedZ);
-          glVertex3f(bedXmax, tick*i, bedZ);
-          glVertex3f(bedXmin, -tick*i, bedZ);
-          glVertex3f(bedXmax, -tick*i, bedZ);
-        }
-      }
-      glEnd();
-    }
-  }
-
 }
 
-template<class POINT, class COLOR> void drawArrow( 
-    const std::string& _label, 
-    const POINT& _p1, 
-    const POINT& _p2, 
-    const COLOR& _color, 
-    bool _drawLabel, 
-    bool _drawCoords, 
-    GLfloat _width=1.0, 
-    GLfloat _arrowR=1.0, 
-    GLfloat _arrowH=2.0 )
+template<class POINT, class COLOR> void drawArrow(
+  const std::string& _label,
+  const POINT& _p1,
+  const POINT& _p2,
+  const COLOR& _color,
+  bool _drawLabel,
+  bool _drawCoords,
+  GLfloat _width=1.0,
+  GLfloat _arrowR=1.0,
+  GLfloat _arrowH=2.0 )
 {
   glLineWidth(_width);
   glBegin(GL_LINES);
@@ -173,15 +198,15 @@ template<class POINT, class COLOR> void drawArrow(
     if( _drawLabel )
     {
       BOOST_FOREACH(char ch, _label)
-        glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,ch);
+      glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,ch);
     }
     if( _drawCoords )
     {
       glScalef(0.5,0.5,0.5);
       BOOST_FOREACH(char ch, (std::string)_p2)
-        glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,ch);
+      glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,ch);
     }
-   }
+  }
   glPopMatrix();
 
   if( _drawCoords )
@@ -193,8 +218,8 @@ template<class POINT, class COLOR> void drawArrow(
       glScalef(0.01,0.01,0.01);
       glScalef(0.5,0.5,0.5);
       BOOST_FOREACH(char ch, (std::string)_p1)
-        glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,ch);
-     }
+      glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,ch);
+    }
   }
   glPopMatrix();
 }
