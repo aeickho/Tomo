@@ -17,7 +17,7 @@ namespace tomo
     Vertices vertices;
     off.read(filename,&vertices,&objs_);
     calcBoundingBox();
-    build(objs_,boundingBox_);
+    //build(objs_,boundingBox_);
   }
 
   std::pair<TriangleMesh,TriangleMesh> TriangleMesh::split(const Plane& splitPlane)
