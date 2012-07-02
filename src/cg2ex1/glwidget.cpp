@@ -266,7 +266,6 @@ void GLWidget::keyPressEvent(QKeyEvent* event)
 
 void GLWidget::light2cam()
 {
-  LOG_MSG << "light2cam";
   light_.eye(-camera_.eye());
   update();
 }
