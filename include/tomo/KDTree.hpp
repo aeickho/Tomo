@@ -26,8 +26,12 @@ namespace tomo
       inline void insert(NodeCont& _nodes, KDNode*& _left, KDNode*& _right)
       {
         data_ = (0x7FFFFFFC & (_nodes.size() << 2)) | (1 << 31);
-        _left = newNode(_nodes);
-        _right = newNode(_nodes);
+        _nodes.push_back(KDNode());
+        _nodes.push_back(KDNode());
+        _left = &_nodes.at(_nodes.size()-2);
+        _right = &_nodes.at(_nodes.size()-1);
+
+//        LOG_MSG << fmt("% %") % ptrdiff_t(_right - _left) % sizeof(KDNode);
       }
 
       inline const KDNode* left(const NodeCont& _nodes) const { return &_nodes[(data_ & 0x7FFFFFFC) >> 2]; }
@@ -38,12 +42,6 @@ namespace tomo
       TBD_PROPERTY(float,splitPos);
 
     private:
-      inline KDNode* newNode(NodeCont& _nodes)
-      {
-        _nodes.push_back(KDNode());
-        return &_nodes[_nodes.size()-1];
-      }
-
       unsigned int data_;
     };
 
@@ -59,7 +57,7 @@ namespace tomo
         // Make leaf node
         offset_ = _dest.size();
         size_ = _src.size();
-        _dest.reserve(offset_ + size_);
+        //_dest.resize(offset_ + size_);
         for (unsigned i = 0; i < size_; i++)
           _dest.push_back(_src[i]);
       }
@@ -82,7 +80,7 @@ namespace tomo
     Leaf leaf_;
   };
 
-  template <typename PRIMITIVE, unsigned int PRIMITIVES_PER_NODE = 100, unsigned int MAX_DEPTH = 2> 
+  template <typename PRIMITIVE, unsigned int PRIMITIVES_PER_NODE = 10, unsigned int MAX_DEPTH = 32> 
   struct KDTree
   {
   protected:
@@ -112,61 +110,72 @@ namespace tomo
 
     void build(std::vector<PRIMITIVE>& _objs, const Bounds& _bounds)
     {
-      std::stack<NodeStackElement> _stack;
+      std::vector<NodeStackElement> _stack;
 
       nodes_.clear();
+      nodes_.reserve(2*MAX_DEPTH*_objs.size()/PRIMITIVES_PER_NODE);
       nodes_.push_back(Node());
 
       primLists_.clear();
+
+      // Initialize root node
       NodeStackElement _node;
-      _node.bounds_ = _bounds;
-      _node.primLists_.reserve(_objs.size());
+      _node.bounds_ = _bounds;  // Object's bounds
       _node.node_ = &nodes_[0];
 
+      // Init primitive lists
+      _node.primLists_.reserve(_objs.size());
       for (unsigned i = 0; i < _objs.size(); i++)
         _node.primLists_.push_back(&_objs[i]);
 
       while (1)
       {
-        while (1) 
+        // Perform depth-in first search until leaf node
+        while (_node.primLists_.size() > PRIMITIVES_PER_NODE && _stack.size() < MAX_DEPTH) 
         {
-          //if (_node.primLists_.size() < PRIMITIVES_PER_NODE || _stack.size() >= MAX_DEPTH) break;
-
           NodeStackElement _right;
-          NodeInner& _inner = _node.node_->inner_;
+          _right.primLists_.reserve(_node.primLists_.size());
 
+          // Setup node
+          NodeInner& _inner = _node.node_->inner_;
           _inner.axis(_node.bounds_.dominantAxis());
           _inner.splitPos(splitPos(_node.primLists_,_inner,_node.bounds_));          
           _inner.insert(nodes_,_node.node_,_right.node_);
+          
+          // Make bounding boxes
           _node.bounds_.split(_inner.splitPos(),_inner.axis(),_node.bounds_,_right.bounds_);
         
+          // Test which primitives intersect which nodes
           unsigned _leftNodeCount = 0, _rightNodeCount = 0;
           for (unsigned i = 0; i < _node.primLists_.size(); i++)
           {
             PRIMITIVE* _prim = _node.primLists_[i];
             SplitPlaneIntersect _result = _prim->intersect(_inner.axis(),_inner.splitPos(),_node.bounds_,_right.bounds_);
-            if (_result.left()) {  _node.primLists_[_leftNodeCount]; _leftNodeCount++; }
-            if (_result.right()) { _right.primLists_.push_back(_prim); _rightNodeCount++; }
+        
+            // Store primtive pointers in right node, if intersection
+            if (_result.right()) 
+            { 
+              _right.primLists_.push_back(_prim); 
+              _rightNodeCount++; 
+            }
+            
+            // Optimization: We can use the original root node array for storing left node primitive pointers
+            if (_result.left()) 
+            {  
+              _node.primLists_[_leftNodeCount]; 
+              _leftNodeCount++; 
+            }
           }
 
-          LOG_MSG << fmt("% %") % _leftNodeCount % _rightNodeCount;
-
           _node.primLists_.resize(_leftNodeCount);
- 
-        //  _stack.push(_right);
-          break;
+          _stack.push_back(_right);
         }
-
 
         // Make leaf node
         _node.node_->leaf_.insert(_node.primLists_,primLists_);
-        
-        if (!_stack.empty())
-        {
-          _node = _stack.top();
-          _stack.pop();
-        } else
-          break;
+         
+        _node = _stack.front();
+        if (!_stack.empty()) _stack.pop_back(); else return;
       }
     }
 
