@@ -78,7 +78,7 @@ namespace tomo
     Leaf leaf_;
   };
 
-  template <typename PRIMITIVE, unsigned int PRIMITIVES_PER_NODE = 10, unsigned int MAX_DEPTH = 32> 
+  template <typename PRIMITIVE, unsigned int PRIMITIVES_PER_NODE = 10, unsigned int MAX_DEPTH = 16> 
   struct KDTree
   {
   protected:
@@ -101,6 +101,7 @@ namespace tomo
       Bounds bounds_;
       PrimCont primLists_;
       unsigned node_;
+      unsigned depth_;
 
       Node* node(NodeCont& _nodes) { return &_nodes[node_]; }
     };
@@ -110,7 +111,7 @@ namespace tomo
 
     void build(std::vector<PRIMITIVE>& _objs, const Bounds& _bounds)
     {
-      std::vector<NodeStackElement> _stack;
+      std::stack<NodeStackElement> _stack;
 
       nodes_.clear();
       nodes_.reserve(2*MAX_DEPTH*_objs.size()/PRIMITIVES_PER_NODE);
@@ -122,6 +123,7 @@ namespace tomo
       NodeStackElement _node;
       _node.bounds_ = _bounds;  // Object's bounds
       _node.node_ = 0;
+      _node.depth_ = 0;
 
       // Init primitive lists
       _node.primLists_.reserve(_objs.size());
@@ -131,7 +133,7 @@ namespace tomo
       while (1)
       {
         // Perform depth-in first search until leaf node
-        while (_node.primLists_.size() > PRIMITIVES_PER_NODE && _stack.size() < MAX_DEPTH) 
+        while (_node.primLists_.size() > PRIMITIVES_PER_NODE && _node.depth_ < MAX_DEPTH) 
         {
           NodeStackElement _right;
           _right.primLists_.reserve(_node.primLists_.size());
@@ -167,8 +169,11 @@ namespace tomo
             }
           }
 
+          _node.depth_++;
+          _right.depth_ = _node.depth_; 
+
           _node.primLists_.resize(_leftNodeCount);
-          _stack.push_back(_right);
+          _stack.push(_right);
         }
 
         // Make leaf node
@@ -176,15 +181,16 @@ namespace tomo
         
         if (!_stack.empty())
         {
-            _node = _stack.front();
-          _stack.pop_back();
-        } else
-          return;
+            _node = _stack.top();
+          _stack.pop();
+        }
+        if (!_stack.empty()) return;
       }
     }
 
     virtual float splitPos(const PrimCont& _primList, const NodeInner& _inner, const Bounds& _bounds) const
     {
+      if (_inner.axis() == 3) LOG_WRN;
       return 0.5*(_bounds.min()[_inner.axis()] + _bounds.max()[_inner.axis()]);
     }
 
