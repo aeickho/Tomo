@@ -58,8 +58,8 @@ namespace tomo
         int k = node->inner_.axis();
         float d = (node->inner_.splitPos() - ray.org_[k]) / ray.dir_[k];
 
-        const KDNode<Triangle>* front = node->inner_.left(this->nodes_);
-        const KDNode<Triangle>* back  = node->inner_.right(this->nodes_);
+        const KDNode<Triangle>* front = &this->nodes_[node->inner_.left()];
+        const KDNode<Triangle>* back  = &this->nodes_[node->inner_.right()];
         if (ray.dir_[k] < 0) std::swap(front,back); 
 
         if (d <= tnear)

@@ -107,9 +107,9 @@ namespace tomo
     box.split(node->inner_.splitPos(),node->inner_.axis(),boxLeft,boxRight);
     
     if (nodeDistance(pointSet.center(),boxLeft) < pointSet.maxDist()) 
-      collect(node->inner_.left(nodes_),boxLeft,pointSet);
+      collect(&nodes_[node->inner_.left()],boxLeft,pointSet);
     if (nodeDistance(pointSet.center(),boxRight) < pointSet.maxDist())
-      collect(node->inner_.right(nodes_),boxRight,pointSet);
+      collect(&nodes_[node->inner_.right()],boxRight,pointSet);
   }
 
   float PointCloud::nodeDistance(const Point3f& p, const BoundingBox& box) const

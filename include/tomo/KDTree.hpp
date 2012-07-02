@@ -23,21 +23,19 @@ namespace tomo
       inline void axis(Axis _axis) { data_  |= ((~3) | (_axis & 3)); }
 
       /// Insert children
-      inline void insert(NodeCont& _nodes, KDNode*& _left, KDNode*& _right)
+      inline void insert(NodeCont& _nodes, unsigned& _left, unsigned& _right)
       {
         data_ = (0x7FFFFFFC & (_nodes.size() << 2)) | (1 << 31);
         _nodes.push_back(KDNode());
         _nodes.push_back(KDNode());
-        _left = &_nodes.at(_nodes.size()-2);
-        _right = &_nodes.at(_nodes.size()-1);
+        _left = _nodes.size()-2;
+        _right = _nodes.size()-1;
 
 //        LOG_MSG << fmt("% %") % ptrdiff_t(_right - _left) % sizeof(KDNode);
       }
 
-      inline const KDNode* left(const NodeCont& _nodes) const { return &_nodes[(data_ & 0x7FFFFFFC) >> 2]; }
-      inline const KDNode* right(const NodeCont& _nodes) const { return &_nodes[((data_ & 0x7FFFFFFC) >> 2) + 1]; }
-      inline KDNode* left(NodeCont& _nodes) { return &_nodes[(data_ & 0x7FFFFFFC) >> 2]; }
-      inline KDNode* right(NodeCont& _nodes) { return &_nodes[((data_ & 0x7FFFFFFC) >> 2) + 1]; }
+      inline unsigned left() const { return (data_ & 0x7FFFFFFC) >> 2; }
+      inline unsigned right() const { return ((data_ & 0x7FFFFFFC) >> 2) + 1; }
 
       TBD_PROPERTY(float,splitPos);
 
@@ -57,9 +55,9 @@ namespace tomo
         // Make leaf node
         offset_ = _dest.size();
         size_ = _src.size();
-        //_dest.resize(offset_ + size_);
+        _dest.resize(offset_ + size_);
         for (unsigned i = 0; i < size_; i++)
-          _dest.push_back(_src[i]);
+          _dest[offset_+i] = _src[i];
       }
 
       inline PrimCont primitives(const PrimCont& _primLists) const
@@ -102,7 +100,9 @@ namespace tomo
     {
       Bounds bounds_;
       PrimCont primLists_;
-      Node* node_;
+      unsigned node_;
+
+      Node* node(NodeCont& _nodes) { return &_nodes[node_]; }
     };
 
     const Node* root() const { return &nodes_[0]; }
@@ -121,7 +121,7 @@ namespace tomo
       // Initialize root node
       NodeStackElement _node;
       _node.bounds_ = _bounds;  // Object's bounds
-      _node.node_ = &nodes_[0];
+      _node.node_ = 0;
 
       // Init primitive lists
       _node.primLists_.reserve(_objs.size());
@@ -137,7 +137,7 @@ namespace tomo
           _right.primLists_.reserve(_node.primLists_.size());
 
           // Setup node
-          NodeInner& _inner = _node.node_->inner_;
+          NodeInner& _inner = _node.node(nodes_)->inner_;
           _inner.axis(_node.bounds_.dominantAxis());
           _inner.splitPos(splitPos(_node.primLists_,_inner,_node.bounds_));          
           _inner.insert(nodes_,_node.node_,_right.node_);
@@ -162,7 +162,7 @@ namespace tomo
             // Optimization: We can use the original root node array for storing left node primitive pointers
             if (_result.left()) 
             {  
-              _node.primLists_[_leftNodeCount]; 
+              _node.primLists_[_leftNodeCount] = _prim; 
               _leftNodeCount++; 
             }
           }
@@ -172,10 +172,14 @@ namespace tomo
         }
 
         // Make leaf node
-        _node.node_->leaf_.insert(_node.primLists_,primLists_);
-         
-        _node = _stack.front();
-        if (!_stack.empty()) _stack.pop_back(); else return;
+        _node.node(nodes_)->leaf_.insert(_node.primLists_,primLists_);
+        
+        if (!_stack.empty())
+        {
+            _node = _stack.front();
+          _stack.pop_back();
+        } else
+          return;
       }
     }
 
