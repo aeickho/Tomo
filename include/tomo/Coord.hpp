@@ -18,8 +18,14 @@ namespace tomo
           set(i,j,(i == j) ? 1.0f : 0.0f);
     };
 
-      void  set(int _x, int _y, float v) { c[_x*4+_y] = v; } 
-      float get(int _x, int _y) { return c[_x*4+_y]; }
+    void  set(int _x, int _y, float v)
+    {
+      c[_x*4+_y] = v;
+    }
+    float get(int _x, int _y)
+    {
+      return c[_x*4+_y];
+    }
 
     void  print();
 
@@ -37,67 +43,158 @@ namespace tomo
    * @tparam DIMENSIONS Number of dimensions
    * @tparam COORD_TYPE Coordinate type
    */
-  template<int DIMENSIONS, typename COORD_TYPE = DEFAULT_TYPE>
+  template<int DIMENSIONS, typename Scalar = DEFAULT_TYPE>
   struct Coords
   {
     /// Coordinate value type
-    typedef COORD_TYPE CoordType;
+    typedef Scalar value_type;
 
     /// Base constructor, all values are initially set to zero
-    Coords() { TOMO_FOREACH_DIM a_[i] = 0; }
-    Coords( Coords& _coords ) { TOMO_FOREACH_DIM a_[i] = _coords[i]; }
-    Coords( const Coords& _coords ) { TOMO_FOREACH_DIM a_[i] = _coords[i]; }
-    Coords( CoordType _x, CoordType _y) { this->operator()(_x,_y); }
-    Coords( CoordType _x, CoordType _y, CoordType _z) { this->operator()(_x,_y,_z); }
-    Coords( CoordType _x, CoordType _y, CoordType _z, CoordType _w) { this->operator()(_x,_y,_z,_w); }
-    /// add a dimension to existing vector
-    Coords( const Coords<DIMENSIONS-1,COORD_TYPE>& _coords, CoordType _c )
+    Coords()
     {
-      TOMO_FOREACH_DIM a_[i] = (i<DIMENSIONS-1)?_coords[i]:_c;
+      TOMO_FOREACH_DIM a_[i] = 0;
+    }
+    Coords( Coords& _coords )
+    {
+      TOMO_FOREACH_DIM a_[i] = _coords[i];
+    }
+    Coords( const Coords& _coords )
+    {
+      TOMO_FOREACH_DIM a_[i] = _coords[i];
+    }
+    Coords( value_type _x, value_type _y)
+    {
+      this->operator()(_x,_y);
+    }
+    Coords( value_type _x, value_type _y, value_type _z)
+    {
+      this->operator()(_x,_y,_z);
+    }
+    Coords( value_type _x, value_type _y, value_type _z, value_type _w)
+    {
+      this->operator()(_x,_y,_z,_w);
     }
 
-    inline void operator()(const Coords _coords) {TOMO_FOREACH_DIM a_[i] = _coords[i]; }
-    inline void operator()(CoordType _x, CoordType _y) { x(_x); y(_y); }
-    inline void operator()(CoordType _x, CoordType _y, CoordType _z) { x(_x); y(_y); z(_z); }
-    inline void operator()(CoordType _x, CoordType _y, CoordType _z, CoordType _w) { x(_x); y(_y); z(_z); w(_w); }
+    inline void operator()(const Coords _coords)
+    {
+      TOMO_FOREACH_DIM a_[i] = _coords[i];
+    }
+    inline void operator()(value_type _x, value_type _y)
+    {
+      x(_x);
+      y(_y);
+    }
+    inline void operator()(value_type _x, value_type _y, value_type _z)
+    {
+      x(_x);
+      y(_y);
+      z(_z);
+    }
+    inline void operator()(value_type _x, value_type _y, value_type _z, value_type _w)
+    {
+      x(_x);
+      y(_y);
+      z(_z);
+      w(_w);
+    }
 
     /* @brief Return pointer */
-    CoordType* p() { return a_; }
+    value_type* p()
+    {
+      return a_;
+    }
     /* @brief Return const pointer */
-    const CoordType* p() const { return a_; }
+    const value_type* p() const
+    {
+      return a_;
+    }
 
     /// Methods to return coordinate values
-    inline CoordType x() const { BOOST_STATIC_ASSERT(DIMENSIONS >= 1); return a_[0]; }
-    inline CoordType y() const { BOOST_STATIC_ASSERT(DIMENSIONS >= 2); return a_[1]; }
-    inline CoordType z() const { BOOST_STATIC_ASSERT(DIMENSIONS >= 3); return a_[2]; }
-    inline CoordType w() const { BOOST_STATIC_ASSERT(DIMENSIONS >= 4); return a_[3]; }
-    
-    /// Methods to set coordinate values 
-    inline void x(const CoordType _x) { BOOST_STATIC_ASSERT(DIMENSIONS >= 1); a_[0] = _x; }
-    inline void y(const CoordType _y) { BOOST_STATIC_ASSERT(DIMENSIONS >= 2); a_[1] = _y; }
-    inline void z(const CoordType _z) { BOOST_STATIC_ASSERT(DIMENSIONS >= 3); a_[2] = _z; }
-    inline void w(const CoordType _w) { BOOST_STATIC_ASSERT(DIMENSIONS >= 4); a_[3] = _w; }
+    inline value_type x() const
+    {
+      BOOST_STATIC_ASSERT(DIMENSIONS >= 1);
+      return a_[0];
+    }
+    inline value_type y() const
+    {
+      BOOST_STATIC_ASSERT(DIMENSIONS >= 2);
+      return a_[1];
+    }
+    inline value_type z() const
+    {
+      BOOST_STATIC_ASSERT(DIMENSIONS >= 3);
+      return a_[2];
+    }
+    inline value_type w() const
+    {
+      BOOST_STATIC_ASSERT(DIMENSIONS >= 4);
+      return a_[3];
+    }
+
+    /// Methods to set coordinate values
+    inline void x(const value_type _x)
+    {
+      BOOST_STATIC_ASSERT(DIMENSIONS >= 1);
+      a_[0] = _x;
+    }
+    inline void y(const value_type _y)
+    {
+      BOOST_STATIC_ASSERT(DIMENSIONS >= 2);
+      a_[1] = _y;
+    }
+    inline void z(const value_type _z)
+    {
+      BOOST_STATIC_ASSERT(DIMENSIONS >= 3);
+      a_[2] = _z;
+    }
+    inline void w(const value_type _w)
+    {
+      BOOST_STATIC_ASSERT(DIMENSIONS >= 4);
+      a_[3] = _w;
+    }
 
     /// Methods to access coordinate value in a certain dimension
-    CoordType& operator[] (int i) { return a_[i]; }
-    const CoordType& operator[] (int i) const { return a_[i]; }
+    value_type& operator[] (int i)
+    {
+      return a_[i];
+    }
+    const value_type& operator[] (int i) const
+    {
+      return a_[i];
+    }
 
-    Coords operator += ( Coords _c ) { TOMO_FOREACH_DIM a_[i] += _c[i]; return *this; }
-    Coords operator -= ( Coords _c ) { TOMO_FOREACH_DIM a_[i] -= _c[i]; return *this; } 
+    void operator += ( const Coords _c )
+    {
+      TOMO_FOREACH_DIM a_[i] += _c[i];
+    }
+    void operator -= ( const Coords _c )
+    {
+      TOMO_FOREACH_DIM a_[i] -= _c[i];
+    }
+
+    /// size/dimension of the vector
+    static const size_t size_ = DIMENSIONS;
+
+    /// size/dimension of the vector
+    static size_t size()
+    {
+      return DIMENSIONS;
+    }
+
     operator std::string() const
     {
-      std::stringstream ss;
-      ss << "(" << a_[0];
-      for( int i=1; i<DIMENSIONS; i++ )
-        ss << "," << a_[i];
-      ss << ")";
+      std::stringstream ss; 
+      ss << "(";
+      TOMO_FOREACH_DIM 
+        ss << a_[i] << ((i < DIMENSIONS) ? "," : ")");
       return ss.str();
     }
 
   protected:
     /// Array to store coordinate values
-    CoordType a_[DIMENSIONS];
+    Scalar a_[DIMENSIONS];
   };
+
   typedef enum { X,Y,Z,W } Axis;
 
   //typedef Matrix<float> Matrix4f;
@@ -105,7 +202,7 @@ namespace tomo
 #define COORDS(C) C.x(),C.y(),C.z()
 }
 
-template<int DIMENSIONS, class COORD> 
+template<int DIMENSIONS, class COORD>
 inline fmt operator%( fmt _fmt, const tomo::Coords<DIMENSIONS,COORD>& _coords)
 {
   return _fmt % (std::string)_coords;

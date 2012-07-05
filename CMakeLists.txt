@@ -20,14 +20,14 @@ SET (CMAKE_PROJECT_DOC_DIR
 FIND_PACKAGE(Qt4 REQUIRED)
 
 # include directories
-INCLUDE_DIRECTORIES(. ${CMAKE_CURRENT_BINARY_DIR} ./include ./TbdLib/include)
+INCLUDE_DIRECTORIES(. ${CMAKE_CURRENT_BINARY_DIR} ./include ./TbdLib/include ./OpenMesh/src )
 
 # tomo library
 AUX_SOURCE_DIRECTORY(./src/lib tomo_src)
 ADD_LIBRARY(tomo STATIC ${tomo_src})
 
 # link with...
-TARGET_LINK_LIBRARIES(tomo glut GLU GL)
+TARGET_LINK_LIBRARIES(tomo glut GLU GL OpenMeshCore )
 
 # qt4
 INCLUDE(${QT_USE_FILE})

@@ -28,7 +28,7 @@ GLWidget::GLWidget(QWidget *parent) :
 }
 void GLWidget::initializeGL()
 {
-  mesh_.read("yoda.off");
+  mesh_.read("yoda.stl");
   mesh_.initDL();
 
   // setup camera

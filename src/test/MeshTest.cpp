@@ -54,7 +54,7 @@ int main(int ac, char* av[])
 
   LOG->level(2);
 
-  tomo::TriangleMesh mesh;
+  tomo::Mesh mesh;
   mesh.read(inputFile);
 /*
   cout << endl;

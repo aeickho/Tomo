@@ -11,18 +11,18 @@ namespace tomo
     typedef COLOR Color;
     /// coordinate type from tracker
     typedef typename Tracker::Point Point;
-    typedef typename Tracker::Point::Coord Coord;
+    typedef typename Tracker::Point::Scalar Scalar;
     /// point type from tracker
-    typedef tomo::Point<4,Coord> Point4;
+    typedef tomo::Point<4,Scalar> Point4;
 
     Light() {}
     Light( const Tracker& _tracker,
         const Color& _ambient, 
         const Color& _diffuse, 
         const Color& _specular, 
-        const Coord _intensity, 
-        Coord _shadows, 
-        Coord _radius,
+        const Scalar _intensity, 
+        Scalar _shadows, 
+        Scalar _radius,
         bool _positional=true) :
       Tracker(_tracker),
       ambient_(_ambient),
@@ -43,9 +43,9 @@ namespace tomo
     TBD_PROPERTY_REF(Color,ambient);
     TBD_PROPERTY_REF(Color,diffuse);
     TBD_PROPERTY_REF(Color,specular);
-    TBD_PROPERTY(Coord,intensity);
-    TBD_PROPERTY(Coord,shadows);
-    TBD_PROPERTY(Coord,radius);
+    TBD_PROPERTY(Scalar,intensity);
+    TBD_PROPERTY(Scalar,shadows);
+    TBD_PROPERTY(Scalar,radius);
     TBD_PROPERTY(bool,positional);
   };
 }

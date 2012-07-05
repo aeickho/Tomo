@@ -15,18 +15,18 @@ template<class COORD> void glRotate(COORD _phi, COORD _theta)
 }
 
 /** @brief rotate in the given direction
- * @tparam VEC point type including POINT::Coord as coord type
+ * @tparam VEC point type including POINT::Scalar as coord type
  * @param _direction vector which points in the desired direction
  */
 template<class VEC> void glRotate(const VEC& _direction)
 {
   // get coordinate type from vector type
-  typedef typename VEC::Coord Coord;
+  typedef typename VEC::Scalar Scalar;
   // pre-calculate vector length
-  Coord length = _direction.length();
+  Scalar length = _direction.length();
   // calculate phi and theta (@link http://de.wikipedia.org/wiki/Kugelkoordinaten#.C3.9Cbliche_Konvention)
-  Coord phi = tomo::rad2deg( atan2(_direction.y(), _direction.x()) );
-  Coord theta = (0.0 != length) ? tomo::rad2deg(acos( (_direction.z() / length) )) : 0.0;
+  Scalar phi = tomo::rad2deg( atan2(_direction.y(), _direction.x()) );
+  Scalar theta = (0.0 != length) ? tomo::rad2deg(acos( (_direction.z() / length) )) : 0.0;
   // rotate GL world
   glRotate(phi,theta);
 }
@@ -252,7 +252,7 @@ template<class LIGHT> void drawLight( LIGHT _light)
 }
 
 
-template<class TRACKER, class COLOR> void drawTracker( const std::string& _name, TRACKER _tracker, const COLOR& _color, bool _drawLabel, bool _drawCoords, typename TRACKER::Coord _width=1.0)
+template<class TRACKER, class COLOR> void drawTracker( const std::string& _name, TRACKER _tracker, const COLOR& _color, bool _drawLabel, bool _drawCoords, typename TRACKER::Scalar _width=1.0)
 {
   glMatrixMode(GL_MODELVIEW);
   glDisable(GL_LIGHTING);
@@ -261,22 +261,55 @@ template<class TRACKER, class COLOR> void drawTracker( const std::string& _name,
   glEnable(GL_DEPTH_TEST);
 }
 
-inline void drawObject( tomo::TriangleMesh& mesh )
+inline void drawObject( tomo::Mesh& _mesh )
 {
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   {
-    tomo::Vec3f c = mesh.bounds().center();
+    tomo::Point3f c = _mesh.bounds().center();
     glTranslatef(-c.x(),-c.y(),0.0);
     glColor3f(0.8,0.8,0.8);
-    glBegin(GL_TRIANGLES);
-    BOOST_FOREACH( const tomo::Triangle& tri, mesh.triangles() )
+
+     tomo::Mesh::ConstFaceIter    fIt(_mesh.faces_begin()),
+             fEnd(_mesh.faces_end());
+     tomo::Mesh::ConstFaceVertexIter fvIt;
+
+    switch (_mesh.shadeMode())
     {
-      glNormal3f(COORDS(tri.normal()));
-      for (int i  = 0; i < 3; i++)
-        glVertex3fv(tri.v[i].p());
-    }
-    glEnd();
+    case tomo::Mesh::SM_FLAT:
+      glBegin(GL_TRIANGLES);
+      for (; fIt!=fEnd; ++fIt)
+      {
+        fvIt = _mesh.cfv_iter(fIt.handle());
+        glNormal3fv(&_mesh.normal(fIt)[0]);
+
+        glVertex3fv( &_mesh.point(fvIt)[0] );
+        ++fvIt;
+        glVertex3fv( &_mesh.point(fvIt)[0] );
+        ++fvIt;
+        glVertex3fv( &_mesh.point(fvIt)[0] );
+      }
+      glEnd();
+      break;
+
+    case tomo::Mesh::SM_GOURAUD:
+      glBegin(GL_TRIANGLES);
+      for (; fIt!=fEnd; ++fIt)
+      {
+        fvIt = _mesh.cfv_iter(fIt.handle());
+
+        glNormal3fv( &_mesh.normal(fvIt)[0] );
+        glVertex3fv( &_mesh.point(fvIt)[0] );
+        ++fvIt;
+        glNormal3fv( &_mesh.normal(fvIt)[0] );
+        glVertex3fv( &_mesh.point(fvIt)[0] );
+        ++fvIt;
+        glNormal3fv( &_mesh.normal(fvIt)[0] );
+        glVertex3fv( &_mesh.point(fvIt)[0] );
+      }
+      glEnd();
+      break;
+    } 
   }
   glPopMatrix();
 }

@@ -11,18 +11,38 @@ using namespace std;
 
 namespace tomo
 {
-  void TriangleMesh::read(const string& filename)
+  void Mesh::read(const string& _filename)
   {
-    OFFReader off;
-    Vertices vertices;
-    off.read(filename,&vertices,&objs_);
-    calcBoundingBox();
-    build(objs_,boundingBox_);
+    if (!OpenMesh::IO::read_mesh(*this, _filename))
+    {
+      LOG_ERR << "Read error.";
+      return;
+    }
+
+    LOG_MSG << fmt("%") % n_vertices();
+    update_face_normals();
+    update_vertex_normals();
+    
+    calcBounds();
+//    build(objs_,boundingBox_);
   }
 
-  std::pair<TriangleMesh,TriangleMesh> TriangleMesh::split(const Plane& splitPlane)
+  void Mesh::calcBounds()
   {
-    std::pair<TriangleMesh,TriangleMesh> halves;
+    Mesh::VertexIter vIt(vertices_begin()), vEnd(vertices_end());
+
+    for (; vIt != vEnd; ++vIt)
+    {
+      Point3f _p = point(vIt);
+      Bounds _bounds(_p,_p);
+      bounds_.extend(_bounds);
+    }
+  }
+
+  std::pair<Mesh,Mesh> Mesh::split(const Plane& splitPlane)
+  {
+    /*
+    std::pair<Mesh,Mesh> halves;
     
     BOOST_FOREACH ( Triangle& tri, objs_ )
       splitTriangle(tri,splitPlane,halves);
@@ -31,13 +51,15 @@ namespace tomo
     halves.first.build(halves.first.objs_,halves.first.boundingBox_);    
     halves.second.calcBoundingBox();
     halves.second.build(halves.second.objs_,halves.first.boundingBox_);
-
-    return halves;
+*/
+    return std::pair<Mesh,Mesh>();
   }
 
-  void TriangleMesh::splitTriangle(const Triangle& tri, const Plane& plane, 
-                std::pair<TriangleMesh,TriangleMesh>& _halves)
+  void Mesh::splitTriangle(const Triangle& tri, const Plane& plane, 
+                std::pair<Mesh,Mesh>& _halves)
   {
+    // TODO To be adapted for OpenMesh
+    /* 
     vector<Triangle> triangles;
     Point3f V[3]; 
     for (int i = 0; i < 3; i++)
@@ -73,7 +95,7 @@ namespace tomo
 
     q->push_back(Triangle(V[k],iPoint[0],iPoint[1],tri.normal()));
     r->push_back(Triangle(V[u],V[v],iPoint[0],tri.normal()));
-    r->push_back(Triangle(V[u],iPoint[0],iPoint[1],tri.normal()));
+    r->push_back(Triangle(V[u],iPoint[0],iPoint[1],tri.normal()));*/
   }
 
 }

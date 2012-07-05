@@ -81,7 +81,6 @@ namespace tomo
   template <typename PRIMITIVE, unsigned int PRIMITIVES_PER_NODE = 10, unsigned int MAX_DEPTH = 16> 
   struct KDTree
   {
-  protected:
     /// Node type
     typedef KDNode<PRIMITIVE> Node;
     typedef typename KDNode<PRIMITIVE>::Inner NodeInner;
@@ -108,6 +107,54 @@ namespace tomo
 
     const Node* root() const { return &nodes_[0]; }
     Node* root() { return &nodes_[0]; }
+
+    /** @brief Traverses kd-tree along a ray recursively
+     * @param _ray        Ray which traverses KDTree
+     * @param _node       Current node
+     * @param _tnear      Near ray section
+     * @param _tfar       Far ray section
+     * @param _found      Flag which determines if a ray was found
+     * @param _normal     Normal of intersecting triangle
+     * @param _texCoords  Texture coordinates of intersecting triangle
+     */
+    float recKDTreeTraverse(Ray& ray, const Node* node, float tnear, float tfar, bool& found,
+        Vec3f* _normal = NULL, Point2f* _texCoords = NULL) const
+    {
+      if (node->isLeaf())
+      {
+        typename PrimCont::iterator it;
+        PrimCont _primList = node->leaf_.primitives(this->primLists_);
+        
+        for (it = _primList.begin() ; it != _primList.end() ; ++it)
+        {
+       //   PRIMITIVE* _prim = (*it);
+       //  if (_prim != ray.primitive_) found |= (_prim->intersect(ray,_normal,_texCoords));
+        }
+        return ray.tMax_;
+      }
+
+      int k = node->inner_.axis();
+      float d = (node->inner_.splitPos() - ray.org_[k]) / ray.dir_[k];
+
+      const Node* front = &this->nodes_[node->inner_.left()];
+      const Node* back  = &this->nodes_[node->inner_.right()];
+      if (ray.dir_[k] < 0) std::swap(front,back); 
+
+      if (d <= tnear)
+      {
+        recKDTreeTraverse(ray,back,tnear,tfar,found);
+      } else
+        if (d >= tfar)
+        {
+          recKDTreeTraverse(ray,front,tnear,tfar,found);
+        } else
+        {
+          float t_hit = recKDTreeTraverse(ray,front,tnear,d,found);
+          if (t_hit <= d) return t_hit;
+          return recKDTreeTraverse(ray,back,d,tfar,found,_normal,_texCoords);
+        }
+      return INF;
+    }
 
     void build(std::vector<PRIMITIVE>& _objs, const Bounds& _bounds)
     {

@@ -13,43 +13,28 @@ namespace tomo
    * @tparam DIMENSIONS Number of dimensions
    * @tparam COORD_TYPE Coordinate type
    */
-  template<int DIMENSIONS, typename COORD = DEFAULT_TYPE>
-  struct Vec : public Coords<DIMENSIONS,COORD>
+  template<int DIMENSIONS, typename SCALAR = DEFAULT_TYPE>  
+  struct Vec : public Coords<DIMENSIONS,SCALAR>
   {
     /// Coordinate value type
-    typedef COORD Coord;
+    typedef SCALAR Scalar;
+    typedef Scalar value_type;
+
     /// Type of base class
-    typedef Coords<DIMENSIONS,COORD> Coords;
+    typedef Coords<DIMENSIONS,Scalar> _Coords;
+    typedef Vec<DIMENSIONS,Scalar> vector_type;
 
-    Vec() : Coords() {}
-    Vec( Vec& v ) : Coords( v ) {}
-    Vec( const Vec& v ) : Coords( v ) {}
-    Vec( const Coords& c ) : Coords( c ) {}
-    Vec( Coord _x, Coord _y ) : Coords(_x,_y) { }
-    Vec( Coord _x, Coord _y, Coord _z) : Coords(_x,_y,_z) { }
-    Vec( Coord _x, Coord _y, Coord _z, Coord _w ) : Coords(_x,_y,_z,_w) { }
-    Vec( const tomo::Coords<DIMENSIONS-1,COORD>& _coords, Coord _c=1.0 ) : Coords(_coords, _c) {}
+    Vec() : _Coords() {}
+    Vec( Vec& v ) : _Coords( v ) {}
+    Vec( const Vec& v ) : _Coords( v ) {}
+    Vec( value_type _x, value_type _y ) : _Coords(_x,_y) { }
+    Vec( value_type _x, value_type _y, value_type _z) : _Coords(_x,_y,_z) { }
+    Vec( value_type _x, value_type _y, value_type _z, value_type _w ) : _Coords(_x,_y,_z,_w) { }
 
-    /// @todo [fightling] is length correct when w() != 1.0 ??
-    Coord sqrLength() const
-    {
-      return dot(*this,*this);
-    }
-    Coord	length() const
-    {
-      return sqrt( sqrLength() );
-    }
-    void normalize()
-    {
-      Coord l = length();
-      if (l>0.0f) TOMO_FOREACH_DIM this->a_[i] /= l;
-    }
-    Vec normalized() const
-    {
-      Vec v(*this);
-      v.normalize();
-      return v;
-    }
+    Scalar  sqrLength()   const     { return dot(*this,*this); }
+    Scalar	 length() 		const	  	{ return    sqrt( sqrLength() ); }
+    vector_type& normalize() { Scalar l = length(); TOMO_FOREACH_DIM this->a_[i] /= l; return *this; }
+    vector_type 	     normalized() const		{ return *this * ( 1 / length() ); }
 
     /** @brief Calculates cross product by this and another Vec
      * @param _left first vector
@@ -63,71 +48,42 @@ namespace tomo
       return Vec(_left.y() * _right.z() - _left.z() * _right.y(),
                  _left.z() * _right.x() - _left.x() * _right.z(),
                  _left.x() * _right.y() - _left.y() * _right.x() );
-    }
-
+    }      
+    
     /** @brief Calculates dot product by this and another Vec
      * @param _left first vector
      * @param _right second vector
      * @returns Coord value
      **/
-    friend Coord dot( const Vec& _left, const Vec& _right)
+    friend value_type dot( const Vec& _left, const Vec& _right)
     {
-      Coord sum = 0;
+      value_type sum = 0;
       TOMO_FOREACH_DIM 
         sum += _left[i] * _right[i];
       return sum;
     }
 
-    /// Vector operations
-    Vec operator- () const
-    {
-      Vec v(*this);
-      TOMO_FOREACH_DIM v[i] = -v[i];
-      return v;
-    }
-    void operator *= ( Coord f )
-    {
-      TOMO_FOREACH_DIM this->a_[i] *= f;
-    }
+    vector_type vectorize(const Scalar& _s) { TOMO_FOREACH_DIM _Coords::a_[i] = _s; return *this; }
 
-    friend Vec      operator*( const Vec& a, const Coord f )
-    {
-      Vec v(a);
-      TOMO_FOREACH_DIM v[i] *= f;
+    /// Vector operations
+    Vec operator- () const { Vec v(*this);  TOMO_FOREACH_DIM v[i] = -v[i];  return v; }
+    void operator *= ( value_type f ) 	{  TOMO_FOREACH_DIM this->a_[i] *= f; }
+
+    friend Vec      operator*( const Vec& a, const value_type f ) { Vec v(a); TOMO_FOREACH_DIM v[i] *= f; return v; }
+    friend Vec      operator*( const value_type f, const Vec& a ) { return a*f; }
+    friend Vec      operator*( const Vec& a, const Vec& b) { Vec v; TOMO_FOREACH_DIM v[i] = a[i]*b[i]; return v; } 
+    friend Vec      operator-( const Vec& a, const Vec& b) { Vec v; TOMO_FOREACH_DIM v[i] = a[i]-b[i]; return v; }
+    friend Vec      operator+( const Vec& a, const Vec& b) { Vec v; TOMO_FOREACH_DIM v[i] = a[i]+b[i]; return v; }
+/*
+    friend Vec      operator*( const Vec& a, const Matrix<DIMENSIONS+1,value_type>& M ) 
+    { 
+      vector_type v;
+      v.x = a.x * M.get(0,0) + a.y*M.get(1,0) + a.z*M.get(2,0) + M.get(3,0);
+      v.y = a.x * M.get(0,1) + a.y*M.get(1,1) + a.z*M.get(2,1) + M.get(3,1);
+      v.z = a.x * M.get(0,2) + a.y*M.get(1,2) + a.z*M.get(2,2) + M.get(3,2);
       return v;
     }
-    friend Vec      operator*( const Coord f, const Vec& a )
-    {
-      return a*f;
-    }
-    friend Vec      operator*( const Vec& a, const Vec& b)
-    {
-      Vec v;
-      TOMO_FOREACH_DIM v[i] = a[i]*b[i];
-      return v;
-    }
-    friend Vec      operator-( const Vec& a, const Vec& b)
-    {
-      Vec v;
-      TOMO_FOREACH_DIM v[i] = a[i]-b[i];
-      return v;
-    }
-    friend Vec      operator+( const Vec& a, const Vec& b)
-    {
-      Vec v;
-      TOMO_FOREACH_DIM v[i] = a[i]+b[i];
-      return v;
-    }
-    /*
-        friend Vec      operator*( const Vec& a, const Matrix<DIMENSIONS+1,Coord>& M )
-        {
-          _Vec v;
-          v.x = a.x * M.get(0,0) + a.y*M.get(1,0) + a.z*M.get(2,0) + M.get(3,0);
-          v.y = a.x * M.get(0,1) + a.y*M.get(1,1) + a.z*M.get(2,1) + M.get(3,1);
-          v.z = a.x * M.get(0,2) + a.y*M.get(1,2) + a.z*M.get(2,2) + M.get(3,2);
-          return v;
-        }
-    */
+*/
   };
 
   typedef Vec<2,int> Vec2i;

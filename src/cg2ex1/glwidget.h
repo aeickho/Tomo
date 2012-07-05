@@ -76,7 +76,7 @@ protected:
   void paintSelection();
 public:
   /// @todo replace with an vector<tomo::SceneObjects>
-  DisplayListed<tomo::TriangleMesh> mesh_;
+  DisplayListed<tomo::Mesh> mesh_;
   /// @brief selection parameters
   float pointSize_;
   float radius_;
