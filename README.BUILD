@@ -7,11 +7,23 @@ Requirements:
 sudo apt-get install libboost-all-dev
 sudo apt-get install libgl-dev
 sudo apt-get install freeglut3-dev
+sudo apt-get install libmagick++-dev
+
+Clone git repository 'TbdLib' from 
+git@github.com:patgithub/TbdLib.git
+
+Clone git repository 'OpenMesh' from 
+git@github.com:WilstonOreo/OpenMesh.git
 
 Compiling with clang
 --------------------
 
-cmake -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ . && make
+Run the bootstrap script 
+./bootstrap.sh
 
+Afterwards, you can run "make" normally.
+
+Update your make files with 
+cmake . 
 
 

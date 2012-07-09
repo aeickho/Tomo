@@ -106,8 +106,6 @@ namespace tomo
                                   _Cit = _slices.get(C.z()),
                                   it;
 
-   //   LOG_MSG << fmt("% % %") % A.z() % B.z() % C.z(); 
-
       Slice* _sliceA = const_cast<Slice*>(&(*_Ait));
       Slice* _sliceB = const_cast<Slice*>(&(*_Bit));
       Slice* _sliceC = const_cast<Slice*>(&(*_Cit));
@@ -126,21 +124,14 @@ namespace tomo
       if (_sliceB->posZ_ > _sliceC->posZ_) { std::swap(_sliceB,_sliceC); std::swap(_Bit,_Cit); std::swap(B,C); }
       if (_sliceA->posZ_ > _sliceB->posZ_) { std::swap(_sliceA,_sliceB); std::swap(_Ait,_Bit); std::swap(A,B); }
 
-     // LOG_MSG << fmt("% % %") % A.z() % B.z() % C.z(); 
-
       Vec3f b = B - A;
       Vec3f c = C - A;
       Vec3f d = C - B;
       Vec3f N = normal();
-      //++_Cit;
 
-      int i = 0;
       for (it = _Ait ; it != _Cit && it != _slices.end() ; ++it)
       {
         Slice* _slice = const_cast<Slice*>(&(*it));
-     //   LOG_MSG << fmt("%, % % ") % i % _slice->posZ_ % _slice->lineSegments_.size();
-        i++;
-      //  LOG_MSG << _slice->posZ_;
 
         float _ratioR = (_slice->posZ_ - A.z()) / c.z();
         Vec3f r(c.x()*_ratioR,c.y()*_ratioR,_slice->posZ_);
