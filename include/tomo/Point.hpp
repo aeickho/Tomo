@@ -55,7 +55,7 @@ namespace tomo
       return Point() - *this;
     }
     /* @brief Transform point into a vector */
-    vector_type vec()
+    vector_type vec() const
     {
       vector_type v;
       TOMO_FOREACH_DIM v[i] = this->a_[i];

@@ -95,6 +95,8 @@ namespace tomo
 
       std::set<Slice,CompareSlice> slices_;
   public:
+    Slices() {}
+
     Slices(unsigned _nSlices, Bounds _bounds)
     {
       make(_nSlices,_bounds);

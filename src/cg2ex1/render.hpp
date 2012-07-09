@@ -370,6 +370,58 @@ inline void drawObject( tomo::Mesh& _mesh )
   glPopMatrix();
 }
 
+inline void drawSlices( tomo::Slices& _slices, tomo::Bounds _bounds )
+{
+  std::vector<const tomo::Slice*> _allSlices = _slices.get();
+
+  ///@todo Put this into Slices class as member 
+  float _sliceHeight = _bounds.size().z() / (_allSlices.size()-1);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  {
+      tomo::Point3f c = _bounds.center();
+    glTranslatef(-c.x(),-c.y(),0.0);
+    /// Note: Could also draw lines here but quads are cooler :)
+    glColor3f(0,1,0.8);
+    BOOST_FOREACH ( const tomo::Slice* _slice, _allSlices) 
+    {
+      BOOST_FOREACH ( const tomo::LineSegment& _seg, _slice->lineSegments_ )
+      {
+        if (_seg.normal_.length() == 0.0) continue;
+
+        tomo::Point2f _p0 = _slice->anchor_ + _seg.p0_.vec() * _slice->size_ ;
+        tomo::Point2f _p1 = _slice->anchor_ + _seg.p1_.vec() * _slice->size_ ;
+
+    glBegin(GL_QUADS);
+        glNormal3f(_seg.normal_.x(),_seg.normal_.y(),0);
+        glVertex3f(_p0.x(),_p0.y(),_slice->posZ_);
+        glVertex3f(_p1.x(),_p1.y(),_slice->posZ_);
+        glVertex3f(_p1.x(),_p1.y(),_slice->posZ_ + _sliceHeight);
+        glVertex3f(_p0.x(),_p0.y(),_slice->posZ_ + _sliceHeight);
+    glEnd();
+
+            _p1 = _slice->anchor_ + _seg.p0_.vec() * _slice->size_ ;
+        _p0 = _slice->anchor_ + _seg.p1_.vec() * _slice->size_ ;
+
+    glBegin(GL_QUADS);
+        glNormal3f(_seg.normal_.x(),_seg.normal_.y(),0);
+        glVertex3f(_p0.x(),_p0.y(),_slice->posZ_);
+        glVertex3f(_p1.x(),_p1.y(),_slice->posZ_);
+        glVertex3f(_p1.x(),_p1.y(),_slice->posZ_ + _sliceHeight);
+        glVertex3f(_p0.x(),_p0.y(),_slice->posZ_ + _sliceHeight);
+    glEnd();
+
+
+
+      }
+    }
+  }
+  glPopMatrix();
+  
+
+}
+
 inline void drawKDTreeNode( const tomo::Mesh& _mesh, unsigned nodeIndex, tomo::Bounds _bounds, int _depth)
 {
   if (_mesh.nodes_[nodeIndex].isLeaf() || _depth > 12) { drawBounds(_bounds,tomo::Color4f(1.0,1.0,0.0)); return; }

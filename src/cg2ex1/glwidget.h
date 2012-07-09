@@ -9,6 +9,7 @@
 #include "tomo/Color.hpp"
 #include "tomo/PolarVec.hpp"
 #include "tomo/PrintBounds.hpp"
+#include "tomo/Slice.hpp"
 #include <QtOpenGL/QGLWidget>
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -77,6 +78,10 @@ protected:
 public:
   /// @todo replace with an vector<tomo::SceneObjects>
   DisplayListed<tomo::Mesh> mesh_;
+
+  tomo::Slices slices_;
+
+
   /// @brief selection parameters
   float pointSize_;
   float radius_;
