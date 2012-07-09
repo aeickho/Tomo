@@ -25,12 +25,12 @@ namespace tomo
 
   void Bounds::validate()
   {
-  /*  FOREACH_AXIS
+    FOREACH_AXIS
     {
       if (min_[axis] != INF && max_[axis] != -INF)
         if (min_[axis] > max_[axis]) 
           std::swap(min_[axis],max_[axis]);
-    }*/
+    }
   }
 
   void Bounds::extend(const Bounds& _bounds)
@@ -47,12 +47,7 @@ namespace tomo
 
   Axis Bounds::dominantAxis() const
   {
-    Vec3f d = size(); 
-    if (d.x() > d.y())
-    { 	if (d.x() > d.z()) return X;
-    } else
-      if (d.y() > d.z()) return Y;
-    return Z;
+    return size().dominantAxis() ; 
   }
 
   void Bounds::split(float splitPos, Axis axis, Bounds& _left, Bounds& _right) const 

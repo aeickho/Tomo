@@ -63,6 +63,24 @@ namespace tomo
       return sum;
     }
 
+    /** @brief Return axis which largest extent
+     */
+    Axis dominantAxis() const
+    {
+      Axis _domAxis = X;
+      float _max = 0.0;
+      TOMO_FOREACH_DIM 
+      {
+        float _abs = abs(this->a_[i]);
+        if (_abs > _max) 
+        { 
+          _max = _abs;
+          _domAxis = Axis(i);
+        }
+      }
+      return _domAxis;
+    }
+
     vector_type vectorize(const Scalar& _s) { TOMO_FOREACH_DIM _Coords::a_[i] = _s; return *this; }
 
     /// Vector operations

@@ -20,7 +20,7 @@ SET (CMAKE_PROJECT_DOC_DIR
 FIND_PACKAGE(Qt4 REQUIRED)
 
 # include directories
-INCLUDE_DIRECTORIES(. ${CMAKE_CURRENT_BINARY_DIR} ./include ./TbdLib/include ./OpenMesh/src )
+INCLUDE_DIRECTORIES(. ${CMAKE_CURRENT_BINARY_DIR} ./include ./TbdLib/include ./OpenMesh/src /usr/include/ImageMagick  )
 
 # tomo library
 AUX_SOURCE_DIRECTORY(./src/lib tomo_src)
@@ -55,11 +55,11 @@ ADD_EXECUTABLE(VectorTest ./src/test/VectorTest.cpp)
 TARGET_LINK_LIBRARIES(VectorTest boost_program_options rt)
 
 ADD_EXECUTABLE(MeshTest ./src/test/MeshTest.cpp)
-TARGET_LINK_LIBRARIES(MeshTest tomo boost_program_options rt)
+TARGET_LINK_LIBRARIES(MeshTest tomo boost_program_options rt Magick++)
 
 #ADD_DEFINITIONS(-g -O2 -fsigned-char -freg-struct-return -Wall -W -Wshadow -Wpointer-arith -Wcast-qual -Winline)
 #ADD_DEFINITIONS(-g -O3 -fsigned-char -fopenmp -freg-struct-return -Wall -fPIC)
-ADD_DEFINITIONS(-g -O0 -fsigned-char -Wall -fPIC)
+ADD_DEFINITIONS(-g -O3 -fsigned-char -Wall -fPIC)
 
 # add a target to generate API documentation with Doxygen
 FIND_PACKAGE(Doxygen)

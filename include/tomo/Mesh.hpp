@@ -52,6 +52,8 @@ namespace tomo
         return false; // TODO: Implement slicing algo
       }
 
+      void slice(Slices& _slice) const;
+
       TBD_PROPERTY(ShadeMode,shadeMode);
 
     private:

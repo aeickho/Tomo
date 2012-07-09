@@ -15,8 +15,10 @@ namespace tomo
 
     virtual bool intersect(Ray& _ray, float& _tNear, float &_tFar, Vec3f* _normal = NULL, Point2f* _texCoords = NULL) const 
     {
-      Vec3f A = v1() - v0(), 
-            B = v2() - v0();
+      Vec3f c = v0() - v1(), 
+            b = v2() - v1(),
+            N = cross(b,c);
+  /*
       Vec3f p = cross(_ray.dir(),B);
 
       // d = Determinant
@@ -35,11 +37,34 @@ namespace tomo
       if (v < 0.0 || u + v > 1.0) return false;
 
       float t = dot(B,q) *  inv_d;
+*/
 
-      if (_ray.intersection(this->pointer(),t,_tNear,_tFar))
+    // distance test
+      float t_plane = - dot((_ray.org()-v1()),N) / dot(_ray.dir(),N);
+      if (t_plane < _tNear || t_plane > _tFar) return false;
+
+      // determine projection dimensiondimensions
+      Axis k = N.dominantAxis();
+      int u = (k+1) % 3, v = (k+2) % 3;
+
+      // calc hitpoint
+      float Hu = _ray.org()[u] + t_plane * _ray.dir()[u] - v1()[u];
+      float Hv = _ray.org()[v] + t_plane * _ray.dir()[v] - v1()[v];
+      
+      float beta = (b[u] * Hv - b[v] * Hu) / (b[u] * c[v] - b[v] * c[u]);
+
+      if (beta < 0) return false;
+
+      float gamma = (c[v] * Hu - c[u] * Hv) / (b[u] * c[v] - b[v] * c[u]);
+
+      if (gamma < 0) return false;
+      if (beta+gamma > 1.0) return false;
+      
+      if (_ray.intersection(this->pointer(),t_plane,_tNear,_tFar))
       {
-        if (_texCoords) (*_texCoords)(u,v);
+        if (_texCoords) (*_texCoords)(beta,gamma);
         if (_normal) (*_normal)(normal(_texCoords));
+
         return true;
       }
       return false;
@@ -57,7 +82,6 @@ namespace tomo
 
   
 
-
         _boundsRight.min()[k] = 
         _boundsRight.min()[k] = 
         _boundsRight.min()[k] = 
@@ -72,6 +96,67 @@ namespace tomo
     bool slice(Slice& _slice) const
     {
       return false;
+    }
+
+    void slice(Slices& _slices) const 
+    {
+      Point3f A = v0(), B = v1(), C = v2();
+      typename Slices::const_iter _Ait = _slices.get(A.z()), 
+                                  _Bit = _slices.get(B.z()), 
+                                  _Cit = _slices.get(C.z()),
+                                  it;
+
+   //   LOG_MSG << fmt("% % %") % A.z() % B.z() % C.z(); 
+
+      Slice* _sliceA = const_cast<Slice*>(&(*_Ait));
+      Slice* _sliceB = const_cast<Slice*>(&(*_Bit));
+      Slice* _sliceC = const_cast<Slice*>(&(*_Cit));
+
+      // If all vertices lay in the same slice, add a triangle
+      if ((_Ait == _Bit) && (_Bit == _Cit)) 
+      {  
+        _sliceA->addSegment(A,B,Vec3f());
+        _sliceA->addSegment(A,C,Vec3f());
+        _sliceA->addSegment(B,C,Vec3f());
+      }
+
+      /// Sort vertices and corresponding slice iterators,
+      /// So that A is the lower, B in the middle and C the upper vertex
+      if (_sliceA->posZ_ > _sliceB->posZ_) { std::swap(_sliceA,_sliceB); std::swap(_Ait,_Bit); std::swap(A,B); }
+      if (_sliceB->posZ_ > _sliceC->posZ_) { std::swap(_sliceB,_sliceC); std::swap(_Bit,_Cit); std::swap(B,C); }
+      if (_sliceA->posZ_ > _sliceB->posZ_) { std::swap(_sliceA,_sliceB); std::swap(_Ait,_Bit); std::swap(A,B); }
+
+     // LOG_MSG << fmt("% % %") % A.z() % B.z() % C.z(); 
+
+      Vec3f b = B - A;
+      Vec3f c = C - A;
+      Vec3f d = C - B;
+      Vec3f N = normal();
+      //++_Cit;
+
+      int i = 0;
+      for (it = _Ait ; it != _Cit && it != _slices.end() ; ++it)
+      {
+        Slice* _slice = const_cast<Slice*>(&(*it));
+     //   LOG_MSG << fmt("%, % % ") % i % _slice->posZ_ % _slice->lineSegments_.size();
+        i++;
+      //  LOG_MSG << _slice->posZ_;
+
+        float _ratioR = (_slice->posZ_ - A.z()) / c.z();
+        Vec3f r(c.x()*_ratioR,c.y()*_ratioR,_slice->posZ_);
+        Vec3f s;
+       
+        if (_slice->posZ_ - A.z() < b.z())
+        {
+          float _ratioS = (_slice->posZ_ - A.z()) / b.z();
+          s(b.x()*_ratioS,b.y()*_ratioS,_slice->posZ_);
+        } else
+        {
+          float _ratioS = (_slice->posZ_ - B.z()) / d.z();
+          s = b + Vec3f(d.x()*_ratioS,d.y()*_ratioS,_slice->posZ_);
+        }
+        _slice->addSegment(A+r,A+s,N);
+      }
     }
 
     Bounds bounds() const
@@ -100,6 +185,8 @@ namespace tomo
       v_[0] = _v0; v_[1] = _v1; v_[2] = _v2; n_ = _n;
       if (_n.sqrLength() == 0.0 )
         n_ = cross(v_[2] - v_[0],v_[1] - v_[0]);
+
+
     }
 
     const Point3f& v0() const { return v_[0]; }

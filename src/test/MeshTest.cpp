@@ -5,11 +5,11 @@
 #include <iostream>
 #include <boost/program_options.hpp>
 #include <boost/foreach.hpp>
+#include <Magick++.h>
+#include <tbd/log.h>
 
+#include "tomo/Slice.hpp"
 #include "tomo/Mesh.hpp"
-#include "tomo/Image.hpp"
-#include "tbd/log.h"
-
 
 using namespace boost;
 namespace po = program_options;
@@ -57,65 +57,40 @@ int main(int ac, char* av[])
   tomo::Mesh mesh;
   mesh.read(inputFile);
 
-  float _tNear = 0.0; float _tFar = 1.0;
+  tomo::Slices _slices(nSlices,mesh.bounds());
 
-  cout << endl;
-  for (int slice = 0; slice < nSlices; slice++)
+  LOG_MSG << "Slicing mesh...";
+
+  mesh.slice(_slices);
+
+  std::vector<const tomo::Slice*> _allSlices = _slices.get();
+
+  unsigned nSlice = 0;
+
+  LOG_MSG << fmt("Got % slices, %") % _allSlices.size();
+
+  BOOST_FOREACH ( const tomo::Slice* _slice, _allSlices)
   {
-    Image image(resX,resY);
-    for (int x = 0; x < resX; x++)
+    LOG_MSG << nSlice;
+    Magick::Image image(Magick::Geometry(resX,resY), Magick::Color());
+    image.strokeColor("red"); // Outline color 
+
+    BOOST_FOREACH ( const tomo::LineSegment& _seg, _slice->lineSegments_ )
     {
-
-      Ray ray(Point3f(mesh.bounds().min().x() + mesh.bounds().size().x() / resX *(0.5+x),
-                      mesh.bounds().min().y(),
-                      mesh.bounds().min().z() + mesh.bounds().size().z() / nSlices *(0.5+slice)),
-              Vec3f(0,mesh.bounds().size().y(),0),
-              0.0,
-              1.0);
-
-      vector<float> ts;
-
-      while (mesh.intersect(ray,_tNear,_tFar))
-      {
-        ts.push_back(ray.tFar());
-        ray.tNear(ray.tFar() + 0.0001);
-        ray.tFar(1.0);
-    //    LOG_MSG << fmt("% %") % ray.tNear() % ray.tFar();
-      }
-      if (ts.empty()) continue;
-     
-      if (ts.size() % 2 != 0) ts.push_back(ts[ts.size()-1]);
-
-      for (int i = 0; i < ts.size(); i+=2)
-        for (int j = int(ts[i]*resY); j < int(ts[i+1]*resY); j++)
-          image.set(x,j,Color3f(1.0,1.0,1.0));
+    image.strokeColor("red"); // Outline color 
+      image.draw( Magick::DrawableLine(resX*_seg.p0_.x(),resY*_seg.p0_.y(),resX*_seg.p1_.x(),resY*_seg.p1_.y()));
+    
+    image.strokeColor("green"); // Outline color 
+      image.draw( Magick::DrawableLine(resX*_seg.p0_.x(),resY*_seg.p0_.y(),
+                                       resX*_seg.p0_.x() + resX*_seg.normal_.x()/50,
+                                       resY*_seg.p0_.y() + resX*_seg.normal_.y()/50 ));
     }
 
-    stringstream ss; ss << "test" << slice << ".ppm";
-    image.save_ppm(ss.str());
+    stringstream ss; ss << "test" << nSlice << ".ppm";
+    image.write(ss.str());
+    nSlice++;
   }
 
-/*
-  Image image(resX,nSlices);
-  for (int slice = 0; slice < nSlices; slice++)
-  {
-    for (int x = 0; x < resX; x++)
-    {
-      Ray ray(Point3f(mesh.bounds().min().x() + mesh.bounds().size().x() / resX *(0.5+x),
-                      mesh.bounds().min().y(),
-                      mesh.bounds().min().z() + mesh.bounds().size().z() / nSlices *(0.5+slice)),
-              Vec3f(0,mesh.bounds().size().y(),0),
-              0.0,
-              1.0);
-
-      if (mesh.intersect(ray,_tNear,_tFar))
-          image.set(x,slice,Color3f(1.0,1.0,1.0));
-    }
-  }
-
- 
-  image.save_ppm(outputFile);
-*/
   return EXIT_SUCCESS;
 }
 

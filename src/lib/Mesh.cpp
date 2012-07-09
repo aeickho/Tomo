@@ -40,6 +40,19 @@ namespace tomo
   bool Mesh::intersect(Ray& _ray, float& _tNear, float &_tFar, Vec3f* _normal, Point2f* _texCoords) const
   {
     return traversal(_ray,boundingBox_,_normal,_texCoords);
+  /* 
+   bool _found = false;
+   BOOST_FOREACH ( const Triangle& _triangle, objs_ )
+      _found |= _triangle.intersect(_ray,_ray.tNear(),_ray.tFar(),_normal,_texCoords);
+   return _found;
+*/
+  }
+
+
+  void Mesh::slice(Slices& _slices) const
+  {
+    BOOST_FOREACH ( const Triangle& _triangle, objs_ )
+      _triangle.slice(_slices);
   }
 
   std::pair<Mesh,Mesh> Mesh::split(const Plane& splitPlane)

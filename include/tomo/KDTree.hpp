@@ -55,13 +55,13 @@ namespace tomo
           _dest[offset_+i] = _src[i];
       }
 
-      inline bool intersect(Ray& _ray, const PrimCont& _primLists, float _tNear, float _tFar) const
+      inline bool intersect(Ray& _ray, const PrimCont& _primLists, float _tNear, float _tFar, Vec3f* _normal = NULL, Point2f* _texCoords = NULL) const
       {
         bool _found = false;
         for (unsigned i = offset_; i < offset_ + size_; i++)
         {
           PRIMITIVE* _prim = _primLists[i]; 
-          _found |= _prim->intersect(_ray,_tNear,_tFar);
+          _found |= _prim->intersect(_ray,_tNear,_tFar,_normal,_texCoords);
         }
         return _found;
       }
@@ -171,9 +171,7 @@ namespace tomo
       int _stackPt = -1;
 
       float _tNear = _ray.tNear(), _tFar = _ray.tFar();
-  //    LOG_MSG << fmt("% %") % _tNear % _tFar;
       if (!_boundingBox.intersect(_ray,_tNear,_tFar)) return false;
-    //  LOG_MSG << fmt("% %") % _tNear % _tFar;
 
       const Node* _node = &root();
       bool _found = false;
@@ -208,7 +206,7 @@ namespace tomo
         }
 
     //    LOG_MSG << fmt("% %") % _tNear % _ray.tFar();
-        _found |= _node->leaf_.intersect(_ray,primLists_,_ray.tNear(),_ray.tFar());
+        _found |= _node->leaf_.intersect(_ray,primLists_,_tNear,_ray.tFar(),_normal,_texCoords);
     //    LOG_MSG << fmt("% %") % _tNear % _ray.tFar();
         if (_found) return true;
         if (_stackPt < 0) return _found;
