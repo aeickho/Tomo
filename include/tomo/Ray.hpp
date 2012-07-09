@@ -9,41 +9,42 @@ namespace tomo
 
   struct Ray
   {
-    Ray(const Point3f _org = Point3f(), const Vec3f _dir = Vec3f(), float _tMin = 0.002, float _tMax = INF): 
-      org_(_org), dir_(_dir), primitive_(NULL), tMin_(_tMin), tMax_(_tMax) {  }
+    Ray(const Point3f _org = Point3f(), const Vec3f _dir = Vec3f(), float _tNear = 0.002, float _tFar = INF): 
+      org_(_org), dir_(_dir), tNear_(_tNear), tFar_(_tFar), primitive_(NULL)  {  }
 
-    bool intersection(Primitive* _primitive, float _t) 
+    bool intersection(Primitive* _primitive, float _t, float _tNear, float _tFar) 
     {
-      if (_t >= tMin_ && _t < tMax_)
+      if (_t >= _tNear && _t < _tFar)
       {
       primitive_ = _primitive;
-      tMin_ = _t;
+      tFar_ = _t;
       return true;
       }
       return false;
     }
 
+    inline bool intersection(Primitive* _primitive, float _t)
+    {
+      return intersection(_primitive,_t,tNear_,tFar_);
+    }
+
     Point3f intersectionPoint() const
     {
-      return org_ + dir_ * tMin_;
+      return org_ + dir_ * tNear_;
     }
 
     void params(Point3f _org, Vec3f _dir) 
     {
       org_=_org; dir_=_dir;
     }
-    Ray reflect();
-    Ray refract(float index);
 
-    Point3f org_;
-    Vec3f dir_;
-   
+    TBD_PROPERTY_REF(Point3f,org);
+    TBD_PROPERTY_REF(Vec3f,dir);
+    TBD_PROPERTY_REF(float,tNear);
+    TBD_PROPERTY_REF(float,tFar);
+
+  private:
     Primitive* primitive_;
-    float tMin_, tMax_;
   };
-
-  typedef std::vector<Ray*> RayList;
-  typedef std::vector<Ray> Rays;
-
 }
 

@@ -34,7 +34,7 @@ namespace tomo
       void read(const string& filename);
       void write(const string& filename) const;
 
-      bool intersect(Ray& _ray, Vec3f* _normal = NULL, Point2f* _texCoords = NULL) const { return false; }
+      bool intersect(Ray& _ray, float& _tNear, float &_tFar, Vec3f* _normal = NULL, Point2f* _texCoords = NULL) const { return false; }
 
       void update();
       void collectKNearest(Point3f& p, int k);
@@ -48,13 +48,13 @@ namespace tomo
 
       Vertices vertices_;
 
-      void collect(Node* node, const BoundingBox& box, PointSet& pointSet);
+      void collect(Node* node, BoundingBox& box, PointSet& pointSet);
 
       TBD_PROPERTY(bool,drawKDTree);
       TBD_PROPERTY(bool,drawBoundingBox);
     
     private:
-      float splitPos(const PrimCont& _primList, const NodeInner& _inner, const Bounds& _bounds) const;
+      float splitPos(const PrimCont& _primList, NodeInner* _inner, const Bounds& _bounds) const;
       float nodeDistance(const Point3f& p, const BoundingBox& box) const;
   };
 }

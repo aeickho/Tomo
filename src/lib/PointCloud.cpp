@@ -80,9 +80,9 @@ namespace tomo
   static bool compareY(const Vertex* a, const Vertex* b) { return a->v.y() < b->v.y(); }
   static bool compareZ(const Vertex* a, const Vertex* b) { return a->v.z() < b->v.z(); }
   
-  float PointCloud::splitPos(const PrimCont& _primList, const NodeInner& _inner, const Bounds& _bounds) const
+  float PointCloud::splitPos(const PrimCont& _primList, NodeInner* _inner, const Bounds& _bounds) const
   {
-    switch (_inner.axis())
+    switch (_inner->axis())
     {
       case X: return median(_primList,compareX)->v.x(); 
       case Y: return median(_primList,compareY)->v.y(); 
@@ -92,7 +92,7 @@ namespace tomo
   }
 
 
-  void PointCloud::collect(Node* node, const BoundingBox& box, PointSet& pointSet) 
+  void PointCloud::collect(Node* node, BoundingBox& box, PointSet& pointSet) 
   {
     if (!node) return;
 
@@ -157,14 +157,14 @@ namespace tomo
   void PointCloud::collectKNearest(Point3f& p, int k)
   {
     PointSet pointSet(p,0.0,k);
-    collect(root(),boundingBox_,pointSet);
+    collect(&root(),boundingBox_,pointSet);
     selection = pointSet.vertexSet();
   }
 
   void PointCloud::collectInRadius(Point3f& p, float radius)
   {
     PointSet pointSet(p,radius); 
-    collect(root(),boundingBox_,pointSet);
+    collect(&root(),boundingBox_,pointSet);
     selection = pointSet.vertexSet();
   }
 

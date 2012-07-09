@@ -22,13 +22,14 @@ namespace tomo
     HalfedgeTraits {};
     EdgeTraits {};
     FaceTraits {};
-    VertexAttributes(OpenMesh::Attributes::Normal | OpenMesh::Attributes::Status);
+
+    VertexAttributes(OpenMesh::Attributes::Normal);
     HalfedgeAttributes(OpenMesh::Attributes::PrevHalfedge);
-    EdgeAttributes(OpenMesh::Attributes::Status);
-    FaceAttributes(OpenMesh::Attributes::Normal | OpenMesh::Attributes::Status);
+    EdgeAttributes(OpenMesh::Attributes::Normal);
+    FaceAttributes(OpenMesh::Attributes::Normal);
   };
 
-  class Mesh : public OpenMesh::TriMesh_ArrayKernelT<MeshTraits>, public Primitive
+  class Mesh : public OpenMesh::TriMesh_ArrayKernelT<MeshTraits>, public Compound<Triangle>
   {
     public:
       typedef enum { SM_FLAT, SM_GOURAUD } ShadeMode;
@@ -44,38 +45,24 @@ namespace tomo
        */
       std::pair<Mesh,Mesh> split(const Plane& plane);
 
-    bool intersect(Ray& _ray, Vec3f* _normal = NULL, Point2f* _texCoords = NULL) const
-    {
-      bool found = false;
-      kdTree_.recKDTreeTraverse(_ray,kdTree_.root(),_ray.tMin_,_ray.tMax_,found,_normal,_texCoords);
-      return found;
-    }
+      bool intersect(Ray& _ray, float& _tNear, float &_tFar, Vec3f* _normal = NULL, Point2f* _texCoords = NULL) const;
 
-    bool slice(Slice& _slice) const 
-    { 
-      return false; // TODO: Implement slicing algo
-    }
+      bool slice(Slice& _slice) const 
+      { 
+        return false; // TODO: Implement slicing algo
+      }
 
-    Bounds bounds() const 
-    {
-      return bounds_; 
-    }
+      TBD_PROPERTY(ShadeMode,shadeMode);
 
-    TBD_PROPERTY(ShadeMode,shadeMode);
+    private:
 
-   private:
-    void calcBounds();
-
-    /** @brief Splits are triangle with splitting plane
-      * @detail Adds triangles behind plane to behind and triangles in front of plane to front
-      * @param _tri    Triangle to be split
-     * @param _plane  Split plane
-    * @param _halves Halves of the mesh where the resulting triangles are inserted 
-    */
-    void splitTriangle(const Triangle& tri, const Plane& plane, std::pair<Mesh,Mesh>& _halves);
-
-    KDTree<Mesh::FaceHandle> kdTree_;
-    Bounds bounds_;
+      /** @brief Splits are triangle with splitting plane
+       * @detail Adds triangles behind plane to behind and triangles in front of plane to front
+       * @param _tri    Triangle to be split
+       * @param _plane  Split plane
+       * @param _halves Halves of the mesh where the resulting triangles are inserted 
+       */
+      void splitTriangle(const Triangle& tri, const Plane& plane, std::pair<Mesh,Mesh>& _halves);
   };
 
 

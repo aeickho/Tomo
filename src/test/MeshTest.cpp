@@ -56,39 +56,65 @@ int main(int ac, char* av[])
 
   tomo::Mesh mesh;
   mesh.read(inputFile);
-/*
+
+  float _tNear = 0.0; float _tFar = 1.0;
+
   cout << endl;
   for (int slice = 0; slice < nSlices; slice++)
   {
     Image image(resX,resY);
     for (int x = 0; x < resX; x++)
     {
-      Ray ray(Point3f(mesh.boundingBox().min.x + mesh.boundingBox().size().x / resX *(0.5+x),
-                      mesh.boundingBox().min.y + mesh.boundingBox().size().y / nSlices *(0.5+slice),
-                      mesh.boundingBox().min.z),
-              Vec3f(0,0,mesh.boundingBox().size().z));
-      ray.tmax = 1.0;
-      ray.tmin = 0.0;
+
+      Ray ray(Point3f(mesh.bounds().min().x() + mesh.bounds().size().x() / resX *(0.5+x),
+                      mesh.bounds().min().y(),
+                      mesh.bounds().min().z() + mesh.bounds().size().z() / nSlices *(0.5+slice)),
+              Vec3f(0,mesh.bounds().size().y(),0),
+              0.0,
+              1.0);
 
       vector<float> ts;
-      while (mesh.intersect(ray))
+
+      while (mesh.intersect(ray,_tNear,_tFar))
       {
-        ts.push_back(ray.tmax);
-        ray.tmin = ray.tmax;
-        ray.tmax = 1.0;
+        ts.push_back(ray.tFar());
+        ray.tNear(ray.tFar() + 0.0001);
+        ray.tFar(1.0);
+    //    LOG_MSG << fmt("% %") % ray.tNear() % ray.tFar();
       }
       if (ts.empty()) continue;
-      
+     
       if (ts.size() % 2 != 0) ts.push_back(ts[ts.size()-1]);
 
       for (int i = 0; i < ts.size(); i+=2)
         for (int j = int(ts[i]*resY); j < int(ts[i+1]*resY); j++)
-          image.set(x,j,Color(1.0,1.0,1.0));
+          image.set(x,j,Color3f(1.0,1.0,1.0));
     }
 
     stringstream ss; ss << "test" << slice << ".ppm";
     image.save_ppm(ss.str());
   }
+
+/*
+  Image image(resX,nSlices);
+  for (int slice = 0; slice < nSlices; slice++)
+  {
+    for (int x = 0; x < resX; x++)
+    {
+      Ray ray(Point3f(mesh.bounds().min().x() + mesh.bounds().size().x() / resX *(0.5+x),
+                      mesh.bounds().min().y(),
+                      mesh.bounds().min().z() + mesh.bounds().size().z() / nSlices *(0.5+slice)),
+              Vec3f(0,mesh.bounds().size().y(),0),
+              0.0,
+              1.0);
+
+      if (mesh.intersect(ray,_tNear,_tFar))
+          image.set(x,slice,Color3f(1.0,1.0,1.0));
+    }
+  }
+
+ 
+  image.save_ppm(outputFile);
 */
   return EXIT_SUCCESS;
 }

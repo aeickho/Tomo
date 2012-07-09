@@ -25,7 +25,7 @@ namespace tomo
 
     /** @brief Split bounding box in two halves 
      */
-    void split(float splitPos, Axis axis, Bounds& boxLeft, Bounds& boxRight) const;
+    void split(float splitPos, Axis axis, Bounds& _left, Bounds& _right) const;
 
     /** @brief Return axis which largest extent
      */

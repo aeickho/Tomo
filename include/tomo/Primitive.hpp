@@ -10,11 +10,11 @@ namespace tomo
   public:
     SplitPlaneIntersect(bool _left = false, bool _right = false) : result_(0) { set(_left,_right); }
 
-    inline void set(bool _left, bool _right) { result_ = _left | (_right << 1); }
+    void set(bool _left, bool _right) { result_ = _left | (_right << 1); }
 
-    inline bool left() { return result_ & 1; }
-    inline bool right() { return result_ & 2; }
-    inline bool both() { return result_ != 0; }
+    bool left() { return result_ & 1; }
+    bool right() { return result_ & 2; }
+    bool both() { return result_ != 0; }
   private:
     unsigned char result_;
   };
@@ -28,7 +28,19 @@ namespace tomo
      * @param _normal     Pointer to normal determined from intersection
      * @param _texCoords  Pointer to texCoords to be returned
      */
-    virtual bool intersect(Ray& _ray, Vec3f* _normal = NULL, Point2f* _texCoords = NULL) const = 0;
+    inline bool intersect(Ray& _ray, Vec3f* _normal = NULL, Point2f* _texCoords = NULL) const
+    {
+      return intersect(_ray,_ray.tNear(),_ray.tFar(),_normal,_texCoords);
+    }
+    
+    /** @brief Virtual method to determine intersection point
+     * @param _ray        Ray for intersection
+     * @param _tNear      Ray segment nearest
+     * @param _tFar       Ray segment farest
+     * @param _normal     Pointer to normal determined from intersection
+     * @param _texCoords  Pointer to texCoords to be returned
+     */
+    virtual bool intersect(Ray& _ray, float& _tNear, float &_tFar, Vec3f* _normal = NULL, Point2f* _texCoords = NULL) const = 0;
 
     /** @brief Method to determine the intersection between primitive and split plane
      * @param _axis        Axis of split plane

@@ -11,21 +11,21 @@ namespace tomo
       p.z() > min().z() && p.z() < max().z();
   }
 
-  bool BoundingBox::intersect(Ray& _ray, Vec3f* _normal, Point2f* _texCoords) const
+  bool BoundingBox::intersect(Ray& _ray, float& _tNear, float &_tFar, Vec3f* _normal, Point2f* _texCoords) const
   {
     float tmin, tmax, tymin, tymax, tzmin, tzmax;
 
     float minV = min().x(), maxV = max().x();
-    if (_ray.dir_.x() < 0) swap(minV,maxV);
+    if (_ray.dir().x() < 0) swap(minV,maxV);
 
-    tmin = (minV - _ray.org_.x()) / _ray.dir_.x();
-    tmax = (maxV - _ray.org_.x()) / _ray.dir_.x();
+    tmin = (minV - _ray.org().x()) / _ray.dir().x();
+    tmax = (maxV - _ray.org().x()) / _ray.dir().x();
 
     minV = min().y(), maxV = max().y();
-    if (_ray.dir_.y() < 0) swap(minV,maxV);
+    if (_ray.dir().y() < 0) swap(minV,maxV);
 
-    tymin = (minV - _ray.org_.y()) / _ray.dir_.y();
-    tymax = (maxV - _ray.org_.y()) / _ray.dir_.y();
+    tymin = (minV - _ray.org().y()) / _ray.dir().y();
+    tymax = (maxV - _ray.org().y()) / _ray.dir().y();
 
     if ( (tmin > tymax) || (tymin > tmax) )  return false;
 
@@ -33,20 +33,21 @@ namespace tomo
     if (tymax < tmax) tmax = tymax;
 
     minV = min().z(), maxV = max().z();
-    if (_ray.dir_.z() < 0) swap(minV,maxV);
+    if (_ray.dir().z() < 0) swap(minV,maxV);
 
-    tzmin = (minV - _ray.org_.z()) / _ray.dir_.z();
-    tzmax = (maxV - _ray.org_.z()) / _ray.dir_.z();
+    tzmin = (minV - _ray.org().z()) / _ray.dir().z();
+    tzmax = (maxV - _ray.org().z()) / _ray.dir().z();
 
     if ( (tmin > tzmax) || (tzmin > tmax) ) return false;
 
     if (tzmin > tmin) tmin = tzmin;
     if (tzmax < tmax) tmax = tzmax;
 
-    if ((tmin < _ray.tMax_) && (tmax > _ray.tMin_))
+
+    if ((tmin <= _ray.tNear()) && (tmax >= _ray.tFar()))
     {
-      _ray.tMin_ = tmin;
-      _ray.tMax_ = tmax;
+      _tNear = (tmin > _ray.tNear()) ? tmin : _ray.tNear();
+      _tFar = (tmax < _ray.tFar()) ? tmax : _ray.tFar();
       return true;
     }
     return false;  

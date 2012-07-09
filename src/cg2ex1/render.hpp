@@ -57,6 +57,62 @@ inline void drawBackground()
   glPopMatrix();
 }
 
+void drawBounds(tomo::Bounds _bounds, const tomo::Color4f& _color) 
+  {
+    float x = _bounds.min().x(), y = _bounds.min().y(), z = _bounds.min().z();
+    float xs = _bounds.max().x(), ys = _bounds.max().y(), zs = _bounds.max().z();
+
+    glColor4f(_color.r(),_color.g(),_color.b(),_color.a());
+
+    glBegin(GL_LINE_LOOP);
+    // top side
+    glVertex3f(x , ys, z );
+    glVertex3f(xs, ys, z );
+    glVertex3f(xs, ys, zs);
+    glVertex3f(x , ys, zs);
+    glEnd();
+
+    glBegin(GL_LINE_LOOP);
+    // bottom side
+    glVertex3f(x , y, z );
+    glVertex3f(xs, y, z );
+    glVertex3f(xs, y, zs);
+    glVertex3f(x , y, zs);
+    glEnd();
+
+    glBegin(GL_LINE_LOOP);
+    // east side
+    glVertex3f(x , y , z);
+    glVertex3f(xs, y , z);
+    glVertex3f(xs, ys, z);
+    glVertex3f(x , ys, z);
+    glEnd();
+
+    glBegin(GL_LINE_LOOP);
+    // west side
+    glVertex3f(x , y ,zs);
+    glVertex3f(xs, y ,zs);
+    glVertex3f(xs, ys,zs);
+    glVertex3f(x , ys,zs);
+    glEnd();
+
+    glBegin(GL_LINE_LOOP);
+    // north side
+    glVertex3f(x , y , z );
+    glVertex3f(x , y , zs);
+    glVertex3f(x , ys, zs);
+    glVertex3f(x , ys, z );
+    glEnd();
+
+    glBegin(GL_LINE_LOOP);
+    // south side
+    glVertex3f( xs, y , z );
+    glVertex3f( xs, y , zs);
+    glVertex3f( xs, ys, zs);
+    glVertex3f( xs, ys, z );
+    glEnd();
+  }
+
 // realize camera
 template<class CAMERA> void realizeCamera(const CAMERA& _camera)
 {
@@ -310,6 +366,31 @@ inline void drawObject( tomo::Mesh& _mesh )
       glEnd();
       break;
     } 
+  }
+  glPopMatrix();
+}
+
+inline void drawKDTreeNode( const tomo::Mesh& _mesh, unsigned nodeIndex, tomo::Bounds _bounds, int _depth)
+{
+  if (_mesh.nodes_[nodeIndex].isLeaf() || _depth > 12) { drawBounds(_bounds,tomo::Color4f(1.0,1.0,0.0)); return; }
+  tomo::Bounds _left, _right;
+
+  if (_mesh.nodes_[nodeIndex].inner_.splitPos() == 0) LOG_WRN;
+
+  _bounds.split(_mesh.nodes_[nodeIndex].inner_.splitPos(),_mesh.nodes_[nodeIndex].inner_.axis(),_left,_right);
+  
+  drawKDTreeNode(_mesh,_mesh.nodes_[nodeIndex].inner_.left(),_left,_depth+1);
+  drawKDTreeNode(_mesh,_mesh.nodes_[nodeIndex].inner_.right(),_right,_depth+1);
+}
+
+inline void drawKDTree( const tomo::Mesh& _mesh)
+{
+  glPushMatrix();
+  {
+    tomo::Point3f c = _mesh.bounds().center();
+    glTranslatef(-c.x(),-c.y(),0.0);
+
+    drawKDTreeNode(_mesh,0,_mesh.bounds(),0);
   }
   glPopMatrix();
 }

@@ -25,12 +25,12 @@ namespace tomo
 
   void Bounds::validate()
   {
-    FOREACH_AXIS
+  /*  FOREACH_AXIS
     {
       if (min_[axis] != INF && max_[axis] != -INF)
         if (min_[axis] > max_[axis]) 
           std::swap(min_[axis],max_[axis]);
-    }
+    }*/
   }
 
   void Bounds::extend(const Bounds& _bounds)
@@ -55,12 +55,17 @@ namespace tomo
     return Z;
   }
 
-  void Bounds::split(float splitPos, Axis axis, Bounds& boxLeft, Bounds& boxRight) const
+  void Bounds::split(float splitPos, Axis axis, Bounds& _left, Bounds& _right) const 
   {
-    boxLeft(min(),max());
-    boxRight(min(),max());
-    boxLeft.max()[axis] = splitPos;
-    boxRight.min()[axis] = splitPos;
+    Point3f _min = min(), _max = max();
+   // LOG_MSG << _min[axis];
+    _min[axis] = splitPos; 
+   // LOG_MSG << _min[axis];
+    _max[axis] = splitPos;
+    _left(min(),_max);
+    _right(_min,max());
+
+
   }
 
 

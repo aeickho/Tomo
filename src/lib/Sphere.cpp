@@ -15,11 +15,11 @@ namespace tomo
 		glPopMatrix();
 	}
 */
-	bool Sphere::intersect(Ray& _ray, Vec3f* _normal, Point2f* _texCoords) const
+	bool Sphere::intersect(Ray& _ray, float& _tNear, float &_tFar, Vec3f* _normal, Point2f* _texCoords) const
 	{
-		Vec3f o = _ray.org_ - center_;
-		float a = dot(_ray.dir_,_ray.dir_);
-		float b = 2.0f * dot(_ray.dir_,o);
+		Vec3f o = _ray.org() - center_;
+		float a = dot(_ray.dir(),_ray.dir());
+		float b = 2.0f * dot(_ray.dir(),o);
 		float c = dot(o,o) - radius()*radius();
 		float disc = b*b - 4*a*c;
 
@@ -39,7 +39,7 @@ namespace tomo
       if (_texCoords)
         (*_texCoords)(atan2(_normal->x(),_normal->z()) / (2.0*M_PI) + 0.5,acosf(_normal->y())/M_PI);
     }
-    return _ray.intersection(pointer(),(t0 < 0) ? t1 : t0);
+    return _ray.intersection(pointer(),(t0 < 0) ? t1 : t0,_tNear,_tFar);
 	}
 
   Bounds Sphere::bounds() const

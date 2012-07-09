@@ -13,11 +13,11 @@ namespace tomo
     virtual const Point3f& v2() const = 0;
     virtual const Vec3f normal(Point2f* _texCoords = NULL) const = 0;
 
-    virtual bool intersect(Ray& _ray, Vec3f* _normal = NULL, Point2f* _texCoords = NULL) const 
+    virtual bool intersect(Ray& _ray, float& _tNear, float &_tFar, Vec3f* _normal = NULL, Point2f* _texCoords = NULL) const 
     {
       Vec3f A = v1() - v0(), 
             B = v2() - v0();
-      Vec3f p = cross(_ray.dir_,B);
+      Vec3f p = cross(_ray.dir(),B);
 
       // d = Determinant
       float d = dot(A,p);
@@ -25,18 +25,18 @@ namespace tomo
 
       float inv_d = 1.0f / d;
 
-      Vec3f tV = _ray.org_ - v0();
+      Vec3f tV = _ray.org() - v0();
 
       float u = dot(tV,p) * inv_d;
       if (u < 0.0 || u > 1.0) return false;
 
       Vec3f q = cross(tV,A);
-      float v =  dot(_ray.dir_,q) * inv_d;
+      float v =  dot(_ray.dir(),q) * inv_d;
       if (v < 0.0 || u + v > 1.0) return false;
 
       float t = dot(B,q) *  inv_d;
 
-      if (_ray.intersection(this->pointer(),t))
+      if (_ray.intersection(this->pointer(),t,_tNear,_tFar))
       {
         if (_texCoords) (*_texCoords)(u,v);
         if (_normal) (*_normal)(normal(_texCoords));
@@ -48,7 +48,25 @@ namespace tomo
     SplitPlaneIntersect intersect(Axis _axis, float _splitPos, const Bounds& _boundsLeft, const Bounds& _boundsRight) const
     {
       // TODO implement better split plane intersection function
-      return Primitive::intersect(_axis,_splitPos,_boundsLeft,_boundsRight);
+      SplitPlaneIntersect _result = Primitive::intersect(_axis,_splitPos,_boundsLeft,_boundsRight);
+
+/*      if (_result.both())
+      {
+        Ray rays[4];
+        int k = _axis, u = (k+1) % 3, v = (k+2) % 3;
+
+  
+
+
+        _boundsRight.min()[k] = 
+        _boundsRight.min()[k] = 
+        _boundsRight.min()[k] = 
+        _boundsRight.min()[k] = 
+
+
+      }*/
+
+      return _result;
     }
 
     bool slice(Slice& _slice) const
@@ -65,34 +83,32 @@ namespace tomo
                             std::max(v0().y(),std::max(v1().y(),v2().y())),
                             std::max(v0().z(),std::max(v1().z(),v2().z()))));
     }
-
-    POINT v[3];
   };
 
   struct Triangle : public TriangleConcept<Point3f>
   {
     Triangle() 
     {
-      v[0](Point3f()); 
-      v[1](Point3f()); 
-      v[2](Point3f()); 
+      v_[0](Point3f()); 
+      v_[1](Point3f()); 
+      v_[2](Point3f()); 
       n_(Vec3f());
     }
 
     Triangle(Point3f _v0, Point3f _v1, Point3f _v2, Vec3f _n = Vec3f())
     {
-      v[0] = _v0; v[1] = _v1; v[2] = _v2; n_ = _n;
+      v_[0] = _v0; v_[1] = _v1; v_[2] = _v2; n_ = _n;
       if (_n.sqrLength() == 0.0 )
-        n_ = cross(v[2] - v[0],v[1] - v[0]);
+        n_ = cross(v_[2] - v_[0],v_[1] - v_[0]);
     }
 
-    const Point3f& v0() const { return v[0]; }
-    const Point3f& v1() const { return v[1]; }
-    const Point3f& v2() const { return v[2]; }
+    const Point3f& v0() const { return v_[0]; }
+    const Point3f& v1() const { return v_[1]; }
+    const Point3f& v2() const { return v_[2]; }
     const Vec3f normal(Point2f* _texCoords = NULL) const { return n_; }
 
-
     private:
+      Point3f v_[3];
       Vec3f n_;
   };
 
@@ -100,19 +116,22 @@ namespace tomo
   {
     VertexTriangle(Vertex* _v0, Vertex* _v1, Vertex* _v2)
     {
-      v[0] = _v0; v[1] = _v1; v[2] = _v2; 
+      v_[0] = _v0; v_[1] = _v1; v_[2] = _v2; 
     }
 
-    const Point3f& v0() const { return v[0]->v; }
-    const Point3f& v1() const { return v[1]->v; }
-    const Point3f& v2() const { return v[2]->v; }
+    const Point3f& v0() const { return v_[0]->v; }
+    const Point3f& v1() const { return v_[1]->v; }
+    const Point3f& v2() const { return v_[2]->v; }
     const Vec3f normal(Point2f* _texCoords = NULL) const 
     { 
       if (_texCoords)
-          return (1.0 - _texCoords->x() - _texCoords->y())*v[0]->n + 
-                  _texCoords->x()*v[1]->n + _texCoords->y()*v[2]->n;
-      return v[0]->n; 
+          return (1.0 - _texCoords->x() - _texCoords->y())*v_[0]->n + 
+                  _texCoords->x()*v_[1]->n + _texCoords->y()*v_[2]->n;
+      return v_[0]->n; 
     }
+
+    private:
+      Vertex* v_[3];
   };
 
 }

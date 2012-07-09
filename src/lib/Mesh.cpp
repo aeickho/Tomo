@@ -19,83 +19,86 @@ namespace tomo
       return;
     }
 
-    LOG_MSG << fmt("%") % n_vertices();
+//    LOG_MSG << fmt("Read '%' which has % vertices.") % _filename % n_vertices();
     update_face_normals();
     update_vertex_normals();
-    
-    calcBounds();
-//    build(objs_,boundingBox_);
+
+    Mesh::ConstFaceIter    fIt(faces_begin()),fEnd(faces_end());
+    Mesh::ConstFaceVertexIter fvIt;
+
+    for (; fIt!=fEnd; ++fIt)
+    {
+      fvIt = cfv_iter(fIt.handle());
+      Triangle _triangle(point(fvIt),point(++fvIt),point(++fvIt),normal(fIt));
+      objs_.push_back(_triangle);
+    }
+    calcBoundingBox();
+
+    build(objs_,boundingBox_);
   }
 
-  void Mesh::calcBounds()
+  bool Mesh::intersect(Ray& _ray, float& _tNear, float &_tFar, Vec3f* _normal, Point2f* _texCoords) const
   {
-    Mesh::VertexIter vIt(vertices_begin()), vEnd(vertices_end());
-
-    for (; vIt != vEnd; ++vIt)
-    {
-      Point3f _p = point(vIt);
-      Bounds _bounds(_p,_p);
-      bounds_.extend(_bounds);
-    }
+    return traversal(_ray,boundingBox_,_normal,_texCoords);
   }
 
   std::pair<Mesh,Mesh> Mesh::split(const Plane& splitPlane)
   {
     /*
-    std::pair<Mesh,Mesh> halves;
-    
-    BOOST_FOREACH ( Triangle& tri, objs_ )
-      splitTriangle(tri,splitPlane,halves);
+       std::pair<Mesh,Mesh> halves;
 
-    halves.first.calcBoundingBox();
-    halves.first.build(halves.first.objs_,halves.first.boundingBox_);    
-    halves.second.calcBoundingBox();
-    halves.second.build(halves.second.objs_,halves.first.boundingBox_);
-*/
+       BOOST_FOREACH ( Triangle& tri, objs_ )
+       splitTriangle(tri,splitPlane,halves);
+
+       halves.first.calcBoundingBox();
+       halves.first.build(halves.first.objs_,halves.first.boundingBox_);    
+       halves.second.calcBoundingBox();
+       halves.second.build(halves.second.objs_,halves.first.boundingBox_);
+       */
     return std::pair<Mesh,Mesh>();
   }
 
   void Mesh::splitTriangle(const Triangle& tri, const Plane& plane, 
-                std::pair<Mesh,Mesh>& _halves)
+      std::pair<Mesh,Mesh>& _halves)
   {
     // TODO To be adapted for OpenMesh
     /* 
-    vector<Triangle> triangles;
-    Point3f V[3]; 
-    for (int i = 0; i < 3; i++)
-      V[i] = tri.v[i];
+       vector<Triangle> triangles;
+       Point3f V[3]; 
+       for (int i = 0; i < 3; i++)
+       V[i] = tri.v[i];
 
-    int signCount = 0;
-    bool signs[3];
+       int signCount = 0;
+       bool signs[3];
 
-    for (int i = 0; i < 3; i++)
-    {
-      signs[i] = dot(V[i] - plane.center_,plane.normal_);
-      signCount += int(signs[i] < 0);
-    }
+       for (int i = 0; i < 3; i++)
+       {
+       signs[i] = dot(V[i] - plane.center_,plane.normal_);
+       signCount += int(signs[i] < 0);
+       }
 
-    vector<Triangle> *q = &_halves.first.objs_, *r = &_halves.second.objs_;
-    if (signCount >= 2) swap(q,r);
+       vector<Triangle> *q = &_halves.first.objs_, *r = &_halves.second.objs_;
+       if (signCount >= 2) swap(q,r);
 
-    if (signCount == 0 || signCount == 3) 
-    {
-      r->push_back(tri);
-      return;
-    }
+       if (signCount == 0 || signCount == 3) 
+       {
+       r->push_back(tri);
+       return;
+       }
 
-    int k = 0;
-    for (int i = 1; i < 3; i++)
-      if ((signCount == 1) ? signs[i] : !signs[i]) k = i;
-    int u = (k+1) % 3, v = (k+2) % 3;
+       int k = 0;
+       for (int i = 1; i < 3; i++)
+       if ((signCount == 1) ? signs[i] : !signs[i]) k = i;
+       int u = (k+1) % 3, v = (k+2) % 3;
 
-    Vec3f A = V[u] - V[k], B = V[v] - V[k]; 
-    Point3f iPoint[2];
-    iPoint[0] = V[k] + A*(dot(plane.normal_,plane.center_ - V[k]) / dot(A,plane.normal_));
-    iPoint[1] = V[k] + B*(dot(plane.normal_,plane.center_ - V[k]) / dot(A,plane.normal_));
+       Vec3f A = V[u] - V[k], B = V[v] - V[k]; 
+       Point3f iPoint[2];
+       iPoint[0] = V[k] + A*(dot(plane.normal_,plane.center_ - V[k]) / dot(A,plane.normal_));
+       iPoint[1] = V[k] + B*(dot(plane.normal_,plane.center_ - V[k]) / dot(A,plane.normal_));
 
-    q->push_back(Triangle(V[k],iPoint[0],iPoint[1],tri.normal()));
-    r->push_back(Triangle(V[u],V[v],iPoint[0],tri.normal()));
-    r->push_back(Triangle(V[u],iPoint[0],iPoint[1],tri.normal()));*/
+       q->push_back(Triangle(V[k],iPoint[0],iPoint[1],tri.normal()));
+       r->push_back(Triangle(V[u],V[v],iPoint[0],tri.normal()));
+       r->push_back(Triangle(V[u],iPoint[0],iPoint[1],tri.normal()));*/
   }
 
 }

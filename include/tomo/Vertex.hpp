@@ -15,7 +15,7 @@ namespace tomo
     Vertex(Point3f _v = Point3f(), Vec3f _n = Vec3f()) { v(_v); n(_n); }
     void set(Point3f _v, Vec3f _n = Vec3f()) { v = _v; n = _n; }
 
-    bool intersect(Ray& _ray, Vec3f* _normal = NULL, Point2f* _texCoords = NULL) const 
+    bool intersect(Ray& _ray, float& _tNear, float &_tFar, Vec3f* _normal = NULL, Point2f* _texCoords = NULL) const 
     {
       return false;
     }

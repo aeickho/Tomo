@@ -179,6 +179,9 @@ void GLWidget::paintGL()
   drawPrintRange(printRange_);
   if( config_.drawObjects_ )
     mesh_.drawDL();
+
+  drawKDTree(mesh_);
+
   if( config_.drawLight_ )
     drawTracker("light",light_, Color(1.0,1.0,1.0,0.8), config_.drawLabels_, config_.drawCoords_);
   if( config_.drawCamera_ )

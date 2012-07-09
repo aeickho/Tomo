@@ -10,7 +10,7 @@ namespace tomo
       : center_(_center), normal_(_normal)
     {}
 
-    bool intersect(Ray& _ray, Vec3f* _normal = NULL, Point2f* _texCoords = NULL) const;
+    bool intersect(Ray& _ray, float& _tNear, float &_tFar, Vec3f* _normal = NULL, Point2f* _texCoords = NULL) const;
 
     Bounds bounds() const;
 
