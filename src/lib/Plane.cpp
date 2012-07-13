@@ -2,7 +2,7 @@
 
 namespace tomo 
 {
-  bool Plane::intersect(Ray& _ray, float& _tNear, float &_tFar, Vec3f* _normal, Point2f* _texCoords) const
+  bool Plane::intersect(Ray3f& _ray, float& _tNear, float &_tFar, Vec3f* _normal) const
   {
     float dn = dot(_ray.dir(),normal_);
     if (dn == 0.0f) return false;
@@ -18,8 +18,8 @@ namespace tomo
     return _ray.intersection(this->pointer(),d,_tNear,_tFar);
   }
 
-  Bounds Plane::bounds() const
+  Bounds3f Plane::bounds() const
   {
-    return Bounds(Point3f(-INF,-INF,-INF),Point3f(INF,INF,INF));
+    return Bounds3f(Point3f(-INF,-INF,-INF),Point3f(INF,INF,INF));
   }
 }

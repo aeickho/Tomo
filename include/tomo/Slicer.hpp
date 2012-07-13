@@ -12,7 +12,7 @@ namespace tomo
   public:
     Slicer(Config* _config = NULL) : ConfigurableObject(_config) {}
 
-    Slices slice(const Primitive& obj, unsigned nSlices = 0) const;
+    Slices slice(const Primitive3f& obj, unsigned nSlices = 0) const;
 
     //  boost::ptr_vector<Isle> fetchIsles(const SceneObject& obj, const SplitPlane& splitPlane, IsleType = ALL);
 

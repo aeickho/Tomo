@@ -2,7 +2,7 @@
 
 namespace tomo 
 {
-  Slice::Slice(float _posZ, const Bounds& _bounds)
+  Slice::Slice(float _posZ, const Bounds3f& _bounds)
   {
         posZ_ = _posZ;
         anchor_(_bounds.min().x(),_bounds.min().y()); 
@@ -19,12 +19,12 @@ namespace tomo
     lineSegments_.push_back(_seg);    
   }
 
-  Slices::Slices(unsigned _nSlices, Bounds _bounds)
+  Slices::Slices(unsigned _nSlices, Bounds3f _bounds)
   {
     make(_nSlices,_bounds);
   }
 
-  void Slices::make(unsigned _nSlices, Bounds _bounds)
+  void Slices::make(unsigned _nSlices, Bounds3f _bounds)
   {
     slices_.clear();
     float _sliceHeight = _bounds.size().z() / _nSlices;

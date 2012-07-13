@@ -6,20 +6,20 @@
 namespace tomo
 {
   template<class POINT>
-  struct TriangleConcept : public SlicableObject 
+    struct TriangleConcept : public SlicableObject 
   {    
     virtual const Point3f& v0() const = 0;
     virtual const Point3f& v1() const = 0;
     virtual const Point3f& v2() const = 0;
     virtual const Vec3f normal(Point2f* _texCoords = NULL) const = 0;
 
-    virtual bool intersect(Ray& _ray, float& _tNear, float &_tFar, Vec3f* _normal = NULL, Point2f* _texCoords = NULL) const 
+    virtual bool intersect(ray_type& _ray, float& _tNear, float &_tFar, Vec3f* _normal = NULL) const 
     {
       Vec3f c = v0() - v1(), 
             b = v2() - v1(),
             N = cross(b,c);
-  /*
-      Vec3f p = cross(_ray.dir(),B);
+      /*
+         Vec3f p = cross(_ray.dir(),B);
 
       // d = Determinant
       float d = dot(A,p);
@@ -37,9 +37,9 @@ namespace tomo
       if (v < 0.0 || u + v > 1.0) return false;
 
       float t = dot(B,q) *  inv_d;
-*/
+      */
 
-    // distance test
+      // distance test
       float t_plane = - dot((_ray.org()-v1()),N) / dot(_ray.dir(),N);
       if (t_plane < _tNear || t_plane > _tFar) return false;
 
@@ -50,7 +50,7 @@ namespace tomo
       // calc hitpoint
       float Hu = _ray.org()[u] + t_plane * _ray.dir()[u] - v1()[u];
       float Hv = _ray.org()[v] + t_plane * _ray.dir()[v] - v1()[v];
-      
+
       float beta = (b[u] * Hv - b[v] * Hu) / (b[u] * c[v] - b[v] * c[u]);
 
       if (beta < 0) return false;
@@ -59,36 +59,34 @@ namespace tomo
 
       if (gamma < 0) return false;
       if (beta+gamma > 1.0) return false;
-      
+
       if (_ray.intersection(this->pointer(),t_plane,_tNear,_tFar))
       {
-        if (_texCoords) (*_texCoords)(beta,gamma);
-        if (_normal) (*_normal)(normal(_texCoords));
-
+        if (_normal) (*_normal)(normal(NULL));
         return true;
       }
       return false;
     }
 
-    SplitPlaneIntersect intersect(Axis _axis, float _splitPos, const Bounds& _boundsLeft, const Bounds& _boundsRight) const
+    SplitPlaneIntersect intersect(Axis _axis, float _splitPos, const Bounds3f& _boundsLeft, const Bounds3f& _boundsRight) const
     {
       // TODO implement better split plane intersection function
       SplitPlaneIntersect _result = Primitive::intersect(_axis,_splitPos,_boundsLeft,_boundsRight);
 
-/*      if (_result.both())
-      {
-        Ray rays[4];
-        int k = _axis, u = (k+1) % 3, v = (k+2) % 3;
-
-  
-
-        _boundsRight.min()[k] = 
-        _boundsRight.min()[k] = 
-        _boundsRight.min()[k] = 
-        _boundsRight.min()[k] = 
+      /*      if (_result.both())
+              {
+              Ray rays[4];
+              int k = _axis, u = (k+1) % 3, v = (k+2) % 3;
 
 
-      }*/
+
+              _boundsRight.min()[k] = 
+              _boundsRight.min()[k] = 
+              _boundsRight.min()[k] = 
+              _boundsRight.min()[k] = 
+
+
+              }*/
 
       return _result;
     }
@@ -102,9 +100,9 @@ namespace tomo
     {
       Point3f A = v0(), B = v1(), C = v2();
       typename Slices::const_iter _Ait = _slices.get(A.z()), 
-                                  _Bit = _slices.get(B.z()), 
-                                  _Cit = _slices.get(C.z()),
-                                  it;
+               _Bit = _slices.get(B.z()), 
+               _Cit = _slices.get(C.z()),
+               it;
 
       Slice* _sliceA = const_cast<Slice*>(&(*_Ait));
       Slice* _sliceB = const_cast<Slice*>(&(*_Bit));
@@ -136,7 +134,7 @@ namespace tomo
         float _ratioR = (_slice->posZ_ - A.z()) / c.z();
         Vec3f r(c.x()*_ratioR,c.y()*_ratioR,_slice->posZ_);
         Vec3f s;
-       
+
         if (_slice->posZ_ - A.z() < b.z())
         {
           float _ratioS = (_slice->posZ_ - A.z()) / b.z();
@@ -150,14 +148,14 @@ namespace tomo
       }
     }
 
-    Bounds bounds() const
+    Bounds3f bounds() const
     {
-      return Bounds(Point3f(std::min(v0().x(),std::min(v1().x(),v2().x())),
-                            std::min(v0().y(),std::min(v1().y(),v2().y())),
-                            std::min(v0().z(),std::min(v1().z(),v2().z()))),
-                    Point3f(std::max(v0().x(),std::max(v1().x(),v2().x())),
-                            std::max(v0().y(),std::max(v1().y(),v2().y())),
-                            std::max(v0().z(),std::max(v1().z(),v2().z()))));
+      return Bounds3f(Point3f(std::min(v0().x(),std::min(v1().x(),v2().x())),
+            std::min(v0().y(),std::min(v1().y(),v2().y())),
+            std::min(v0().z(),std::min(v1().z(),v2().z()))),
+          Point3f(std::max(v0().x(),std::max(v1().x(),v2().x())),
+            std::max(v0().y(),std::max(v1().y(),v2().y())),
+            std::max(v0().z(),std::max(v1().z(),v2().z()))));
     }
   };
 
@@ -186,13 +184,13 @@ namespace tomo
     const Vec3f normal(Point2f* _texCoords = NULL) const { return n_; }
 
     private:
-      Point3f v_[3];
-      Vec3f n_;
+    Point3f v_[3];
+    Vec3f n_;
   };
 
-  struct VertexTriangle : public TriangleConcept<Vertex*>
+  struct VertexTriangle : public TriangleConcept<Vertex3f*>
   {
-    VertexTriangle(Vertex* _v0, Vertex* _v1, Vertex* _v2)
+    VertexTriangle(Vertex3f* _v0, Vertex3f* _v1, Vertex3f* _v2)
     {
       v_[0] = _v0; v_[1] = _v1; v_[2] = _v2; 
     }
@@ -203,13 +201,13 @@ namespace tomo
     const Vec3f normal(Point2f* _texCoords = NULL) const 
     { 
       if (_texCoords)
-          return (1.0 - _texCoords->x() - _texCoords->y())*v_[0]->n + 
-                  _texCoords->x()*v_[1]->n + _texCoords->y()*v_[2]->n;
+        return (1.0 - _texCoords->x() - _texCoords->y())*v_[0]->n + 
+          _texCoords->x()*v_[1]->n + _texCoords->y()*v_[2]->n;
       return v_[0]->n; 
     }
 
     private:
-      Vertex* v_[3];
+    Vertex3f* v_[3];
   };
 
 }

@@ -19,9 +19,9 @@ namespace tomo
     public:
       /* @brief Return bounds of bounding box
        */
-      Bounds bounds() const
+      Bounds3f bounds() const
       {
-        return Bounds(boundingBox_.min(),boundingBox_.max());
+        return Bounds3f(boundingBox_.min(),boundingBox_.max());
       }
 
     protected:

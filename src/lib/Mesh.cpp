@@ -1,7 +1,6 @@
 #include "tomo/Mesh.hpp"
 
 #include <boost/foreach.hpp>
-#include "tomo/OFFReader.hpp"
 
 #include <tbd/log.h>
 
@@ -37,9 +36,9 @@ namespace tomo
     build(objs_,boundingBox_);
   }
 
-  bool Mesh::intersect(Ray& _ray, float& _tNear, float &_tFar, Vec3f* _normal, Point2f* _texCoords) const
+  bool Mesh::intersect(Ray3f& _ray, float& _tNear, float &_tFar, Vec3f* _normal) const
   {
-    return traversal(_ray,boundingBox_,_normal,_texCoords);
+    return traversal(_ray,boundingBox_,_normal);
   /* 
    bool _found = false;
    BOOST_FOREACH ( const Triangle& _triangle, objs_ )
@@ -47,7 +46,6 @@ namespace tomo
    return _found;
 */
   }
-
 
   void Mesh::slice(Slices& _slices) const
   {

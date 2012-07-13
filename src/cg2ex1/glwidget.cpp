@@ -30,7 +30,7 @@ void GLWidget::initializeGL()
 {
   mesh_.read("yoda.stl");
   mesh_.initDL();
-  slices_.make(600,mesh_.bounds());
+  slices_.make(300,mesh_.bounds());
   mesh_.slice(slices_);
 
   // setup camera

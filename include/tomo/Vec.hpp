@@ -81,8 +81,6 @@ namespace tomo
       return _domAxis;
     }
 
-    vector_type vectorize(const Scalar& _s) { TOMO_FOREACH_DIM _Coords::a_[i] = _s; return *this; }
-
     /// Vector operations
     Vec operator- () const { Vec v(*this);  TOMO_FOREACH_DIM v[i] = -v[i];  return v; }
     void operator *= ( value_type f ) 	{  TOMO_FOREACH_DIM this->a_[i] *= f; }

@@ -2,15 +2,15 @@
 
 namespace tomo 
 {
-	struct Sphere : public Primitive 
+	struct Sphere : public Primitive3f
 	{
 		Sphere(const Point3f& _center, float _radius)
 			: center_(_center), radius_(_radius)
 		{}
 
-    bool intersect(Ray& _ray, float& _tNear, float &_tFar, Vec3f* _normal = NULL, Point2f* _texCoords = NULL) const;
+    bool intersect(Ray3f& _ray, float& _tNear, float &_tFar, Vec3f* _normal = NULL) const;
 	
-    Bounds bounds() const;
+    Bounds3f bounds() const;
 
     TBD_PROPERTY_REF(Point3f,center);
     TBD_PROPERTY(float,radius);

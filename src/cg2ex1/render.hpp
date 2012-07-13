@@ -57,7 +57,7 @@ inline void drawBackground()
   glPopMatrix();
 }
 
-void drawBounds(tomo::Bounds _bounds, const tomo::Color4f& _color) 
+void drawBounds(tomo::Bounds3f _bounds, const tomo::Color4f& _color) 
   {
     float x = _bounds.min().x(), y = _bounds.min().y(), z = _bounds.min().z();
     float xs = _bounds.max().x(), ys = _bounds.max().y(), zs = _bounds.max().z();
@@ -370,7 +370,7 @@ inline void drawObject( tomo::Mesh& _mesh )
   glPopMatrix();
 }
 
-inline void drawSlices( tomo::Slices& _slices, tomo::Bounds _bounds )
+inline void drawSlices( tomo::Slices& _slices, tomo::Bounds3f _bounds )
 {
   std::vector<const tomo::Slice*> _allSlices = _slices.get();
 
@@ -393,8 +393,15 @@ inline void drawSlices( tomo::Slices& _slices, tomo::Bounds _bounds )
         tomo::Point2f _p0 = _slice->anchor_ + _seg.p0_.vec() * _slice->size_ ;
         tomo::Point2f _p1 = _slice->anchor_ + _seg.p1_.vec() * _slice->size_ ;
 
-    glBegin(GL_QUADS);
+        glBegin(GL_LINES);
         glNormal3f(_seg.normal_.x(),_seg.normal_.y(),0);
+        glVertex3f(_p0.x(),_p0.y(),_slice->posZ_);
+        glVertex3f(_p1.x(),_p1.y(),_slice->posZ_);
+
+        glEnd();
+
+/*
+    glBegin(GL_QUADS);
         glVertex3f(_p0.x(),_p0.y(),_slice->posZ_);
         glVertex3f(_p1.x(),_p1.y(),_slice->posZ_);
         glVertex3f(_p1.x(),_p1.y(),_slice->posZ_ + _sliceHeight);
@@ -411,7 +418,7 @@ inline void drawSlices( tomo::Slices& _slices, tomo::Bounds _bounds )
         glVertex3f(_p1.x(),_p1.y(),_slice->posZ_ + _sliceHeight);
         glVertex3f(_p0.x(),_p0.y(),_slice->posZ_ + _sliceHeight);
     glEnd();
-
+*/
 
 
       }
@@ -422,10 +429,10 @@ inline void drawSlices( tomo::Slices& _slices, tomo::Bounds _bounds )
 
 }
 
-inline void drawKDTreeNode( const tomo::Mesh& _mesh, unsigned nodeIndex, tomo::Bounds _bounds, int _depth)
+inline void drawKDTreeNode( const tomo::Mesh& _mesh, unsigned nodeIndex, tomo::Bounds3f _bounds, int _depth)
 {
   if (_mesh.nodes_[nodeIndex].isLeaf() || _depth > 12) { drawBounds(_bounds,tomo::Color4f(1.0,1.0,0.0)); return; }
-  tomo::Bounds _left, _right;
+  tomo::Bounds3f _left, _right;
 
   if (_mesh.nodes_[nodeIndex].inner_.splitPos() == 0) LOG_WRN;
 

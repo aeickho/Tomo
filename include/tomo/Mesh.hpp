@@ -45,7 +45,7 @@ namespace tomo
        */
       std::pair<Mesh,Mesh> split(const Plane& plane);
 
-      bool intersect(Ray& _ray, float& _tNear, float &_tFar, Vec3f* _normal = NULL, Point2f* _texCoords = NULL) const;
+      bool intersect(Ray3f& _ray, float& _tNear, float &_tFar, Vec3f* _normal = NULL) const;
 
       bool slice(Slice& _slice) const 
       { 
@@ -66,7 +66,5 @@ namespace tomo
        */
       void splitTriangle(const Triangle& tri, const Plane& plane, std::pair<Mesh,Mesh>& _halves);
   };
-
-
 
 }

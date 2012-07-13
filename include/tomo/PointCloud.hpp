@@ -10,11 +10,11 @@ namespace tomo
   class PointSet
   {
   public:
-    std::multimap<double, Vertex *> points;
+    std::multimap<double, Vertex3f *> points;
     PointSet(Point3f _center, float _radius = std::numeric_limits<float>::max(), int _k = std::numeric_limits<int>::max());
 
-    virtual bool insert(Vertex * v);
-    set<Vertex const *> vertexSet();
+    virtual bool insert(Vertex3f* v);
+    std::set<const Vertex3f*> vertexSet();
     float maxDist();
 
     TBD_PROPERTY(int,k)
@@ -22,31 +22,30 @@ namespace tomo
     TBD_PROPERTY_REF(Point3f,center)
   };
 
-  class PointCloud : public Compound<Vertex>
+  class PointCloud : public Compound<Vertex3f>
   {
     public:
-      typedef KDNode<Vertex> Node; 
-      typedef std::vector<Vertex*> PrimCont;
+      typedef KDNode<Vertex3f> Node; 
+      typedef std::vector<Vertex3f*> PrimCont;
       typedef std::vector<Node> NodeCont;
 
       PointCloud();
 
       void read(const string& filename);
-      void write(const string& filename) const;
 
-      bool intersect(Ray& _ray, float& _tNear, float &_tFar, Vec3f* _normal = NULL, Point2f* _texCoords = NULL) const { return false; }
+      bool intersect(Ray3f& _ray, float& _tNear, float &_tFar, Vec3f* _normal = NULL) const { return false; }
 
       void update();
       void collectKNearest(Point3f& p, int k);
       void collectInRadius(Point3f& p, float radius);
 
-      virtual set<const Vertex*> collectKNearest(Point3f const & p, int k) const;
-      virtual set<const Vertex *> collectInRadius(Point3f const & p, float radius) const;
-      bool isNearest(const Vertex& _v, const Point3f& _p);
+      virtual std::set<const Vertex3f*> collectKNearest(Point3f const & p, int k) const;
+      virtual std::set<const Vertex3f*> collectInRadius(Point3f const & p, float radius) const;
+      bool isNearest(const Vertex3f& _v, const Point3f& _p);
 
-      set<const Vertex*> selection;
+      std::set<const Vertex3f*> selection;
 
-      Vertices vertices_;
+      std::vector<Vertex3f> vertices_;
 
       void collect(Node* node, BoundingBox& box, PointSet& pointSet);
 
@@ -54,7 +53,7 @@ namespace tomo
       TBD_PROPERTY(bool,drawBoundingBox);
     
     private:
-      float splitPos(const PrimCont& _primList, NodeInner* _inner, const Bounds& _bounds) const;
+      float splitPos(const PrimCont& _primList, NodeInner* _inner, const Bounds3f& _bounds) const;
       float nodeDistance(const Point3f& p, const BoundingBox& box) const;
   };
 }

@@ -86,7 +86,7 @@ int main(int ac, char* av[])
                                        resY*_seg.p0_.y() + resX*_seg.normal_.y()/50 ));
     }
 
-    stringstream ss; ss << "test" << nSlice << ".ppm";
+    stringstream ss; ss << outputFile << nSlice << ".ppm";
     image.write(ss.str());
     nSlice++;
   }

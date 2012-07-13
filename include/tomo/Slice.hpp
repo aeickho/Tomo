@@ -30,7 +30,7 @@ namespace tomo
   struct Slice 
   {
     Slice(float _posZ = 0.0) : posZ_(_posZ) {}
-    Slice(float _posZ, const Bounds& _bounds);
+    Slice(float _posZ, const Bounds3f& _bounds);
     
     void addSegment(const Point3f& _p0, const Point3f& _p1, const Vec3f& _normal);
 
@@ -54,12 +54,12 @@ namespace tomo
       std::set<Slice,CompareSlice> slices_;
   public:
       Slices() {}
-      Slices(unsigned _nSlices, Bounds _bounds);
+      Slices(unsigned _nSlices, Bounds3f _bounds);
 
       typedef std::set<Slice,CompareSlice>::iterator iter;
       typedef std::set<Slice,CompareSlice>::const_iterator const_iter;
 
-      void make(unsigned _nSlices, Bounds _bounds);
+      void make(unsigned _nSlices, Bounds3f _bounds);
 
       /// Get slice by Z position
       iter get(float _posZ);

@@ -11,7 +11,7 @@ namespace tomo
       p.z() > min().z() && p.z() < max().z();
   }
 
-  bool BoundingBox::intersect(Ray& _ray, float& _tNear, float &_tFar, Vec3f* _normal, Point2f* _texCoords) const
+  bool BoundingBox::intersect(Ray3f& _ray, float& _tNear, float &_tFar, Vec3f* _normal) const
   {
     float tmin, tmax, tymin, tymax, tzmin, tzmax;
 

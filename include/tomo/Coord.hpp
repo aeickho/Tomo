@@ -181,6 +181,8 @@ namespace tomo
       return DIMENSIONS;
     }
 
+    Coords vectorize(const Scalar& _s) { TOMO_FOREACH_DIM a_[i] = _s; return *this; }
+
     operator std::string() const
     {
       std::stringstream ss; 

@@ -5,23 +5,20 @@
 
 #include <cassert>
 
-#include "tomo/OFFReader.hpp"
-#include "tomo/OFFWriter.hpp"
-
 #include "tbd/log.h"
 
 using namespace std;
 
 namespace tomo
 {
-  typedef pair<double,Vertex *> entry;
+  typedef pair<double,Vertex3f *> entry;
 
   PointSet::PointSet(Point3f _center, float _radius, int _k) : k_(_k), radius_(_radius), center_(_center)
   {
 
   }
 
-  bool PointSet::insert(Vertex * v)
+  bool PointSet::insert(Vertex3f * v)
   {
     Vec3f distVec = v->v-center();
     float dist = distVec.length();
@@ -35,7 +32,7 @@ namespace tomo
     if (points.empty())
       return true;
 
-    multimap<double, Vertex *>::iterator it = points.end();
+    multimap<double, Vertex3f *>::iterator it = points.end();
     it--;
     if (int(points.size()) > k())
     {
@@ -45,9 +42,9 @@ namespace tomo
   }
 
 
-  set<const Vertex*> PointSet::vertexSet()
+  set<const Vertex3f*> PointSet::vertexSet()
   {
-    set<const Vertex*> result;
+    set<const Vertex3f*> result;
     BOOST_FOREACH( const entry& p, points )
       result.insert(p.second);
     return result;
@@ -68,7 +65,7 @@ namespace tomo
       }
       if (k_ >= int(points.size()) && !points.empty())
       {
-        multimap<double,Vertex *>::iterator it = points.end();
+        multimap<double,Vertex3f *>::iterator it = points.end();
         it--;
         return it->first;
       }
@@ -76,11 +73,11 @@ namespace tomo
     return INF;
   }
  
-  static bool compareX(const Vertex* a, const Vertex* b) { return a->v.x() < b->v.x(); }
-  static bool compareY(const Vertex* a, const Vertex* b) { return a->v.y() < b->v.y(); }
-  static bool compareZ(const Vertex* a, const Vertex* b) { return a->v.z() < b->v.z(); }
+  static bool compareX(const Vertex3f* a, const Vertex3f* b) { return a->v.x() < b->v.x(); }
+  static bool compareY(const Vertex3f* a, const Vertex3f* b) { return a->v.y() < b->v.y(); }
+  static bool compareZ(const Vertex3f* a, const Vertex3f* b) { return a->v.z() < b->v.z(); }
   
-  float PointCloud::splitPos(const PrimCont& _primList, NodeInner* _inner, const Bounds& _bounds) const
+  float PointCloud::splitPos(const PrimCont& _primList, NodeInner* _inner, const Bounds3f& _bounds) const
   {
     switch (_inner->axis())
     {
@@ -98,7 +95,7 @@ namespace tomo
 
     if (node->isLeaf())
     {
-      BOOST_FOREACH( Vertex* vertex, node->leaf_.primitives(primLists_) )
+      BOOST_FOREACH( Vertex3f* vertex, node->leaf_.primitives(primLists_) )
         pointSet.insert(vertex);
       return;
     }
@@ -137,15 +134,8 @@ namespace tomo
 
   void PointCloud::read(const string& filename)
   {
-    OFFReader off;
-    off.read(filename,&vertices_,NULL);
+    ///@todo implement read function
     update();
-  }
-
-  void PointCloud::write(const string& filename) const
-  {
-    OFFWriter off;
-    off.write(filename,&vertices_,NULL);
   }
 
   void PointCloud::update()
@@ -168,7 +158,7 @@ namespace tomo
     selection = pointSet.vertexSet();
   }
 
-  bool PointCloud::isNearest(const Vertex& _v, const Point3f& _p)
+  bool PointCloud::isNearest(const Vertex3f& _v, const Point3f& _p)
   {
     float radius = (_v.v - _p).length();
     return collectInRadius(_p,radius).size() <= 1;

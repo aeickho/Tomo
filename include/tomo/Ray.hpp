@@ -5,14 +5,18 @@
 
 namespace tomo
 {
-  struct Primitive;
-
+  template<int DIMENSIONS, typename SCALAR = DEFAULT_TYPE>  
   struct Ray
   {
-    Ray(const Point3f _org = Point3f(), const Vec3f _dir = Vec3f(), float _tNear = 0.002, float _tFar = INF): 
+    typedef SCALAR Scalar;
+    typedef Point<DIMENSIONS,Scalar> point_type;
+    typedef Vec<DIMENSIONS,Scalar> vector_type;
+
+    Ray(const point_type _org = point_type(), const vector_type _dir = vector_type(), 
+        Scalar _tNear = 0.002, Scalar _tFar = std::numeric_limits<Scalar>::max()) : 
       org_(_org), dir_(_dir), tNear_(_tNear), tFar_(_tFar), primitive_(NULL)  {  }
 
-    bool intersection(Primitive* _primitive, float _t, float _tNear, float _tFar) 
+    bool intersection(void* _primitive, Scalar _t, Scalar _tNear, Scalar _tFar) 
     {
       if (_t >= _tNear && _t < _tFar)
       {
@@ -23,28 +27,32 @@ namespace tomo
       return false;
     }
 
-    inline bool intersection(Primitive* _primitive, float _t)
+    inline bool intersection(void* _primitive, Scalar _t)
     {
       return intersection(_primitive,_t,tNear_,tFar_);
     }
 
-    Point3f intersectionPoint() const
+    point_type intersectionPoint() const
     {
       return org_ + dir_ * tNear_;
     }
 
-    void params(Point3f _org, Vec3f _dir) 
+    void params(point_type _org, vector_type _dir) 
     {
       org_=_org; dir_=_dir;
     }
 
-    TBD_PROPERTY_REF(Point3f,org);
-    TBD_PROPERTY_REF(Vec3f,dir);
-    TBD_PROPERTY_REF(float,tNear);
-    TBD_PROPERTY_REF(float,tFar);
+    TBD_PROPERTY_REF(point_type,org);
+    TBD_PROPERTY_REF(vector_type,dir);
+    TBD_PROPERTY_REF(Scalar,tNear);
+    TBD_PROPERTY_REF(Scalar,tFar);
 
   private:
-    Primitive* primitive_;
+    void* primitive_;
   };
+
+  typedef Ray<2,float> Ray2f; 
+  typedef Ray<3,float> Ray3f;
+
 }
 

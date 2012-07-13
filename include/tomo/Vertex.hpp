@@ -7,42 +7,37 @@
 
 namespace tomo 
 {
-  using std::vector;
-  using std::set;
-
-  struct Vertex : public Primitive
+  template<int DIMENSIONS, typename SCALAR = DEFAULT_TYPE>  
+  struct Vertex : public Primitive<DIMENSIONS,SCALAR>
   {
-    Vertex(Point3f _v = Point3f(), Vec3f _n = Vec3f()) { v(_v); n(_n); }
-    void set(Point3f _v, Vec3f _n = Vec3f()) { v = _v; n = _n; }
+    typedef SCALAR Scalar;
+    typedef Bounds<DIMENSIONS,Scalar> bounds_type;
+    typedef Vec<DIMENSIONS,Scalar> vector_type;
+    typedef Point<DIMENSIONS,Scalar> point_type;
+    typedef Ray<DIMENSIONS,Scalar> ray_type;
+    typedef Primitive<DIMENSIONS,Scalar> primitive_type;
 
-    bool intersect(Ray& _ray, float& _tNear, float &_tFar, Vec3f* _normal = NULL, Point2f* _texCoords = NULL) const 
+    Vertex(point_type _v = point_type(), vector_type _n = vector_type()) { v(_v); n(_n); }
+    void set(point_type _v, vector_type _n = vector_type()) { v = _v; n = _n; }
+
+    bool intersect(ray_type& _ray, Scalar& _tNear, Scalar& _tFar, vector_type* _normal = NULL) const 
     {
       return false;
     }
 
-    SplitPlaneIntersect intersect(Axis _axis, float _splitPos, const Bounds& _boundsLeft, const Bounds& _boundsRight) const
+    SplitPlaneIntersect intersect(Axis _axis, Scalar _splitPos, 
+      const bounds_type& _boundsLeft, const bounds_type& _boundsRight) const
     {
-      return Primitive::intersect(_axis,_splitPos,_boundsLeft,_boundsRight);
+      return primitive_type::intersect(_axis,_splitPos,_boundsLeft,_boundsRight);
     }
 
-    Bounds bounds() const { return Bounds(v,v); }
+    bounds_type bounds() const { return bounds_type(v,v); }
 
-    Point3f v;
-    Vec3f n;
+    point_type v;
+    vector_type n;
     bool hasNormal() { return (n.length() != 0.0f); }
-
   };
 
-  typedef vector<Vertex> Vertices;
-  typedef vector<Vertex*> VertexList;
-  typedef std::set<Vertex*> VertexSet;
-
-  struct Polygon : public VertexList
-  {
-    Polygon(int n = 3) { if (n < 3) n = 3; resize(n); } 
-	  Vec3f normal();
-  };
-
-  typedef vector<Polygon*> PolygonList;
-  typedef vector<Polygon> Polygons;
+  typedef Vertex<2,float> Vertex2f;
+  typedef Vertex<3,float> Vertex3f;
 }

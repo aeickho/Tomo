@@ -3,7 +3,7 @@
 
 namespace tomo
 {
-  struct PrintBounds : Bounds 
+  struct PrintBounds : Bounds3f
   {
     typedef Vec3f Vec;
     typedef Point3f Point;
