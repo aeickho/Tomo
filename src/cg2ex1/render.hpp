@@ -40,15 +40,17 @@ inline void drawBackground()
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   glDisable(GL_DEPTH_TEST);
+
   glBegin(GL_QUADS);
+  {
+    glColor3f(0.0,0.0,0.0);
+    glVertex2f(-1.0,-1.0);
+    glVertex2f(1.0,-1.0);
 
-  glColor3f(0.0,0.0,0.0);
-  glVertex2f(-1.0,-1.0);
-  glVertex2f(1.0,-1.0);
-
-  glColor3f(54.0/255.0,110.0/255.0,201.0/255.0);
-  glVertex2f(1.0, 1.0);
-  glVertex2f(-1.0, 1.0);
+    glColor3f(54.0/255.0,110.0/255.0,201.0/255.0);
+    glVertex2f(1.0, 1.0);
+    glVertex2f(-1.0, 1.0);
+  }
   glEnd();
 
   glEnable(GL_DEPTH_TEST);
@@ -57,61 +59,73 @@ inline void drawBackground()
   glPopMatrix();
 }
 
-void drawBounds(tomo::Bounds3f _bounds, const tomo::Color4f& _color) 
+void drawBounds(tomo::Bounds3f _bounds, const tomo::Color4f& _color)
+{
+  float x = _bounds.min().x(), y = _bounds.min().y(), z = _bounds.min().z();
+  float xs = _bounds.max().x(), ys = _bounds.max().y(), zs = _bounds.max().z();
+
+  glColor4f(_color.r(),_color.g(),_color.b(),_color.a());
+
+  glBegin(GL_LINE_LOOP);
   {
-    float x = _bounds.min().x(), y = _bounds.min().y(), z = _bounds.min().z();
-    float xs = _bounds.max().x(), ys = _bounds.max().y(), zs = _bounds.max().z();
-
-    glColor4f(_color.r(),_color.g(),_color.b(),_color.a());
-
-    glBegin(GL_LINE_LOOP);
     // top side
     glVertex3f(x , ys, z );
     glVertex3f(xs, ys, z );
     glVertex3f(xs, ys, zs);
     glVertex3f(x , ys, zs);
-    glEnd();
+  }
+  glEnd();
 
-    glBegin(GL_LINE_LOOP);
+  glBegin(GL_LINE_LOOP);
+  {
     // bottom side
     glVertex3f(x , y, z );
     glVertex3f(xs, y, z );
     glVertex3f(xs, y, zs);
     glVertex3f(x , y, zs);
-    glEnd();
+  }
+  glEnd();
 
-    glBegin(GL_LINE_LOOP);
+  glBegin(GL_LINE_LOOP);
+  {
     // east side
     glVertex3f(x , y , z);
     glVertex3f(xs, y , z);
     glVertex3f(xs, ys, z);
     glVertex3f(x , ys, z);
-    glEnd();
+  }
+  glEnd();
 
-    glBegin(GL_LINE_LOOP);
-    // west side
+  glBegin(GL_LINE_LOOP);
+  // west side
+  {
     glVertex3f(x , y ,zs);
     glVertex3f(xs, y ,zs);
     glVertex3f(xs, ys,zs);
     glVertex3f(x , ys,zs);
-    glEnd();
+  }
+  glEnd();
 
-    glBegin(GL_LINE_LOOP);
+  glBegin(GL_LINE_LOOP);
+  {
     // north side
     glVertex3f(x , y , z );
     glVertex3f(x , y , zs);
     glVertex3f(x , ys, zs);
     glVertex3f(x , ys, z );
-    glEnd();
+  }
+  glEnd();
 
-    glBegin(GL_LINE_LOOP);
+  glBegin(GL_LINE_LOOP);
+  {
     // south side
     glVertex3f( xs, y , z );
     glVertex3f( xs, y , zs);
     glVertex3f( xs, ys, zs);
     glVertex3f( xs, ys, z );
-    glEnd();
   }
+  glEnd();
+}
 
 // realize camera
 template<class CAMERA> void realizeCamera(const CAMERA& _camera)
@@ -131,13 +145,46 @@ template<class CAMERA> void realizeCamera(const CAMERA& _camera)
   );
 }
 
-inline void drawBed( const tomo::PrintBounds& _bounds )
+inline void drawBedBorder( const tomo::PrintBounds& _bounds, const tomo::Color4f& _color )
 {
   glMatrixMode(GL_MODELVIEW);
   // draw _bounds.min().
   glBegin(GL_QUADS);
   {
-    glColor4f(0.5,0.5,0.5,0.8);
+    glColor4f(_color.r(),_color.g(),_color.b(),_color.a());
+    glVertex3f(_bounds.min().x(), _bounds.min().y()+5, _bounds.min().z());
+    glVertex3f(_bounds.min().x(), _bounds.min().y(), _bounds.min().z());
+    glVertex3f(_bounds.max().x()-5, _bounds.min().y(), _bounds.min().z());
+    glVertex3f(_bounds.max().x()-5, _bounds.min().y()+5, _bounds.min().z());
+
+    glVertex3f(_bounds.min().x()+5, _bounds.max().y(), _bounds.min().z());
+    glVertex3f(_bounds.min().x()+5, _bounds.max().y()-5, _bounds.min().z());
+    glVertex3f(_bounds.max().x(), _bounds.max().y()-5, _bounds.min().z());
+    glVertex3f(_bounds.max().x(), _bounds.max().y(), _bounds.min().z());
+
+    glVertex3f(_bounds.min().x(), _bounds.min().y()+5, _bounds.min().z());
+    glVertex3f(_bounds.min().x()+5, _bounds.min().y()+5, _bounds.min().z());
+    glVertex3f(_bounds.min().x()+5, _bounds.max().y(), _bounds.min().z());
+    glVertex3f(_bounds.min().x(), _bounds.max().y(), _bounds.min().z());
+
+    glVertex3f(_bounds.max().x()-5, _bounds.min().y(), _bounds.min().z());
+    glVertex3f(_bounds.max().x(), _bounds.min().y(), _bounds.min().z());
+    glVertex3f(_bounds.max().x(), _bounds.max().y()-5, _bounds.min().z());
+    glVertex3f(_bounds.max().x()-5, _bounds.max().y()-5, _bounds.min().z());
+
+//    glVertex3f(_bounds.max().x(), _bounds.max().y(), _bounds.min().z());
+//    glVertex3f(_bounds.min().x(), _bounds.max().y(), _bounds.min().z());
+  }
+  glEnd();
+}
+
+inline void drawBed( const tomo::PrintBounds& _bounds, const tomo::Color4f& _color )
+{
+  glMatrixMode(GL_MODELVIEW);
+  // draw _bounds.min().
+  glBegin(GL_QUADS);
+  {
+    glColor4f(_color.r(),_color.g(),_color.b(),_color.a());
     glVertex3f(_bounds.min().x(), _bounds.min().y(), _bounds.min().z());
     glVertex3f(_bounds.max().x(), _bounds.min().y(), _bounds.min().z());
     glVertex3f(_bounds.max().x(), _bounds.max().y(), _bounds.min().z());
@@ -180,7 +227,7 @@ inline void drawPrintRange( const tomo::PrintBounds& _bounds )
   glEnd();
 }
 
-inline void drawGrid( const tomo::PrintBounds& _bounds )
+inline void drawGrid( const tomo::PrintBounds& _bounds, const tomo::Color4f& xcolor_, const tomo::Color4f& ycolor_ )
 {
   // draw grid
   GLfloat tick=1.0;
@@ -191,7 +238,7 @@ inline void drawGrid( const tomo::PrintBounds& _bounds )
     {
       for (int i = 0; tick*i <= _bounds.size().x()/2; i++)
       {
-        glColor4f(0.2,0.6,0.2,(i%10)?0.4:0.8);
+        glColor4f(xcolor_.r(),xcolor_.g(),xcolor_.b(),xcolor_.a()*(i%10)?0.5:1.0);
         glVertex3f(tick*i, _bounds.min().y(), _bounds.min().z());
         glVertex3f(tick*i, _bounds.max().y(), _bounds.min().z());
         glVertex3f(-tick*i, _bounds.min().y(), _bounds.min().z());
@@ -205,7 +252,7 @@ inline void drawGrid( const tomo::PrintBounds& _bounds )
     {
       for (int i = _bounds.min().y(); i <= _bounds.size().y()/2; i++)
       {
-        glColor4f(0.6,0.0,0.2,(i%10)?0.4:0.8);
+        glColor4f(xcolor_.r(),xcolor_.g(),xcolor_.b(),xcolor_.a()*(i%10)?0.5:1.0);
         glVertex3f(_bounds.min().x(), tick*i, _bounds.min().z());
         glVertex3f(_bounds.max().x(), tick*i, _bounds.min().z());
         glVertex3f(_bounds.min().x(), -tick*i, _bounds.min().z());
@@ -326,9 +373,9 @@ inline void drawObject( tomo::Mesh& _mesh )
     glTranslatef(-c.x(),-c.y(),0.0);
     glColor3f(0.8,0.8,0.8);
 
-     tomo::Mesh::ConstFaceIter    fIt(_mesh.faces_begin()),
-             fEnd(_mesh.faces_end());
-     tomo::Mesh::ConstFaceVertexIter fvIt;
+    tomo::Mesh::ConstFaceIter    fIt(_mesh.faces_begin()),
+         fEnd(_mesh.faces_end());
+    tomo::Mesh::ConstFaceVertexIter fvIt;
 
     switch (_mesh.shadeMode())
     {
@@ -365,7 +412,7 @@ inline void drawObject( tomo::Mesh& _mesh )
       }
       glEnd();
       break;
-    } 
+    }
   }
   glPopMatrix();
 }
@@ -374,17 +421,17 @@ inline void drawSlices( tomo::Slices& _slices, tomo::Bounds3f _bounds )
 {
   std::vector<const tomo::Slice*> _allSlices = _slices.get();
 
-  ///@todo Put this into Slices class as member 
+  ///@todo Put this into Slices class as member
   float _sliceHeight = _bounds.size().z() / (_allSlices.size()-1);
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   {
-      tomo::Point3f c = _bounds.center();
+    tomo::Point3f c = _bounds.center();
     glTranslatef(-c.x(),-c.y(),0.0);
     /// Note: Could also draw lines here but quads are cooler :)
     glColor3f(0,1,0.8);
-    BOOST_FOREACH ( const tomo::Slice* _slice, _allSlices) 
+    BOOST_FOREACH ( const tomo::Slice* _slice, _allSlices)
     {
       BOOST_FOREACH ( const tomo::LineSegment& _seg, _slice->lineSegments_ )
       {
@@ -400,44 +447,48 @@ inline void drawSlices( tomo::Slices& _slices, tomo::Bounds3f _bounds )
 
         glEnd();
 
-/*
-    glBegin(GL_QUADS);
-        glVertex3f(_p0.x(),_p0.y(),_slice->posZ_);
-        glVertex3f(_p1.x(),_p1.y(),_slice->posZ_);
-        glVertex3f(_p1.x(),_p1.y(),_slice->posZ_ + _sliceHeight);
-        glVertex3f(_p0.x(),_p0.y(),_slice->posZ_ + _sliceHeight);
-    glEnd();
+        /*
+            glBegin(GL_QUADS);
+                glVertex3f(_p0.x(),_p0.y(),_slice->posZ_);
+                glVertex3f(_p1.x(),_p1.y(),_slice->posZ_);
+                glVertex3f(_p1.x(),_p1.y(),_slice->posZ_ + _sliceHeight);
+                glVertex3f(_p0.x(),_p0.y(),_slice->posZ_ + _sliceHeight);
+            glEnd();
 
-            _p1 = _slice->anchor_ + _seg.p0_.vec() * _slice->size_ ;
-        _p0 = _slice->anchor_ + _seg.p1_.vec() * _slice->size_ ;
+                    _p1 = _slice->anchor_ + _seg.p0_.vec() * _slice->size_ ;
+                _p0 = _slice->anchor_ + _seg.p1_.vec() * _slice->size_ ;
 
-    glBegin(GL_QUADS);
-        glNormal3f(_seg.normal_.x(),_seg.normal_.y(),0);
-        glVertex3f(_p0.x(),_p0.y(),_slice->posZ_);
-        glVertex3f(_p1.x(),_p1.y(),_slice->posZ_);
-        glVertex3f(_p1.x(),_p1.y(),_slice->posZ_ + _sliceHeight);
-        glVertex3f(_p0.x(),_p0.y(),_slice->posZ_ + _sliceHeight);
-    glEnd();
-*/
+            glBegin(GL_QUADS);
+                glNormal3f(_seg.normal_.x(),_seg.normal_.y(),0);
+                glVertex3f(_p0.x(),_p0.y(),_slice->posZ_);
+                glVertex3f(_p1.x(),_p1.y(),_slice->posZ_);
+                glVertex3f(_p1.x(),_p1.y(),_slice->posZ_ + _sliceHeight);
+                glVertex3f(_p0.x(),_p0.y(),_slice->posZ_ + _sliceHeight);
+            glEnd();
+        */
 
 
       }
     }
   }
   glPopMatrix();
-  
+
 
 }
 
 inline void drawKDTreeNode( const tomo::Mesh& _mesh, unsigned nodeIndex, tomo::Bounds3f _bounds, int _depth)
 {
-  if (_mesh.nodes_[nodeIndex].isLeaf() || _depth > 12) { drawBounds(_bounds,tomo::Color4f(1.0,1.0,0.0)); return; }
+  if (_mesh.nodes_[nodeIndex].isLeaf() || _depth > 12)
+  {
+    drawBounds(_bounds,tomo::Color4f(1.0,1.0,0.0));
+    return;
+  }
   tomo::Bounds3f _left, _right;
 
   if (_mesh.nodes_[nodeIndex].inner_.splitPos() == 0) LOG_WRN;
 
   _bounds.split(_mesh.nodes_[nodeIndex].inner_.splitPos(),_mesh.nodes_[nodeIndex].inner_.axis(),_left,_right);
-  
+
   drawKDTreeNode(_mesh,_mesh.nodes_[nodeIndex].inner_.left(),_left,_depth+1);
   drawKDTreeNode(_mesh,_mesh.nodes_[nodeIndex].inner_.right(),_right,_depth+1);
 }

@@ -175,8 +175,8 @@ void GLWidget::paintGL()
 
   realizeCamera(camera_);
 
-  drawBed(printRange_);
-  drawGrid(printRange_);
+  drawBedBorder(printRange_,tomo::Color4f(0.478,0.803,0.942,0.5));
+  drawGrid(printRange_,tomo::Color4f(0.478,0.803,0.942,0.5),tomo::Color4f(0.478,0.803,0.942,0.5));
   drawLight(light_);
   drawPrintRange(printRange_);
 //  if( config_.drawObjects_ )
