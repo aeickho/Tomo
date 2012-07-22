@@ -56,21 +56,21 @@ namespace tomo
       Slices() {}
       Slices(unsigned _nSlices, Bounds3f _bounds);
 
-      typedef std::set<Slice,CompareSlice>::iterator iter;
-      typedef std::set<Slice,CompareSlice>::const_iterator const_iter;
+      typedef std::set<Slice,CompareSlice>::iterator iterator;
+      typedef std::set<Slice,CompareSlice>::const_iterator const_iterator;
 
       void make(unsigned _nSlices, Bounds3f _bounds);
 
       /// Get slice by Z position
-      iter get(float _posZ);
-      const_iter get(float _posZ) const;
+      iterator get(float _posZ);
+      const_iterator get(float _posZ) const;
       
       std::vector<const Slice*> get() const;
    
-      iter end();
-      iter begin();
-      const_iter end() const;
-      const_iter begin() const;
+      iterator end();
+      iterator begin();
+      const_iterator end() const;
+      const_iterator begin() const;
   };
 
 }

@@ -99,7 +99,7 @@ namespace tomo
     void slice(Slices& _slices) const 
     {
       Point3f A = v0(), B = v1(), C = v2();
-      typename Slices::const_iter _Ait = _slices.get(A.z()), 
+      typename Slices::const_iterator _Ait = _slices.get(A.z()), 
                _Bit = _slices.get(B.z()), 
                _Cit = _slices.get(C.z()),
                it;

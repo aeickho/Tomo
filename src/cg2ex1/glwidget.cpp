@@ -32,6 +32,7 @@ void GLWidget::initializeGL()
   mesh_.initDL();
   slices_.make(300,mesh_.bounds());
   mesh_.slice(slices_);
+  slices_.initDL();
 
   // setup camera
   camera_ = Camera(
@@ -182,7 +183,8 @@ void GLWidget::paintGL()
 //  if( config_.drawObjects_ )
 //    mesh_.drawDL();
 
-  drawSlices(slices_,mesh_.bounds());
+  slices_.drawDL();
+//  drawSlices(slices_);
 //  drawKDTree(mesh_);
 
   if( config_.drawLight_ )

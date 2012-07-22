@@ -39,23 +39,23 @@ namespace tomo
   } 
 
 
-  Slices::iter Slices::get(float _posZ)
+  Slices::iterator Slices::get(float _posZ)
   {
     Slice _slice(_posZ); 
     return slices_.lower_bound(_slice);
   }
 
-  Slices::const_iter Slices::get(float _posZ) const
+  Slices::const_iterator Slices::get(float _posZ) const
   {
     Slice _slice(_posZ); 
     return slices_.lower_bound(_slice);
   }
 
-  Slices::iter Slices::end() { return slices_.end(); }
-  Slices::iter Slices::begin() { return slices_.begin(); }
+  Slices::iterator Slices::end() { return slices_.end(); }
+  Slices::iterator Slices::begin() { return slices_.begin(); }
 
-  Slices::const_iter Slices::end() const { return slices_.end(); }
-  Slices::const_iter Slices::begin() const { return slices_.begin(); }
+  Slices::const_iterator Slices::end() const { return slices_.end(); }
+  Slices::const_iterator Slices::begin() const { return slices_.begin(); }
 
   std::vector<const Slice*> Slices::get() const
   {

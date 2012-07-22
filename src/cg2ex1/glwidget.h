@@ -24,7 +24,7 @@ struct DisplayListed : OBJECT
     {
       displayList_ = glGenLists(1);
       glNewList(displayList_,GL_COMPILE);
-      drawObject(*this);
+      draw(*this);
       glEndList();
     }
   }
@@ -79,7 +79,7 @@ public:
   /// @todo replace with an vector<tomo::SceneObjects>
   DisplayListed<tomo::Mesh> mesh_;
 
-  tomo::Slices slices_;
+  DisplayListed<tomo::Slices> slices_;
 
 
   /// @brief selection parameters
