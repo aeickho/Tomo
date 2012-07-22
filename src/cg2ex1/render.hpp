@@ -417,9 +417,6 @@ inline void draw( tomo::Mesh& _mesh )
   glPopMatrix();
 }
 
-struct Sliced {
-};
-
 inline void draw( tomo::Slices& _slices )
 {
 //  std::vector<const tomo::Slice*> _allSlices = _slices.get();
@@ -429,18 +426,21 @@ inline void draw( tomo::Slices& _slices )
   {
 //    tomo::Point3f c = _bounds.center();
 //    glTranslatef(-c.x(),-c.y(),0.0);
-    float _sliceHeight = 0.1;
+    float _pos = 0.0;
     /// Note: Could also draw lines here but quads are cooler :)
     glColor3f(0,1,0.8);
     for( tomo::Slices::iterator _slice=_slices.begin(); _slice!=_slices.end(); _slice++)
     {
-      BOOST_FOREACH ( const tomo::LineSegment& _seg, _slice->lineSegments_ )
+      if( _pos > 0.0 )
       {
-        if (_seg.normal_.length() == 0.0) continue;
+        BOOST_FOREACH ( const tomo::LineSegment& _seg, _slice->lineSegments_ )
+        {
+          if (_seg.normal_.length() == 0.0 || _pos == _slice->posZ_) 
+            continue;
 
-        tomo::Point2f _p0 = _slice->anchor_ + _seg.p0_.vec() * _slice->size_ ;
-        tomo::Point2f _p1 = _slice->anchor_ + _seg.p1_.vec() * _slice->size_ ;
-        /*
+          tomo::Point2f _p0 = _slice->anchor_ + _seg.p0_.vec() * _slice->size_ ;
+          tomo::Point2f _p1 = _slice->anchor_ + _seg.p1_.vec() * _slice->size_ ;
+          /*
                 glBegin(GL_LINES);
                 {
                 glNormal3f(_seg.normal_.x(),_seg.normal_.y(),0);
@@ -448,33 +448,35 @@ inline void draw( tomo::Slices& _slices )
                 glVertex3f(_p1.x(),_p1.y(),_slice->posZ_);
                 }
                 glEnd();
-        */
+          */
 
-        glBegin(GL_QUADS);
-        {
-          glVertex3f(_p1.x(),_p1.y(),_slice->posZ_);
-          glVertex3f(_p0.x(),_p0.y(),_slice->posZ_);
-          glVertex3f(_p0.x(),_p0.y(),_slice->posZ_ + _sliceHeight);
-          glVertex3f(_p1.x(),_p1.y(),_slice->posZ_ + _sliceHeight);
+          glBegin(GL_QUADS);
+          {
+            glNormal3f(_seg.normal_.x(),-_seg.normal_.y(),0);
+            glVertex3f(_p1.x(),_p1.y(),_pos);
+            glVertex3f(_p1.x(),_p1.y(),_slice->posZ_);
+            glVertex3f(_p0.x(),_p0.y(),_slice->posZ_);
+            glVertex3f(_p0.x(),_p0.y(),_pos);
+          }
+          glEnd();
+
+          _p1 = _slice->anchor_ + _seg.p0_.vec() * _slice->size_ ;
+          _p0 = _slice->anchor_ + _seg.p1_.vec() * _slice->size_ ;
+
+          glBegin(GL_QUADS);
+          {
+            glNormal3f(_seg.normal_.x(),-_seg.normal_.y(),0);
+            glVertex3f(_p1.x(),_p1.y(),_pos);
+            glVertex3f(_p1.x(),_p1.y(),_slice->posZ_);
+            glVertex3f(_p0.x(),_p0.y(),_slice->posZ_);
+            glVertex3f(_p0.x(),_p0.y(),_pos);
+          }
+          glEnd();
+          
         }
-        glEnd();
-
-        _p1 = _slice->anchor_ + _seg.p0_.vec() * _slice->size_ ;
-        _p0 = _slice->anchor_ + _seg.p1_.vec() * _slice->size_ ;
-
-        glBegin(GL_QUADS);
-        {
-          glNormal3f(_seg.normal_.x(),_seg.normal_.y(),0);
-          glVertex3f(_p1.x(),_p1.y(),_slice->posZ_);
-          glVertex3f(_p0.x(),_p0.y(),_slice->posZ_);
-          glVertex3f(_p0.x(),_p0.y(),_slice->posZ_ + _sliceHeight);
-          glVertex3f(_p1.x(),_p1.y(),_slice->posZ_ + _sliceHeight);
-        }
-        glEnd();
-
-
-
       }
+      _pos = _slice->posZ_;
+ //     _sliceHeight = 
     }
   }
   glPopMatrix();
