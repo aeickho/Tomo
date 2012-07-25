@@ -5,7 +5,7 @@
 #include <iostream>
 #include <boost/program_options.hpp>
 #include <boost/foreach.hpp>
-#include <Magick++.h>
+//#include <Magick++.h>
 #include <tbd/log.h>
 
 #include "tomo/Slice.hpp"
@@ -39,7 +39,7 @@ int main(int ac, char* av[])
     ("slices,n", po::value<int>(&nSlices), "Number of slices")
     ("resx,x", po::value<int>(&resX), "Resolution X")
     ("resy,y", po::value<int>(&resY), "Resolution Y")
-    ;
+   ;
 
   // Parse the command line arguments for all supported options
   po::variables_map vm;
@@ -66,7 +66,7 @@ int main(int ac, char* av[])
   std::vector<const tomo::Slice*> _allSlices = _slices.get();
 
   unsigned nSlice = 0;
-
+/*
   LOG_MSG << fmt("Got % slices, %") % _allSlices.size();
 
   BOOST_FOREACH ( const tomo::Slice* _slice, _allSlices)
@@ -90,7 +90,7 @@ int main(int ac, char* av[])
     image.write(ss.str());
     nSlice++;
   }
-
+*/
   return EXIT_SUCCESS;
 }
 

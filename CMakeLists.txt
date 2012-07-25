@@ -20,11 +20,17 @@ SET (CMAKE_PROJECT_DOC_DIR
 FIND_PACKAGE(Qt4 REQUIRED)
 
 # include directories
-INCLUDE_DIRECTORIES(. ${CMAKE_CURRENT_BINARY_DIR} ./include ./TbdLib/include ./OpenMesh/src /usr/include/ImageMagick  )
+INCLUDE_DIRECTORIES(. ${CMAKE_CURRENT_BINARY_DIR} ./include ./TbdLib/include /usr/include/ImageMagick  )
 
 # tomo library
 AUX_SOURCE_DIRECTORY(./src/lib tomo_src)
+AUX_SOURCE_DIRECTORY(./src/OpenMesh OpenMesh_src)
 ADD_LIBRARY(tomo STATIC ${tomo_src})
+
+# OpenMeshCore library
+ADD_LIBRARY(OpenMeshCore SHARED ${OpenMesh_src})
+SET_TARGET_PROPERTIES( OpenMeshCore PROPERTIES COMPILE_FLAGS "-m64 -pipe -O3 -DINCLUDE_TEMPLATES -W -Wall -Wno-unused -DNDEBUG -D_REENTRANT -Wall -W -fPIC " )
+
 
 # link with...
 TARGET_LINK_LIBRARIES(tomo glut GLU GL OpenMeshCore )
