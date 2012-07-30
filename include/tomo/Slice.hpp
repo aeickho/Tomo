@@ -2,6 +2,8 @@
 
 #include <vector>
 #include "tomo/Plane.hpp"
+#include "tomo/Vertex.hpp"
+#include "tomo/KDTree.hpp"
 #include <boost/foreach.hpp>
 #include <set>
 
@@ -20,57 +22,72 @@ namespace tomo
 
   struct LineSegment
   {
-    LineSegment(Point2f _p0, Point2f _p1, Vec2f _normal) :
-      p0_(_p0), p1_(_p1), normal_(_normal) {}
+    LineSegment(Point2us _v, Vec2f _normal = Vec2f()) : v_(_v), normal_(_normal), next_(NULL) {}
 
-    Point2f p0_, p1_;
+    Point2us v_;
     Vec2f normal_;
+    LineSegment* next_;
+
+    bool isLine() const
+    {
+      if (!next_) return false;
+      return next_->next_ == this;
+    }
+
+    friend bool operator<(const LineSegment& lhs, const LineSegment& rhs) 
+    {
+      return (lhs.v_.x() * 65536 + lhs.v_.y()) < (rhs.v_.x() * 65536 + rhs.v_.y());
+    }
   };
 
   struct Slice 
   {
-    Slice(float _posZ = 0.0) : posZ_(_posZ) {}
+    typedef std::multiset<LineSegment> LineSegments;
     Slice(float _posZ, const Bounds3f& _bounds);
     
     void addSegment(const Point3f& _p0, const Point3f& _p1, const Vec3f& _normal);
+    bool getSegment(const LineSegment& _lineSeg, Point2f& _p0, Point2f& _p1, Vec3f& _normal ) const;
 
-    Point2f anchor_;
-    Vec2f size_;
+    LineSegments::iterator get(LineSegment* _lineSeg);
+
+    void connect();
+
+    Bounds2f bounds_;
     float posZ_;
-    std::vector<LineSegment> lineSegments_; 
+    LineSegments lineSegments_;
+
+    friend bool operator<(const Slice& lhs, const Slice& rhs)
+    {
+      return lhs.posZ_ < rhs.posZ_;
+    }
+
+    private:
+      bool makePoint(const Point3f& _p, Point2us& _v) const;
   };
 
   struct Slices
   {
-  private:
-      struct CompareSlice
-      {
-        bool operator()(const Slice& lhs, const Slice& rhs) const
-        {
-          return lhs.posZ_ < rhs.posZ_;
-        }
-      };
-
-      std::set<Slice,CompareSlice> slices_;
   public:
       Slices() {}
       Slices(unsigned _nSlices, Bounds3f _bounds);
 
-      typedef std::set<Slice,CompareSlice>::iterator iterator;
-      typedef std::set<Slice,CompareSlice>::const_iterator const_iterator;
+      typedef std::set<Slice>::iterator iterator;
+      typedef std::set<Slice>::const_iterator const_iterator;
 
       void make(unsigned _nSlices, Bounds3f _bounds);
 
       /// Get slice by Z position
       iterator get(float _posZ);
       const_iterator get(float _posZ) const;
-      
+     
       std::vector<const Slice*> get() const;
-   
+
       iterator end();
       iterator begin();
       const_iterator end() const;
       const_iterator begin() const;
+  private:
+      std::set<Slice> slices_;
   };
 
 }

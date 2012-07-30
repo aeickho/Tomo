@@ -29,7 +29,7 @@ ADD_LIBRARY(tomo STATIC ${tomo_src})
 
 # OpenMeshCore library
 ADD_LIBRARY(OpenMeshCore SHARED ${OpenMesh_src})
-SET_TARGET_PROPERTIES( OpenMeshCore PROPERTIES COMPILE_FLAGS "-m64 -pipe -O3 -DINCLUDE_TEMPLATES -W -Wall -Wno-unused -DNDEBUG -D_REENTRANT -Wall -W -fPIC " )
+SET_TARGET_PROPERTIES( OpenMeshCore PROPERTIES COMPILE_FLAGS " -pipe -O3 -DINCLUDE_TEMPLATES -W -Wall -Wno-unused -DNDEBUG -D_REENTRANT -Wall -W -fPIC " )
 
 
 # link with...

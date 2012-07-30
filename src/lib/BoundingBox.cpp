@@ -4,13 +4,6 @@ using namespace std;
 
 namespace tomo 
 {
-  bool BoundingBox::pointInBox(const Point3f p) const
-  {
-    return p.x() > min().x() && p.x() < max().x() &&
-      p.y() > min().y() && p.y() < max().y() &&
-      p.z() > min().z() && p.z() < max().z();
-  }
-
   bool BoundingBox::intersect(Ray3f& _ray, float& _tNear, float &_tFar, Vec3f* _normal) const
   {
     float tmin, tmax, tymin, tymax, tzmin, tzmax;

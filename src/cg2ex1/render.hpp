@@ -133,16 +133,16 @@ template<class CAMERA> void realizeCamera(const CAMERA& _camera)
   glMatrixMode(GL_MODELVIEW);
   // realize coordinates
   gluLookAt(
-    _camera.eye().x(),
-    _camera.eye().y(),
-    _camera.eye().z(),
-    _camera.center().x(),
-    _camera.center().y(),
-    _camera.center().z(),
-    _camera.up().x(),
-    _camera.up().y(),
-    _camera.up().z()
-  );
+      _camera.eye().x(),
+      _camera.eye().y(),
+      _camera.eye().z(),
+      _camera.center().x(),
+      _camera.center().y(),
+      _camera.center().z(),
+      _camera.up().x(),
+      _camera.up().y(),
+      _camera.up().z()
+      );
 }
 
 inline void drawBedBorder( const tomo::PrintBounds& _bounds, const tomo::Color4f& _color )
@@ -172,8 +172,8 @@ inline void drawBedBorder( const tomo::PrintBounds& _bounds, const tomo::Color4f
     glVertex3f(_bounds.max().x(), _bounds.max().y()-5, _bounds.min().z());
     glVertex3f(_bounds.max().x()-5, _bounds.max().y()-5, _bounds.min().z());
 
-//    glVertex3f(_bounds.max().x(), _bounds.max().y(), _bounds.min().z());
-//    glVertex3f(_bounds.min().x(), _bounds.max().y(), _bounds.min().z());
+    //    glVertex3f(_bounds.max().x(), _bounds.max().y(), _bounds.min().z());
+    //    glVertex3f(_bounds.min().x(), _bounds.max().y(), _bounds.min().z());
   }
   glEnd();
 }
@@ -264,15 +264,15 @@ inline void drawGrid( const tomo::PrintBounds& _bounds, const tomo::Color4f& xco
 }
 
 template<class POINT, class COLOR> void drawArrow(
-  const std::string& _label,
-  const POINT& _p1,
-  const POINT& _p2,
-  const COLOR& _color,
-  bool _drawLabel,
-  bool _drawCoords,
-  GLfloat _width=1.0,
-  GLfloat _arrowR=1.0,
-  GLfloat _arrowH=2.0 )
+    const std::string& _label,
+    const POINT& _p1,
+    const POINT& _p2,
+    const COLOR& _color,
+    bool _drawLabel,
+    bool _drawCoords,
+    GLfloat _width=1.0,
+    GLfloat _arrowR=1.0,
+    GLfloat _arrowH=2.0 )
 {
   glLineWidth(_width);
   glBegin(GL_LINES);
@@ -301,13 +301,13 @@ template<class POINT, class COLOR> void drawArrow(
     if( _drawLabel )
     {
       BOOST_FOREACH(char ch, _label)
-      glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,ch);
+        glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,ch);
     }
     if( _drawCoords )
     {
       glScalef(0.5,0.5,0.5);
       BOOST_FOREACH(char ch, (std::string)_p2)
-      glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,ch);
+        glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,ch);
     }
   }
   glPopMatrix();
@@ -321,7 +321,7 @@ template<class POINT, class COLOR> void drawArrow(
       glScalef(0.01,0.01,0.01);
       glScalef(0.5,0.5,0.5);
       BOOST_FOREACH(char ch, (std::string)_p1)
-      glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,ch);
+        glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,ch);
     }
   }
   glPopMatrix();
@@ -374,44 +374,44 @@ inline void draw( tomo::Mesh& _mesh )
     glColor3f(0.8,0.8,0.8);
 
     tomo::Mesh::ConstFaceIter    fIt(_mesh.faces_begin()),
-         fEnd(_mesh.faces_end());
+      fEnd(_mesh.faces_end());
     tomo::Mesh::ConstFaceVertexIter fvIt;
 
     switch (_mesh.shadeMode())
     {
-    case tomo::Mesh::SM_FLAT:
-      glBegin(GL_TRIANGLES);
-      for (; fIt!=fEnd; ++fIt)
-      {
-        fvIt = _mesh.cfv_iter(fIt.handle());
-        glNormal3fv(&_mesh.normal(fIt)[0]);
+      case tomo::Mesh::SM_FLAT:
+        glBegin(GL_TRIANGLES);
+        for (; fIt!=fEnd; ++fIt)
+        {
+          fvIt = _mesh.cfv_iter(fIt.handle());
+          glNormal3fv(&_mesh.normal(fIt)[0]);
 
-        glVertex3fv( &_mesh.point(fvIt)[0] );
-        ++fvIt;
-        glVertex3fv( &_mesh.point(fvIt)[0] );
-        ++fvIt;
-        glVertex3fv( &_mesh.point(fvIt)[0] );
-      }
-      glEnd();
-      break;
+          glVertex3fv( &_mesh.point(fvIt)[0] );
+          ++fvIt;
+          glVertex3fv( &_mesh.point(fvIt)[0] );
+          ++fvIt;
+          glVertex3fv( &_mesh.point(fvIt)[0] );
+        }
+        glEnd();
+        break;
 
-    case tomo::Mesh::SM_GOURAUD:
-      glBegin(GL_TRIANGLES);
-      for (; fIt!=fEnd; ++fIt)
-      {
-        fvIt = _mesh.cfv_iter(fIt.handle());
+      case tomo::Mesh::SM_GOURAUD:
+        glBegin(GL_TRIANGLES);
+        for (; fIt!=fEnd; ++fIt)
+        {
+          fvIt = _mesh.cfv_iter(fIt.handle());
 
-        glNormal3fv( &_mesh.normal(fvIt)[0] );
-        glVertex3fv( &_mesh.point(fvIt)[0] );
-        ++fvIt;
-        glNormal3fv( &_mesh.normal(fvIt)[0] );
-        glVertex3fv( &_mesh.point(fvIt)[0] );
-        ++fvIt;
-        glNormal3fv( &_mesh.normal(fvIt)[0] );
-        glVertex3fv( &_mesh.point(fvIt)[0] );
-      }
-      glEnd();
-      break;
+          glNormal3fv( &_mesh.normal(fvIt)[0] );
+          glVertex3fv( &_mesh.point(fvIt)[0] );
+          ++fvIt;
+          glNormal3fv( &_mesh.normal(fvIt)[0] );
+          glVertex3fv( &_mesh.point(fvIt)[0] );
+          ++fvIt;
+          glNormal3fv( &_mesh.normal(fvIt)[0] );
+          glVertex3fv( &_mesh.point(fvIt)[0] );
+        }
+        glEnd();
+        break;
     }
   }
   glPopMatrix();
@@ -419,13 +419,13 @@ inline void draw( tomo::Mesh& _mesh )
 
 inline void draw( tomo::Slices& _slices )
 {
-//  std::vector<const tomo::Slice*> _allSlices = _slices.get();
+  //  std::vector<const tomo::Slice*> _allSlices = _slices.get();
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   {
-//    tomo::Point3f c = _bounds.center();
-//    glTranslatef(-c.x(),-c.y(),0.0);
+    //    tomo::Point3f c = _bounds.center();
+    //    glTranslatef(-c.x(),-c.y(),0.0);
     float _pos = 0.0;
     /// Note: Could also draw lines here but quads are cooler :)
     glColor3f(0,1,0.8);
@@ -435,48 +435,48 @@ inline void draw( tomo::Slices& _slices )
       {
         BOOST_FOREACH ( const tomo::LineSegment& _seg, _slice->lineSegments_ )
         {
-          if (_seg.normal_.length() == 0.0 || _pos == _slice->posZ_) 
-            continue;
+          tomo::Vec3f _normal;
+          tomo::Point2f _p0,_p1;
 
-          tomo::Point2f _p0 = _slice->anchor_ + _seg.p0_.vec() * _slice->size_ ;
-          tomo::Point2f _p1 = _slice->anchor_ + _seg.p1_.vec() * _slice->size_ ;
-          /*
-                glBegin(GL_LINES);
-                {
-                glNormal3f(_seg.normal_.x(),_seg.normal_.y(),0);
-                glVertex3f(_p0.x(),_p0.y(),_slice->posZ_);
-                glVertex3f(_p1.x(),_p1.y(),_slice->posZ_);
-                }
-                glEnd();
-          */
-
-          glBegin(GL_QUADS);
+          if (_slice->getSegment(_seg,_p0,_p1,_normal))
           {
-            glNormal3f(_seg.normal_.x(),-_seg.normal_.y(),0);
-            glVertex3f(_p1.x(),_p1.y(),_pos);
-            glVertex3f(_p1.x(),_p1.y(),_slice->posZ_);
-            glVertex3f(_p0.x(),_p0.y(),_slice->posZ_);
-            glVertex3f(_p0.x(),_p0.y(),_pos);
-          }
-          glEnd();
 
-          _p1 = _slice->anchor_ + _seg.p0_.vec() * _slice->size_ ;
-          _p0 = _slice->anchor_ + _seg.p1_.vec() * _slice->size_ ;
+            /*
+               glBegin(GL_LINES);
+               {
+               glNormal3f(_seg.normal_.x(),_seg.normal_.y(),0);
+               glVertex3f(_p0.x(),_p0.y(),_slice->posZ_);
+               glVertex3f(_p1.x(),_p1.y(),_slice->posZ_);
+               }
+               glEnd();
+               */
 
-          glBegin(GL_QUADS);
-          {
-            glNormal3f(_seg.normal_.x(),-_seg.normal_.y(),0);
-            glVertex3f(_p1.x(),_p1.y(),_pos);
-            glVertex3f(_p1.x(),_p1.y(),_slice->posZ_);
-            glVertex3f(_p0.x(),_p0.y(),_slice->posZ_);
-            glVertex3f(_p0.x(),_p0.y(),_pos);
-          }
-          glEnd();
-          
+            glBegin(GL_QUADS);
+            {
+              glNormal3f(_normal.x(),_normal.y(),0);
+              glVertex3f(_p1.x(),_p1.y(),_pos);
+              glVertex3f(_p1.x(),_p1.y(),_slice->posZ_);
+              glVertex3f(_p0.x(),_p0.y(),_slice->posZ_);
+              glVertex3f(_p0.x(),_p0.y(),_pos);
+            }
+            glEnd();
+
+            std::swap(_p0,_p1);
+
+            glBegin(GL_QUADS);
+            {
+              glNormal3f(_normal.x(),_normal.y(),0);
+              glVertex3f(_p1.x(),_p1.y(),_pos);
+              glVertex3f(_p1.x(),_p1.y(),_slice->posZ_);
+              glVertex3f(_p0.x(),_p0.y(),_slice->posZ_);
+              glVertex3f(_p0.x(),_p0.y(),_pos);
+            }
+            glEnd();
+          }  
         }
       }
       _pos = _slice->posZ_;
- //     _sliceHeight = 
+      //     _sliceHeight = 
     }
   }
   glPopMatrix();

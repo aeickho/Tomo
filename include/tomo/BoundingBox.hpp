@@ -14,9 +14,5 @@ namespace tomo
     bool intersect(Ray3f& _ray, float& _tNear, float &_tFar, Vec3f* _normal = NULL) const;
     
     Bounds3f bounds() const { return Bounds3f(min(),max()); }
-    
-    /** @brief Test if point is in box
-     */
-    bool pointInBox(Point3f p) const;
   };
 }

@@ -5,7 +5,7 @@
 #include <iostream>
 #include <boost/program_options.hpp>
 #include <boost/foreach.hpp>
-//#include <Magick++.h>
+#include <Magick++.h>
 #include <tbd/log.h>
 
 #include "tomo/Slice.hpp"
@@ -39,7 +39,7 @@ int main(int ac, char* av[])
     ("slices,n", po::value<int>(&nSlices), "Number of slices")
     ("resx,x", po::value<int>(&resX), "Resolution X")
     ("resy,y", po::value<int>(&resY), "Resolution Y")
-   ;
+    ;
 
   // Parse the command line arguments for all supported options
   po::variables_map vm;
@@ -66,31 +66,41 @@ int main(int ac, char* av[])
   std::vector<const tomo::Slice*> _allSlices = _slices.get();
 
   unsigned nSlice = 0;
-/*
   LOG_MSG << fmt("Got % slices, %") % _allSlices.size();
 
   BOOST_FOREACH ( const tomo::Slice* _slice, _allSlices)
   {
+    if (nSlice != _allSlices.size()/2) { nSlice++; continue; }
     LOG_MSG << nSlice;
     Magick::Image image(Magick::Geometry(resX,resY), Magick::Color());
-    image.strokeColor("red"); // Outline color 
-
+    
     BOOST_FOREACH ( const tomo::LineSegment& _seg, _slice->lineSegments_ )
     {
-    image.strokeColor("red"); // Outline color 
-      image.draw( Magick::DrawableLine(resX*_seg.p0_.x(),resY*_seg.p0_.y(),resX*_seg.p1_.x(),resY*_seg.p1_.y()));
-    
-    image.strokeColor("green"); // Outline color 
-      image.draw( Magick::DrawableLine(resX*_seg.p0_.x(),resY*_seg.p0_.y(),
-                                       resX*_seg.p0_.x() + resX*_seg.normal_.x()/50,
-                                       resY*_seg.p0_.y() + resX*_seg.normal_.y()/50 ));
+      tomo::Point2f _p0,_p1;
+      tomo::Vec3f _normal;
+      if (_slice->getSegment(_seg,_p0,_p1,_normal))
+      {
+        _p0((_p0.x() - _slice->bounds_.min().x())/_slice->bounds_.size().x(),(_p0.y() - _slice->bounds_.min().y())/_slice->bounds_.size().y());
+        _p1((_p1.x() - _slice->bounds_.min().x())/_slice->bounds_.size().x(),(_p1.y() - _slice->bounds_.min().y())/_slice->bounds_.size().y());
+        LOG_MSG << fmt("% %") % _normal.x() % _normal.y();
+
+      image.strokeColor("red"); // Outline color 
+      image.draw( Magick::DrawableLine(resX*_p0.x(),resY*_p0.y(),resX*_p1.x(),resY*_p1.y()));
+  
+      image.strokeColor("green"); // Outline color 
+      image.draw( Magick::DrawableLine(resX*_p0.x(),resY*_p0.y(),
+            resX*_p0.x() + resX*_normal.x()/50,
+            resY*_p0.y() + resX*_normal.y()/50 ));
+      }
     }
+    
+    //image.d
 
     stringstream ss; ss << outputFile << nSlice << ".ppm";
     image.write(ss.str());
     nSlice++;
   }
-*/
+
   return EXIT_SUCCESS;
 }
 

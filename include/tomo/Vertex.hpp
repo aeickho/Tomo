@@ -40,4 +40,5 @@ namespace tomo
 
   typedef Vertex<2,float> Vertex2f;
   typedef Vertex<3,float> Vertex3f;
+  typedef Vertex<2,unsigned short> Vertex2us;
 }

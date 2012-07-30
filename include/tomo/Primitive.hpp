@@ -55,7 +55,7 @@ namespace tomo
      * @param _boundsLeft  Left bounds
      * @param _boundsRight Right bounds
      */
-    virtual SplitPlaneIntersect intersect(Axis _axis, float _splitPos, const bounds_type& _boundsLeft, const bounds_type& _boundsRight) const
+    virtual SplitPlaneIntersect intersect(Axis _axis, Scalar _splitPos, const bounds_type& _boundsLeft, const bounds_type& _boundsRight) const
     {
       if (bounds().max()[_axis] < _splitPos) return SplitPlaneIntersect(true,false);
       if (bounds().min()[_axis] > _splitPos) return SplitPlaneIntersect(false,true); 

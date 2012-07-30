@@ -12,8 +12,8 @@ namespace tomo
   struct Bounds 
   {
     typedef SCALAR Scalar;
-    typedef Point<DIMENSIONS,Scalar> point_type;
-    typedef Vec<DIMENSIONS,Scalar> vector_type;
+    typedef Point<DIMENSIONS,SCALAR> point_type;
+    typedef Vec<DIMENSIONS,SCALAR> vector_type;
 
     Bounds() { min_.vectorize(std::numeric_limits<Scalar>::max()); max_.vectorize(std::numeric_limits<Scalar>::min());  }
     Bounds(point_type _min, point_type _max) { this->operator()(_min,_max); }
@@ -35,6 +35,15 @@ namespace tomo
         min_[i] = std::min(_bounds.min_[i],min_[i]);
         max_[i] = std::max(_bounds.max_[i],max_[i]);
       }
+    }
+    
+    /// Test if point is inside bounds
+    bool inside(point_type _p) const
+    {
+      TOMO_FOREACH_DIM {
+        if (_p[i] < min_[i] || _p[i] > max_[i]) return false;
+     }
+      return true;
     }
 
     /// Return axis which largest extent

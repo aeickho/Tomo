@@ -65,8 +65,8 @@ namespace tomo
 
   typedef Point<2,int> Point2i;
   typedef Point<2,double> Point2d;
-
   typedef Point<2,float> Point2f;
+  typedef Point<2,unsigned short> Point2us;
   typedef Point<3,float> Point3f;
 }
 

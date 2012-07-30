@@ -106,6 +106,7 @@ namespace tomo
   typedef Vec<2,double> Vec2d;
   typedef Vec<2,float> Vec2f;
   typedef Vec<3,float> Vec3f;
+  typedef Vec<2,short> Vec2s;
 }
 
 #endif /* _VEC_HPP */

@@ -111,7 +111,7 @@ namespace tomo
 
   float PointCloud::nodeDistance(const Point3f& p, const BoundingBox& box) const
   {
-    if (box.pointInBox(p)) return 0.0;
+    if (box.inside(p)) return 0.0;
 
     float minDist = INF;
     FOREACH_AXIS 
