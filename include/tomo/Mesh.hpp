@@ -1,8 +1,6 @@
 #pragma once
 
-#include "tomo/Compound.hpp"
-#include "tomo/Triangle.hpp"
-#include "tomo/Color.hpp"
+#include "tomo/SlicableObject.hpp"
 #include <OpenMesh/Core/IO/MeshIO.hh>
 #include <OpenMesh/Core/Mesh/TriMesh_ArrayKernelT.hh>
 
@@ -29,7 +27,7 @@ namespace tomo
     FaceAttributes(OpenMesh::Attributes::Normal);
   };
 
-  class Mesh : public OpenMesh::TriMesh_ArrayKernelT<MeshTraits>, public Compound<Triangle>
+  class Mesh : public OpenMesh::TriMesh_ArrayKernelT<MeshTraits>, public SlicableObject 
   {
     public:
       typedef enum { SM_FLAT, SM_GOURAUD } ShadeMode;
@@ -52,11 +50,13 @@ namespace tomo
         return false; // TODO: Implement slicing algo
       }
 
-      void slice(Slices& _slice) const;
+      void slice(Slices& _slices) const;
+      Bounds3f bounds() const { return bounds_; }
+      void calcBounds();
 
       TBD_PROPERTY(ShadeMode,shadeMode);
-
     private:
+      Bounds3f bounds_;
 
       /** @brief Splits are triangle with splitting plane
        * @detail Adds triangles behind plane to behind and triangles in front of plane to front
@@ -64,7 +64,8 @@ namespace tomo
        * @param _plane  Split plane
        * @param _halves Halves of the mesh where the resulting triangles are inserted 
        */
-      void splitTriangle(const Triangle& tri, const Plane& plane, std::pair<Mesh,Mesh>& _halves);
+      void splitTriangle(ConstFaceIter _faceIter, const Plane& plane, std::pair<Mesh,Mesh>& _halves);
+      void sliceTriangle(ConstFaceIter _faceIter, Slices& _slices) const; 
   };
 
 }

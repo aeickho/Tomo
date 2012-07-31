@@ -22,23 +22,27 @@ namespace tomo
     update_face_normals();
     update_vertex_normals();
 
+    calcBounds();
+  }
+
+  void Mesh::calcBounds()
+  {
+    Bounds3f _bounds;
     Mesh::ConstFaceIter    fIt(faces_begin()),fEnd(faces_end());
     Mesh::ConstFaceVertexIter fvIt;
-
     for (; fIt!=fEnd; ++fIt)
     {
       fvIt = cfv_iter(fIt.handle());
-      Triangle _triangle(point(fvIt),point(++fvIt),point(++fvIt),normal(fIt));
-      objs_.push_back(_triangle);
+      _bounds.extend(point(fvIt));
+      _bounds.extend(point(++fvIt));
+      _bounds.extend(point(++fvIt));
     }
-    calcBoundingBox();
-
-    build(objs_,boundingBox_);
+    bounds_=_bounds;
   }
 
   bool Mesh::intersect(Ray3f& _ray, float& _tNear, float &_tFar, Vec3f* _normal) const
   {
-    return traversal(_ray,boundingBox_,_normal);
+    return false; //traversal(_ray,boundingBox_,_normal);
   /* 
    bool _found = false;
    BOOST_FOREACH ( const Triangle& _triangle, objs_ )
@@ -49,8 +53,9 @@ namespace tomo
 
   void Mesh::slice(Slices& _slices) const
   {
-    BOOST_FOREACH ( const Triangle& _triangle, objs_ )
-      _triangle.slice(_slices);
+    Mesh::ConstFaceIter    fIt(faces_begin()),fEnd(faces_end());
+    for (; fIt!=fEnd; ++fIt)
+      sliceTriangle(fIt,_slices);
   }
 
   std::pair<Mesh,Mesh> Mesh::split(const Plane& splitPlane)
@@ -69,7 +74,7 @@ namespace tomo
     return std::pair<Mesh,Mesh>();
   }
 
-  void Mesh::splitTriangle(const Triangle& tri, const Plane& plane, 
+  void Mesh::splitTriangle(ConstFaceIter _faceIter, const Plane& plane, 
       std::pair<Mesh,Mesh>& _halves)
   {
     // TODO To be adapted for OpenMesh
@@ -112,4 +117,56 @@ namespace tomo
        r->push_back(Triangle(V[u],iPoint[0],iPoint[1],tri.normal()));*/
   }
 
+  void Mesh::sliceTriangle(ConstFaceIter _faceIter, Slices& _slices) const
+  {
+    Mesh::ConstFaceVertexIter fvIt = cfv_iter(_faceIter.handle());
+      Point3f A = point(fvIt), B = point(++fvIt), C = point(++fvIt);
+      typename Slices::const_iterator _Ait = _slices.get(A.z()), 
+               _Bit = _slices.get(B.z()), 
+               _Cit = _slices.get(C.z()),
+               it;
+
+      Slice* _sliceA = const_cast<Slice*>(&(*_Ait));
+      Slice* _sliceB = const_cast<Slice*>(&(*_Bit));
+      Slice* _sliceC = const_cast<Slice*>(&(*_Cit));
+
+      // If all vertices lay in the same slice, add a triangle
+      if ((_Ait == _Bit) && (_Bit == _Cit)) 
+      {  
+        _sliceA->addSegment(A,B,Vec3f());
+        _sliceA->addSegment(A,C,Vec3f());
+        _sliceA->addSegment(B,C,Vec3f());
+      }
+
+      /// Sort vertices and corresponding slice iterators,
+      /// So that A is the lower, B in the middle and C the upper vertex
+      if (_sliceA->posZ_ > _sliceB->posZ_) { std::swap(_sliceA,_sliceB); std::swap(_Ait,_Bit); std::swap(A,B); }
+      if (_sliceB->posZ_ > _sliceC->posZ_) { std::swap(_sliceB,_sliceC); std::swap(_Bit,_Cit); std::swap(B,C); }
+      if (_sliceA->posZ_ > _sliceB->posZ_) { std::swap(_sliceA,_sliceB); std::swap(_Ait,_Bit); std::swap(A,B); }
+
+      Vec3f b = B - A;
+      Vec3f c = C - A;
+      Vec3f d = C - B;
+      Vec3f N = normal(_faceIter);
+
+      for (it = _Ait ; it != _Cit && it != _slices.end() ; ++it)
+      {
+        Slice* _slice = const_cast<Slice*>(&(*it));
+
+        float _ratioR = (_slice->posZ_ - A.z()) / c.z();
+        Vec3f r(c.x()*_ratioR,c.y()*_ratioR,_slice->posZ_);
+        Vec3f s;
+
+        if (_slice->posZ_ - A.z() < b.z())
+        {
+          float _ratioS = (_slice->posZ_ - A.z()) / b.z();
+          s(b.x()*_ratioS,b.y()*_ratioS,_slice->posZ_);
+        } else
+        {
+          float _ratioS = (_slice->posZ_ - B.z()) / d.z();
+          s = b + Vec3f(d.x()*_ratioS,d.y()*_ratioS,_slice->posZ_);
+        }
+        _slice->addSegment(A+r,A+s,N);
+      }
+  }
 }

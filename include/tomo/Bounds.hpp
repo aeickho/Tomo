@@ -36,6 +36,15 @@ namespace tomo
         max_[i] = std::max(_bounds.max_[i],max_[i]);
       }
     }
+
+    void extend(const point_type& _point)
+    {
+      TOMO_FOREACH_DIM
+      {
+        if (min_[i] > _point[i]) min_[i] = _point[i];
+        if (max_[i] < _point[i]) max_[i] = _point[i];
+      }
+    }
     
     /// Test if point is inside bounds
     bool inside(point_type _p) const

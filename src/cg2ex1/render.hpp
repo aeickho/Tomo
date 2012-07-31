@@ -486,6 +486,7 @@ inline void draw( tomo::Slices& _slices )
 
 inline void drawKDTreeNode( const tomo::Mesh& _mesh, unsigned nodeIndex, tomo::Bounds3f _bounds, int _depth)
 {
+/*
   if (_mesh.nodes_[nodeIndex].isLeaf() || _depth > 12)
   {
     drawBounds(_bounds,tomo::Color4f(1.0,1.0,0.0));
@@ -498,19 +499,19 @@ inline void drawKDTreeNode( const tomo::Mesh& _mesh, unsigned nodeIndex, tomo::B
   _bounds.split(_mesh.nodes_[nodeIndex].inner_.splitPos(),_mesh.nodes_[nodeIndex].inner_.axis(),_left,_right);
 
   drawKDTreeNode(_mesh,_mesh.nodes_[nodeIndex].inner_.left(),_left,_depth+1);
-  drawKDTreeNode(_mesh,_mesh.nodes_[nodeIndex].inner_.right(),_right,_depth+1);
+  drawKDTreeNode(_mesh,_mesh.nodes_[nodeIndex].inner_.right(),_right,_depth+1);*/
 }
 
 inline void drawKDTree( const tomo::Mesh& _mesh)
 {
-  glPushMatrix();
+/*  glPushMatrix();
   {
     tomo::Point3f c = _mesh.bounds().center();
     glTranslatef(-c.x(),-c.y(),0.0);
 
     drawKDTreeNode(_mesh,0,_mesh.bounds(),0);
   }
-  glPopMatrix();
+  glPopMatrix();*/
 }
 
 template<class POINT, class COLOR> void drawSelection( const POINT& _selection, const COLOR& _color )

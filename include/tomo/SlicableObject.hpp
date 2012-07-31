@@ -7,7 +7,7 @@ namespace tomo
 {
   struct SlicableObject : public Primitive3f
   {
-    virtual bool slice(Slice& _slice) const = 0;
+    virtual void slice(Slices& _slices) const = 0;
 
   };
 }
