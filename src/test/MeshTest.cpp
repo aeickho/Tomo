@@ -84,8 +84,18 @@ int main(int ac, char* av[])
         _p1((_p1.x() - _slice->bounds_.min().x())/_slice->bounds_.size().x(),(_p1.y() - _slice->bounds_.min().y())/_slice->bounds_.size().y());
         LOG_MSG << fmt("% %") % _normal.x() % _normal.y();
 
+        image.fillColor(Magick::Color(0,0,0,0));
+        image.fillPattern(image);
       image.strokeColor("red"); // Outline color 
-      image.draw( Magick::DrawableLine(resX*_p0.x(),resY*_p0.y(),resX*_p1.x(),resY*_p1.y()));
+      
+      Point2i _drawP0(resX*_p0.x(),resY*_p0.y());
+      Point2i _drawP1(resX*_p1.x(),resY*_p1.y());
+
+      image.draw( Magick::DrawableLine(_drawP0.x(),_drawP0.y(),_drawP1.x(),_drawP1.y()) );      
+      image.strokeColor("yellow");
+      image.draw( Magick::DrawableCircle(_drawP0.x(),_drawP0.y(),4+_drawP0.x(),_drawP0.y() ));
+      image.strokeColor("blue");
+      image.draw( Magick::DrawableCircle(_drawP1.x(),_drawP1.y(),7+_drawP1.x(),_drawP1.y() ));
   
       image.strokeColor("green"); // Outline color 
       image.draw( Magick::DrawableLine(resX*_p0.x(),resY*_p0.y(),
