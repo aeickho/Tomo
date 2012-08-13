@@ -17,8 +17,9 @@ namespace tomo
     LineSegment _ls1(Point2us(),Vec2f(_normal.x(),_normal.y()));
     if (!makePoint(_p1,_ls1.v_)) return;
 
+    _ls1.next_ = NULL; // const_cast<LineSegment*>(&(*lineSegments_.insert(_ls0)));    
     _ls0.next_ = const_cast<LineSegment*>(&(*lineSegments_.insert(_ls1)));    
-    _ls1.next_ = const_cast<LineSegment*>(&(*lineSegments_.insert(_ls0)));    
+    lineSegments_.insert(_ls0);
   }
 
   bool Slice::getSegment(const LineSegment& _lineSeg, Point2f& _p0, Point2f& _p1, Vec3f& _normal ) const
