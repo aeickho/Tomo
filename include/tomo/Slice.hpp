@@ -6,6 +6,7 @@
 #include "tomo/KDTree.hpp"
 #include <boost/foreach.hpp>
 #include <set>
+#include <list>
 
 namespace tomo
 {
@@ -20,12 +21,12 @@ namespace tomo
   };
 */
 
-  struct LineSegment
+/*
+  struct LineSegment : Primitive2f
   {
-    LineSegment(Point2us _v, Vec2f _normal = Vec2f()) : v_(_v), normal_(_normal), next_(NULL) {}
+    LineSegment(Point2us _v) : v_(_v), next_(NULL) {}
 
     Point2us v_;
-    Vec2f normal_;
     LineSegment* next_;
 
     bool isLine() const
@@ -34,47 +35,88 @@ namespace tomo
       return next_->next_ == this;
     }
 
-    friend bool operator<(const LineSegment& lhs, const LineSegment& rhs) 
+
+    bool intersect(Ray2f _ray, float _tNear, float _tFar, Vec2f _normal = NULL);
+    SplitPlaneIntersect intersect(Axis _axis, float _splitPos, 
+            const Bounds2f& _boundsLeft, const Bounds2f& _boundsRight) const;
+    Bounds2f bounds() const;
+
+    KDTree<LineSegment,2,float> kdTree_;
+  };
+*/
+  struct SliceVertex : public Point2us
+  {
+    Point2f getCoords(const Bounds2f& _bounds);
+
+    friend bool operator<(const SliceVertex& lhs, const SliceVertex& rhs) 
     {
-      return (lhs.v_.x() * 65536 + lhs.v_.y()) < (rhs.v_.x() * 65536 + rhs.v_.y());
+      return (lhs.x() * 65536 + lhs.y()) < (rhs.x() * 65536 + rhs.y());
     }
+  };
+
+  struct Polyline : private std::list<SliceVertex>
+  {
+    typedef std::list<SliceVertex> Cntr;
+
+    using Cntr::iterator;
+    using Cntr::const_iterator;
+    using Cntr::push_back;
+    using Cntr::push_front;
+    using Cntr::size;
+    using Cntr::end;
+    using Cntr::begin;
+    using Cntr::front;
+    using Cntr::back;
+
+    void optimize(float _threshold);
   };
 
   struct Slice 
   {
-    typedef std::multiset<LineSegment> LineSegments;
+    typedef std::multimap<SliceVertex,SliceVertex> Graph; 
+
     Slice(float _posZ, const Bounds3f& _bounds);
     
-    void addSegment(const Point3f& _p0, const Point3f& _p1, const Vec3f& _normal);
-    bool getSegment(const LineSegment& _lineSeg, Point2f& _p0, Point2f& _p1, Vec3f& _normal ) const;
+    void addSegment(const Point3f& _p0, const Point3f& _p1);
+    //bool getSegment(const LineSegment& _lineSeg, Point2f& _p0, Point2f& _p1) const;
 
-    LineSegments::iterator get(LineSegment* _lineSeg);
+//    LineSegments::iterator get(LineSegment* _lineSeg);
 
     void connect();
 
     Bounds2f bounds_;
     float posZ_;
-    LineSegments lineSegments_;
+
+    void makePolylines();
+    void optimize(float _threshold);
 
     friend bool operator<(const Slice& lhs, const Slice& rhs)
     {
       return lhs.posZ_ < rhs.posZ_;
     }
 
+
+    std::vector<Polyline> polylines_;
+    Graph graph_;
+    static int resolution_;
+    
     private:
-      bool makePoint(const Point3f& _p, Point2us& _v) const;
+      bool makePoint(const Point3f& _p, SliceVertex& _v) const;
+
   };
 
   struct Slices
   {
   public:
       Slices() {}
-      Slices(unsigned _nSlices, Bounds3f _bounds);
+      Slices(float _thickness, Bounds3f _bounds);
 
       typedef std::set<Slice>::iterator iterator;
       typedef std::set<Slice>::const_iterator const_iterator;
 
-      void make(unsigned _nSlices, Bounds3f _bounds);
+      void make(float _thickness, Bounds3f _bounds);
+
+      std::vector<Slice*> get();
 
       /// Get slice by Z position
       iterator get(float _posZ);

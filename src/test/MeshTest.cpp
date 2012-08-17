@@ -19,6 +19,35 @@ using namespace tomo;
 
 LOG_INIT;
 
+/*
+ *       tomo::Point2f _p0,_p1;
+      tomo::Vec3f _normal;
+      if (_slice->getSegment(_seg,_p0,_p1,_normal))
+      {
+        _p0((_p0.x() - _slice->bounds_.min().x())/_slice->bounds_.size().x(),(_p0.y() - _slice->bounds_.min().y())/_slice->bounds_.size().y());
+        _p1((_p1.x() - _slice->bounds_.min().x())/_slice->bounds_.size().x(),(_p1.y() - _slice->bounds_.min().y())/_slice->bounds_.size().y());
+        LOG_MSG << fmt("% %") % _normal.x() % _normal.y();
+
+        image.fillColor(Magick::Color(0,0,0,0));
+        image.fillPattern(image);
+      image.strokeColor("red"); // Outline color 
+      
+      Point2i _drawP0(resX*_p0.x(),resY*_p0.y());
+      Point2i _drawP1(resX*_p1.x(),resY*_p1.y());
+
+      image.draw( Magick::DrawableLine(_drawP0.x(),_drawP0.y(),_drawP1.x(),_drawP1.y()) );      
+      image.strokeColor("yellow");
+      image.draw( Magick::DrawableCircle(_drawP0.x(),_drawP0.y(),4+_drawP0.x(),_drawP0.y() ));
+      image.strokeColor("blue");
+      image.draw( Magick::DrawableCircle(_drawP1.x(),_drawP1.y(),7+_drawP1.x(),_drawP1.y() ));
+  
+      image.strokeColor("green"); // Outline color 
+      image.draw( Magick::DrawableLine(resX*_p0.x(),resY*_p0.y(),
+            resX*_p0.x() + resX*_normal.x()/50,
+            resY*_p0.y() + resX*_normal.y()/50 ));
+      }
+*/
+
 int main(int ac, char* av[])
 {
   cout << "MeshTest -- written by Wilston Oreo." << endl;
@@ -57,51 +86,38 @@ int main(int ac, char* av[])
   tomo::Mesh mesh;
   mesh.read(inputFile);
 
-  tomo::Slices _slices(nSlices,mesh.bounds());
+  tomo::Slices _slices(mesh.bounds().size().z()/nSlices,mesh.bounds());
 
   LOG_MSG << "Slicing mesh...";
 
   mesh.slice(_slices);
 
-  std::vector<const tomo::Slice*> _allSlices = _slices.get();
+  std::vector<tomo::Slice*> _allSlices = _slices.get();
 
   unsigned nSlice = 0;
   LOG_MSG << fmt("Got % slices, %") % _allSlices.size();
 
-  BOOST_FOREACH ( const tomo::Slice* _slice, _allSlices)
+  BOOST_FOREACH ( tomo::Slice* _slice, _allSlices)
   {
-    if (nSlice != _allSlices.size()/2) { nSlice++; continue; }
-    LOG_MSG << nSlice;
+   // if (nSlice != _allSlices.size()/2) { nSlice++; continue; }
+    LOG_MSG << fmt("% %") % nSlice % _slice->polylines_.size();
     Magick::Image image(Magick::Geometry(resX,resY), Magick::Color());
-    
-    BOOST_FOREACH ( const tomo::LineSegment& _seg, _slice->lineSegments_ )
+
+    BOOST_FOREACH ( const tomo::Polyline& _polyline, _slice->polylines_  )
     {
-      tomo::Point2f _p0,_p1;
-      tomo::Vec3f _normal;
-      if (_slice->getSegment(_seg,_p0,_p1,_normal))
-      {
-        _p0((_p0.x() - _slice->bounds_.min().x())/_slice->bounds_.size().x(),(_p0.y() - _slice->bounds_.min().y())/_slice->bounds_.size().y());
-        _p1((_p1.x() - _slice->bounds_.min().x())/_slice->bounds_.size().x(),(_p1.y() - _slice->bounds_.min().y())/_slice->bounds_.size().y());
-        LOG_MSG << fmt("% %") % _normal.x() % _normal.y();
+      std::list<Magick::Coordinate> _coordinates;
+      BOOST_FOREACH ( const tomo::SliceVertex& _sv, _polyline )
+        _coordinates.push_back(Magick::Coordinate(_sv.x() / float(Slice::resolution_)*resX,
+                                                  _sv.y() / float(Slice::resolution_)*resY));
+     
+   //   _coordinates.erase(--_coordinates.end());
 
-        image.fillColor(Magick::Color(0,0,0,0));
-        image.fillPattern(image);
-      image.strokeColor("red"); // Outline color 
-      
-      Point2i _drawP0(resX*_p0.x(),resY*_p0.y());
-      Point2i _drawP1(resX*_p1.x(),resY*_p1.y());
 
-      image.draw( Magick::DrawableLine(_drawP0.x(),_drawP0.y(),_drawP1.x(),_drawP1.y()) );      
-      image.strokeColor("yellow");
-      image.draw( Magick::DrawableCircle(_drawP0.x(),_drawP0.y(),4+_drawP0.x(),_drawP0.y() ));
-      image.strokeColor("blue");
-      image.draw( Magick::DrawableCircle(_drawP1.x(),_drawP1.y(),7+_drawP1.x(),_drawP1.y() ));
-  
-      image.strokeColor("green"); // Outline color 
-      image.draw( Magick::DrawableLine(resX*_p0.x(),resY*_p0.y(),
-            resX*_p0.x() + resX*_normal.x()/50,
-            resY*_p0.y() + resX*_normal.y()/50 ));
-      }
+      image.strokeColor(Magick::Color(RND*65535,RND*65535,RND*65535)); // Outline color  
+  //      image.fillColor(Magick::Color(RND*65535,RND*65535,RND*65535));      
+     // image.draw( Magick::DrawablePolygon( _coordinates )) ;
+      image.draw( Magick::DrawablePolyline( _coordinates )) ;
+
     }
     
     //image.d

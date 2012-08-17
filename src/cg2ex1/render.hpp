@@ -417,6 +417,18 @@ inline void draw( tomo::Mesh& _mesh )
   glPopMatrix();
 }
 
+inline void draw( tomo::Polyline _polyline, float _posZ, tomo::Bounds2f _bounds)
+{
+  glBegin(GL_LINE_LOOP);
+  BOOST_FOREACH( tomo::SliceVertex& _sv, _polyline )
+  {
+    //  glNormal3f(_seg.normal_.x(),_seg.normal_.y(),0);
+    tomo::Point2f _realCoords = _sv.getCoords(_bounds);
+      glVertex3f(_realCoords.x() ,_realCoords.y(),_posZ);
+  }            
+  glEnd();
+}
+
 inline void draw( tomo::Slices& _slices )
 {
   //  std::vector<const tomo::Slice*> _allSlices = _slices.get();
@@ -429,29 +441,12 @@ inline void draw( tomo::Slices& _slices )
     float _pos = 0.0;
     /// Note: Could also draw lines here but quads are cooler :)
     glColor3f(0,1,0.8);
-    for( tomo::Slices::iterator _slice=_slices.begin(); _slice!=_slices.end(); _slice++)
+    for( tomo::Slices::iterator _slice=_slices.begin(); _slice!=_slices.end(); ++_slice)
     {
-      if( _pos > 0.0 )
-      {
-        BOOST_FOREACH ( const tomo::LineSegment& _seg, _slice->lineSegments_ )
-        {
-          tomo::Vec3f _normal;
-          tomo::Point2f _p0,_p1;
-
-          if (_slice->getSegment(_seg,_p0,_p1,_normal))
-          {
-
-            /*
-               glBegin(GL_LINES);
-               {
-               glNormal3f(_seg.normal_.x(),_seg.normal_.y(),0);
-               glVertex3f(_p0.x(),_p0.y(),_slice->posZ_);
-               glVertex3f(_p1.x(),_p1.y(),_slice->posZ_);
-               }
-               glEnd();
-               */
-
-            glBegin(GL_QUADS);
+        BOOST_FOREACH( const tomo::Polyline& _polyline, _slice->polylines_ )
+          draw(_polyline,_slice->posZ_,_slice->bounds_);
+ 
+/*            glBegin(GL_QUADS);
             {
               glNormal3f(_normal.x(),_normal.y(),0);
               glVertex3f(_p1.x(),_p1.y(),_pos);
@@ -471,13 +466,9 @@ inline void draw( tomo::Slices& _slices )
               glVertex3f(_p0.x(),_p0.y(),_slice->posZ_);
               glVertex3f(_p0.x(),_p0.y(),_pos);
             }
-            glEnd();
-          }  
+            glEnd();*/
         }
-      }
-      _pos = _slice->posZ_;
       //     _sliceHeight = 
-    }
   }
   glPopMatrix();
 

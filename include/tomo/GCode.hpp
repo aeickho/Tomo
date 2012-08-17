@@ -1,6 +1,7 @@
 #pragma once
 #include <tbd/property.h>
 #include <iostream>
+#include <boost/optional.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 
 namespace tomo
@@ -63,7 +64,8 @@ namespace tomo
     typedef Parameter<'N',int> N;
 
     struct Line
-    { 
+    {
+      boost::optional<N> lineNumber;
       TBD_PROPERTY_REF(std::vector<Token*>,parameters);
     };
 
