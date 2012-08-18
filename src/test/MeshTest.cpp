@@ -118,6 +118,19 @@ int main(int ac, char* av[])
      // image.draw( Magick::DrawablePolygon( _coordinates )) ;
       image.draw( Magick::DrawablePolyline( _coordinates )) ;
 
+      image.fillColor(Magick::Color("none"));
+      //image.fillPattern(image);
+
+      image.strokeColor("yellow");
+      image.draw( Magick::DrawableCircle(_coordinates.front().x(),
+                                         _coordinates.front().y(),
+                                         4+_coordinates.front().x(),
+                                         _coordinates.front().y() ));
+      image.strokeColor("blue");
+      image.draw( Magick::DrawableCircle(_coordinates.back().x(),
+                                         _coordinates.back().y(),
+                                         7+_coordinates.back().x(),
+                                         _coordinates.back().y() ));
     }
     
     //image.d

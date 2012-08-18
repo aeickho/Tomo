@@ -62,7 +62,7 @@ namespace tomo
     BOOST_FOREACH( Slice* _slice, _allSlices )
     {
       _slice->makePolylines();
-      _slice->optimize(1000000); // /Slice::resolution_);
+      _slice->optimize(100000); // /Slice::resolution_);
       //_slice.removeInvisibleSegments();
       //_slice.generateFilling();
       //_slice.generateBorderTracks();
@@ -141,14 +141,15 @@ namespace tomo
     Slice* _sliceB = const_cast<Slice*>(&(*_Bit));
     Slice* _sliceC = const_cast<Slice*>(&(*_Cit));
 
-/*    // If all vertices lay in the same slice, add a triangle
+    // If all vertices lay in the same slice, add a triangle
     if ((_Ait == _Bit) && (_Bit == _Cit)) 
     {  
       _sliceA->addSegment(A,B);
       _sliceA->addSegment(A,C);
       _sliceA->addSegment(B,C);
+      return;
     }
-*/
+
     /// Sort vertices and corresponding slice iterators,
     /// So that A is the lower, B in the middle and C the upper vertex
     if (_sliceA->posZ_ > _sliceB->posZ_) { std::swap(_sliceA,_sliceB); std::swap(_Ait,_Bit); std::swap(A,B); }
@@ -181,6 +182,7 @@ namespace tomo
       Point3f _p0 = A+r;
       Point3f _p1 = A+s;
       Vec3f _normal = _p1 - _p0;  // Normal of segment points
+      if (_normal.sqrLength() == 0.0) continue;
       _normal(-_normal[1],_normal[0],0);
       if (dot(N,_normal) > 0.0) std::swap(_p0,_p1);
       _slice->addSegment(_p0,_p1);

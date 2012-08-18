@@ -89,7 +89,7 @@ namespace tomo
     if (!makePoint(_p0,_ps0)) return;
     if (!makePoint(_p1,_ps1)) return;
 
-    if (_ps0 == _ps1) return;
+//    if (_ps0 == _ps1) return;
 
     graph_.insert(std::make_pair<SliceVertex,SliceVertex>(_ps0,_ps1));
   }
@@ -123,6 +123,7 @@ namespace tomo
                  _iteration = 0;
     typedef multimap<float,Polyline::iterator> ErrorMap;
 
+    // Repeat this loop until there is no vertex to be deleted
     while(1)
     {
       ErrorMap _errorMap; 
@@ -137,6 +138,7 @@ namespace tomo
 
       while (_next != end())
       {
+        // Calculate Error //TODO: Put this into separate method
         _next = it; ++_next; _prev = it; --_prev;
         Vec2f _dir(_next->x() - _prev->x(),_next->y() - _prev->y());
         Vec2f _normal(-_dir.y(),_dir.x());
@@ -179,6 +181,7 @@ namespace tomo
     return _result;
 
   }
+
   /*
      bool Slice::getSegment(const LineSegment& _lineSeg, Point2f& _p0, Point2f& _p1) const
      {
