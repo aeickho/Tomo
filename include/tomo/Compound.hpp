@@ -85,7 +85,7 @@ namespace tomo
     /// Calculates the distance of a primitive to a kdtree node
     scalar_type nodeDistance(const PRIMITIVE* _p, const bounds_type _bounds) const
     {
-      if (_bounds.overlap(_p->bounds())) return 0.0;
+      if (overlap(_bounds,_p->bounds())) return 0.0;
       float _minDist = INF;
 
       TOMO_FOREACH_DIM

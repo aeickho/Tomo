@@ -18,6 +18,7 @@ namespace tomo
     Bounds() { min_.vectorize(std::numeric_limits<Scalar>::max()); max_.vectorize(std::numeric_limits<Scalar>::min());  }
     Bounds(point_type _min, point_type _max) { this->operator()(_min,_max); }
 
+    /// Retrieve the corners of bounds with as a vector of points
     std::vector<point_type> corners() const
     {
       int _nCorners = 1 << DIMENSIONS;
@@ -55,10 +56,12 @@ namespace tomo
       return true;
     }
 
-    bool overlap(const Bounds& _bounds) const
+
+    /// Test if two bounds overlap
+    friend bool overlap(const Bounds& _a, const Bounds& _b) 
     {
       TOMO_FOREACH_DIM {
-        if (min()[i] > _bounds.max()[i] || max()[i] < _bounds.min()[i]) return false;
+        if (_a.min()[i] > _b.max()[i] || _a.max()[i] < _b.min()[i]) return false;
       }
       return true;
     }
@@ -68,7 +71,8 @@ namespace tomo
     {
      return size().dominantAxis() ; 
     }
-    
+   
+    /// Set new values and validate
     void operator()(const point_type& _min, const point_type& _max)
     {
       min_ = _min; 
@@ -76,8 +80,13 @@ namespace tomo
       validate();
     }
 
+    /// Return the size vector
     vector_type size() const { return max_ - min_; }
+    
+    /// Return bounds' radius 
     Scalar radius() const { return size().length()/2; }
+
+    /// Return bounds' center
     point_type center() { return 0.5*(max().vec() + min().vec()); }
 
     /// Split bounds in two halves 
