@@ -416,7 +416,7 @@ inline void draw( tomo::Mesh& _mesh )
   }
   glPopMatrix();
 }
-
+/*
 inline void draw( tomo::Polyline _polyline, float _posZ, tomo::Bounds2f _bounds)
 {
   glBegin(GL_LINE_LOOP);
@@ -428,11 +428,11 @@ inline void draw( tomo::Polyline _polyline, float _posZ, tomo::Bounds2f _bounds)
   }            
   glEnd();
 }
-
+*/
 inline void draw( tomo::Slices& _slices )
 {
   //  std::vector<const tomo::Slice*> _allSlices = _slices.get();
-
+/*
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   {
@@ -446,7 +446,7 @@ inline void draw( tomo::Slices& _slices )
         BOOST_FOREACH( const tomo::Polyline& _polyline, _slice->polylines_ )
           draw(_polyline,_slice->posZ_,_slice->bounds_);
  
-/*            glBegin(GL_QUADS);
+            glBegin(GL_QUADS);
             {
               glNormal3f(_normal.x(),_normal.y(),0);
               glVertex3f(_p1.x(),_p1.y(),_pos);
@@ -466,18 +466,18 @@ inline void draw( tomo::Slices& _slices )
               glVertex3f(_p0.x(),_p0.y(),_slice->posZ_);
               glVertex3f(_p0.x(),_p0.y(),_pos);
             }
-            glEnd();*/
+            glEnd();
         }
       //     _sliceHeight = 
-  }
+  }*/
   glPopMatrix();
 
 
 }
-
+/// XXX Drawing KDTree is deprecated...
+/*
 inline void drawKDTreeNode( const tomo::Mesh& _mesh, unsigned nodeIndex, tomo::Bounds3f _bounds, int _depth)
 {
-/*
   if (_mesh.nodes_[nodeIndex].isLeaf() || _depth > 12)
   {
     drawBounds(_bounds,tomo::Color4f(1.0,1.0,0.0));
@@ -490,20 +490,20 @@ inline void drawKDTreeNode( const tomo::Mesh& _mesh, unsigned nodeIndex, tomo::B
   _bounds.split(_mesh.nodes_[nodeIndex].inner_.splitPos(),_mesh.nodes_[nodeIndex].inner_.axis(),_left,_right);
 
   drawKDTreeNode(_mesh,_mesh.nodes_[nodeIndex].inner_.left(),_left,_depth+1);
-  drawKDTreeNode(_mesh,_mesh.nodes_[nodeIndex].inner_.right(),_right,_depth+1);*/
+  drawKDTreeNode(_mesh,_mesh.nodes_[nodeIndex].inner_.right(),_right,_depth+1);
 }
 
 inline void drawKDTree( const tomo::Mesh& _mesh)
 {
-/*  glPushMatrix();
+  glPushMatrix();
   {
     tomo::Point3f c = _mesh.bounds().center();
     glTranslatef(-c.x(),-c.y(),0.0);
 
     drawKDTreeNode(_mesh,0,_mesh.bounds(),0);
   }
-  glPopMatrix();*/
-}
+  glPopMatrix();
+}*/
 
 template<class POINT, class COLOR> void drawSelection( const POINT& _selection, const COLOR& _color )
 {

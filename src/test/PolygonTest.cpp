@@ -69,7 +69,7 @@ namespace po = program_options;
 using namespace std;
 
 LOG_INIT;
-
+/*
 void generateFilling()
 {
 
@@ -79,7 +79,7 @@ void paintFillingLine(LineString& _lineString)
 {
 
 }
-
+*/
 /*
 template <typename Point, typename Coord>
 struct CoordinateWrapper

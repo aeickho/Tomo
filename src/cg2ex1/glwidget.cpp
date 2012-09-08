@@ -30,9 +30,11 @@ void GLWidget::initializeGL()
 {
   mesh_.read("yoda.stl");
   mesh_.initDL();
-  slices_.make(0.2,mesh_.bounds());
-  mesh_.slice(slices_);
-  slices_.initDL();
+  
+  // TODO Slice mesh
+  //slices_.build(0.2,mesh_.bounds());
+  //mesh_.slice(slices_);
+  //slices_.initDL();
 
   // setup camera
   camera_ = Camera(
@@ -180,10 +182,12 @@ void GLWidget::paintGL()
   drawGrid(printRange_,tomo::Color4f(0.478,0.803,0.942,0.5),tomo::Color4f(0.478,0.803,0.942,0.5));
   drawLight(light_);
   drawPrintRange(printRange_);
-//  if( config_.drawObjects_ )
-//    mesh_.drawDL();
 
-  slices_.drawDL();
+  if( config_.drawObjects_ )
+    mesh_.drawDL();
+
+/// @todo Draw slices
+//  slices_.drawDL();
 //  drawSlices(slices_);
 //  drawKDTree(mesh_);
 

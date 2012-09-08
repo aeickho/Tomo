@@ -79,7 +79,8 @@ public:
   /// @todo replace with an vector<tomo::SceneObjects>
   DisplayListed<tomo::Mesh> mesh_;
 
-  DisplayListed<tomo::Slices> slices_;
+  /// @todo Obsolete since tomo::Slices does not have a default constructor anymore
+  /// DisplayListed<tomo::Slices> slices_;
 
 
   /// @brief selection parameters
