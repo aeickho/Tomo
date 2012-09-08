@@ -1,4 +1,4 @@
-#include "tomo/SceneObject.hpp"
+#include "tomo/Primitive.hpp"
 
 namespace tomo 
 {
