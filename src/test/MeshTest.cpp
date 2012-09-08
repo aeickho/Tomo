@@ -62,7 +62,7 @@ int main(int ac, char* av[])
   desc.add_options()
     ("help,h", "Display help message.")
     ("input,i", po::value<string>(&inputFile), "Input OFF file")
-    ("output,o", po::value<string>(&outputFile), "Output PPM image file")
+    ("output,o", po::value<string>(&outputFile), "Output Line Desciptor image file")
     ("slices,n", po::value<int>(&nSlices), "Number of slices")
     ("resx,x", po::value<int>(&resX), "Resolution X")
     ("resy,y", po::value<int>(&resY), "Resolution Y")
@@ -104,7 +104,7 @@ int main(int ac, char* av[])
     _ofs << "IMAGE " << outputFile << nSlice << ".png " << resX << " " << resY << endl;
 
     
-    BOOST_FOREACH ( tomo::LineSegment& _lineSegment, _p->lineSegments() )
+    BOOST_FOREACH ( tomo::LineSegment& _lineSegment, _p->objs() )
     {
       _ofs << "red ";
       vector<Point2f> _points;
@@ -114,7 +114,7 @@ int main(int ac, char* av[])
       {
         int posX = (_point.x() - mesh.bounds().min().x()) / mesh.bounds().size().x() * resX;
         int posY = (_point.y() - mesh.bounds().min().y()) / mesh.bounds().size().y() * resY;
-        _ofs << posY << " " << posX << " ";
+        _ofs << posY << "," << posX << " ";
       }
       _ofs << endl;
     }

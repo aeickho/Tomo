@@ -342,8 +342,8 @@ namespace tomo
 
         _nodeObjs.clear();
    //     LOG_MSG << fmt("% %") % nodes_[nodeIndex].inner_.left() % nodes_[nodeIndex].inner_.right();
-        divideNode(nodes_[nodeIndex].inner_.left(),_leftBounds,_leftObjs,depth+1,10);
-        divideNode(nodes_[nodeIndex].inner_.right(),_rightBounds,_rightObjs,depth+1,10);
+        divideNode(nodes_[nodeIndex].inner_.left(),_leftBounds,_leftObjs,depth+1,_primitivesPerNode);
+        divideNode(nodes_[nodeIndex].inner_.right(),_rightBounds,_rightObjs,depth+1,_primitivesPerNode);
    }
 #endif
 

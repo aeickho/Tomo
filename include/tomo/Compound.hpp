@@ -73,7 +73,7 @@ namespace tomo
     void update()
     {
       calcBounds();
-      kdTree_.build(objs_,bounds(),1);
+      kdTree_.build(objs_,bounds(),3);
     }
 
     TBD_PROPERTY_REF(std::vector<PRIMITIVE>,objs);

@@ -70,14 +70,20 @@ namespace tomo
       return bounds().center();
     }
 
-    virtual scalar_type sqrDistance(const Primitive& _p) const 
+
+    virtual vector_type distanceVec(const Primitive& _p) const
     {
-      return (_p.center() - center()).sqrLength(); 
+      return _p.center() - center();
     }
 
-    virtual scalar_type distance(const Primitive& _p) const 
+    scalar_type sqrDistance(const Primitive& _p) const 
     {
-      return (_p.center() - center()).length();
+      return distanceVec(_p).sqrLength(); 
+    }
+
+    scalar_type distance(const Primitive& _p) const 
+    {
+      return distanceVec(_p).length();
     }
 
     /** @brief Return pointer to object
