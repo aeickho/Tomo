@@ -16,15 +16,15 @@ namespace tomo
   {
     typedef SCALAR Scalar;
     typedef Scalar value_type;
-    typedef Vec<DIMENSIONS,Scalar> vector_type;
-    typedef Coords<DIMENSIONS,Scalar> Coords;
+    typedef Vec<DIMENSIONS,SCALAR> vector_type;
+    typedef Coords<DIMENSIONS,SCALAR> coord_type;
 
-    Point() : Coords() {}
-    Point( Coords& p ) : Coords( p ) {}
-    Point( const Coords& p ) : Coords( p ) {}
-    Point( value_type _x, value_type _y ) : Coords(_x,_y) { }
-    Point( value_type _x, value_type _y, value_type _z ) : Coords(_x,_y,_z) { }
-    Point( value_type _x, value_type _y, value_type _z, value_type _w ) : Coords(_x,_y,_z,_w) { }
+    Point() : coord_type() {}
+    Point( coord_type& p ) : coord_type( p ) {}
+    Point( const coord_type& p ) : coord_type( p ) {}
+    Point( value_type _x, value_type _y ) : coord_type(_x,_y) { }
+    Point( value_type _x, value_type _y, value_type _z ) : coord_type(_x,_y,_z) { }
+    Point( value_type _x, value_type _y, value_type _z, value_type _w ) : coord_type(_x,_y,_z,_w) { }
 
     friend vector_type operator-( const Point& a, const Point& b)
     {
@@ -60,6 +60,19 @@ namespace tomo
       vector_type v;
       TOMO_FOREACH_DIM v[i] = this->a_[i];
       return v;
+    }
+
+    Point<DIMENSIONS-1,SCALAR> project(Axis _axis) 
+    {
+      Point<DIMENSIONS-1,SCALAR> _projPoint;
+      int _dim = 0;
+      TOMO_FOREACH_DIM
+      {
+        if (i == _axis) continue; 
+        _projPoint[_dim] = this->a_[i];
+        _dim++;
+      }
+      return _projPoint;
     }
   };
 

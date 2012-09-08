@@ -24,11 +24,11 @@ namespace tomo
   template<int DIMENSIONS, typename SCALAR = DEFAULT_TYPE>  
   struct Primitive
   {
-    typedef SCALAR Scalar;
-    typedef Bounds<DIMENSIONS,Scalar> bounds_type;
-    typedef Point<DIMENSIONS,Scalar> point_type;
-    typedef Vec<DIMENSIONS,Scalar> vector_type;
-    typedef Ray<DIMENSIONS,Scalar> ray_type;
+    typedef SCALAR scalar_type;
+    typedef Bounds<DIMENSIONS,scalar_type> bounds_type;
+    typedef Point<DIMENSIONS,scalar_type> point_type;
+    typedef Vec<DIMENSIONS,scalar_type> vector_type;
+    typedef Ray<DIMENSIONS,scalar_type> ray_type;
 
     /** @brief Virtual method to determine intersection point
      * @param _ray        Ray for intersection
@@ -47,7 +47,7 @@ namespace tomo
      * @param _normal     Pointer to normal determined from intersection
      * @param _texCoords  Pointer to texCoords to be returned
      */
-    virtual bool intersect(ray_type& _ray, Scalar& _tNear, Scalar& _tFar, vector_type* _normal = NULL) const = 0;
+    virtual bool intersect(ray_type& _ray, scalar_type& _tNear, scalar_type& _tFar, vector_type* _normal = NULL) const = 0;
 
     /** @brief Method to determine the intersection between primitive and split plane
      * @param _axis        Axis of split plane
@@ -55,7 +55,7 @@ namespace tomo
      * @param _boundsLeft  Left bounds
      * @param _boundsRight Right bounds
      */
-    virtual SplitPlaneIntersect intersect(Axis _axis, Scalar _splitPos, const bounds_type& _boundsLeft, const bounds_type& _boundsRight) const
+    virtual SplitPlaneIntersect intersect(Axis _axis, scalar_type _splitPos, const bounds_type& _boundsLeft, const bounds_type& _boundsRight) const
     {
       if (bounds().max()[_axis] < _splitPos) return SplitPlaneIntersect(true,false);
       if (bounds().min()[_axis] > _splitPos) return SplitPlaneIntersect(false,true); 
@@ -65,6 +65,20 @@ namespace tomo
     /** @brief Return bounds of primitive
      */
     virtual bounds_type bounds() const = 0;
+    virtual point_type center() const 
+    {
+      return bounds().center();
+    }
+
+    virtual scalar_type sqrDistance(const Primitive& _p) const 
+    {
+      return (_p.center() - center()).sqrLength(); 
+    }
+
+    virtual scalar_type distance(const Primitive& _p) const 
+    {
+      return (_p.center() - center()).length();
+    }
 
     /** @brief Return pointer to object
      */

@@ -12,7 +12,7 @@ namespace tomo
 	
     Bounds3f bounds() const;
 
-    TBD_PROPERTY_REF(Point3f,center);
+    TBD_PROPERTY(Point3f,center);
     TBD_PROPERTY(float,radius);
 	};
 

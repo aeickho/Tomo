@@ -4,7 +4,7 @@
 
 namespace tomo 
 {
-  struct Plane : public Primitive3f
+  struct Plane : Primitive3f
   {
     Plane(const Point3f& _center, const Vec3f& _normal)
       : center_(_center), normal_(_normal)

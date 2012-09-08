@@ -5,10 +5,8 @@
 #include <iostream>
 #include <boost/program_options.hpp>
 #include <boost/foreach.hpp>
-#include <Magick++.h>
 #include <tbd/log.h>
 
-#include "tomo/Slice.hpp"
 #include "tomo/Mesh.hpp"
 
 using namespace boost;
@@ -86,59 +84,48 @@ int main(int ac, char* av[])
   tomo::Mesh mesh;
   mesh.read(inputFile);
 
-  tomo::Slices _slices(mesh.bounds().size().z()/nSlices,mesh.bounds());
+  float _thickness = mesh.bounds().size().z()/nSlices;
+  static tomo::Slices _slices(_thickness,mesh.bounds());
+  static tomo::LineSegmentContainer _pC(_slices);
 
   LOG_MSG << "Slicing mesh...";
+  mesh.slice(_pC);
 
-  mesh.slice(_slices);
-
-  std::vector<tomo::Slice*> _allSlices = _slices.get();
+  std::vector<tomo::LineSegmentPlane*> _planes = _pC.fetch();
 
   unsigned nSlice = 0;
-  LOG_MSG << fmt("Got % slices, %") % _allSlices.size();
+  LOG_MSG << fmt("Got % slices, %") % _planes.size();
 
-  BOOST_FOREACH ( tomo::Slice* _slice, _allSlices)
+  ofstream _ofs;
+  _ofs.open(string(outputFile+".txt").c_str());
+
+  BOOST_FOREACH ( tomo::LineSegmentPlane* _p, _planes )
   {
-   // if (nSlice != _allSlices.size()/2) { nSlice++; continue; }
-    LOG_MSG << fmt("% %") % nSlice % _slice->polylines_.size();
-    Magick::Image image(Magick::Geometry(resX,resY), Magick::Color());
+    _ofs << "IMAGE " << outputFile << nSlice << ".png " << resX << " " << resY << endl;
 
-    BOOST_FOREACH ( const tomo::Polyline& _polyline, _slice->polylines_  )
-    {
-      std::list<Magick::Coordinate> _coordinates;
-      BOOST_FOREACH ( const tomo::SliceVertex& _sv, _polyline )
-        _coordinates.push_back(Magick::Coordinate(_sv.x() / float(Slice::resolution_)*resX,
-                                                  _sv.y() / float(Slice::resolution_)*resY));
-     
-   //   _coordinates.erase(--_coordinates.end());
-
-
-      image.strokeColor(Magick::Color(RND*65535,RND*65535,RND*65535)); // Outline color  
-  //      image.fillColor(Magick::Color(RND*65535,RND*65535,RND*65535));      
-     // image.draw( Magick::DrawablePolygon( _coordinates )) ;
-      image.draw( Magick::DrawablePolyline( _coordinates )) ;
-
-      image.fillColor(Magick::Color("none"));
-      //image.fillPattern(image);
-
-      image.strokeColor("yellow");
-      image.draw( Magick::DrawableCircle(_coordinates.front().x(),
-                                         _coordinates.front().y(),
-                                         4+_coordinates.front().x(),
-                                         _coordinates.front().y() ));
-      image.strokeColor("blue");
-      image.draw( Magick::DrawableCircle(_coordinates.back().x(),
-                                         _coordinates.back().y(),
-                                         7+_coordinates.back().x(),
-                                         _coordinates.back().y() ));
-    }
     
-    //image.d
-
-    stringstream ss; ss << outputFile << nSlice << ".ppm";
-    image.write(ss.str());
+    BOOST_FOREACH ( tomo::LineSegment& _lineSegment, _p->lineSegments() )
+    {
+      _ofs << "red ";
+      vector<Point2f> _points;
+      _points.push_back(_lineSegment.front());
+      _points.push_back(_lineSegment.back());
+      BOOST_FOREACH ( tomo::Point2f& _point, _points )
+      {
+        int posX = (_point.x() - mesh.bounds().min().x()) / mesh.bounds().size().x() * resX;
+        int posY = (_point.y() - mesh.bounds().min().y()) / mesh.bounds().size().y() * resY;
+        _ofs << posY << " " << posX << " ";
+      }
+      _ofs << endl;
+    }
+    _ofs << endl;
     nSlice++;
   }
+
+  LOG_MSG << "Ready.";
+
+  _ofs << "END";
+  _ofs.close();
 
   return EXIT_SUCCESS;
 }

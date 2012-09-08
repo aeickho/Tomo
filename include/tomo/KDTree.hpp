@@ -94,7 +94,7 @@ namespace tomo
   struct KDTree
   {
     /// Node type
-    typedef KDNode<PRIMITIVE> Node;
+    typedef KDNode<PRIMITIVE,DIMENSIONS,SCALAR> Node;
     typedef typename KDNode<PRIMITIVE>::Inner NodeInner;
 
     typedef SCALAR Scalar;
@@ -123,6 +123,11 @@ namespace tomo
 
     const Node& root() const { return nodes_[0]; }
     Node& root() { return nodes_[0]; }
+
+    const Node* node(unsigned _nodeIndex) const 
+    {
+      return &nodes_[_nodeIndex];
+    }
 
     /** @brief Traverses kd-tree along a ray recursively
      * @param _ray        Ray which traverses KDTree
@@ -310,12 +315,12 @@ namespace tomo
       for (unsigned i = 0; i < objs.size(); i++)
         _nodeObjs.push_back(&objs[i]);
 
-      divideNode(0,_bounds,_nodeObjs,0,10);
+      divideNode(0,_bounds,_nodeObjs,0,_primitivesPerNode);
    //   for (size_t i = 0; i < nodes_.size() ; i++)
      //   std::cout << nodes_[i].isLeaf();
     }
 
-   virtual void divideNode(unsigned nodeIndex, bounds_type _bounds, PrimCont& _nodeObjs, int depth, unsigned _primitivesPerNode)
+   virtual void divideNode(unsigned nodeIndex, bounds_type _bounds, PrimCont& _nodeObjs, unsigned depth, unsigned _primitivesPerNode)
    {
         if (depth >= maxDepth() || _nodeObjs.size() <= _primitivesPerNode )
         { // We have a leaf node!

@@ -21,8 +21,8 @@ namespace tomo
     TBD_PROPERTY(float,radius)
     TBD_PROPERTY_REF(Point3f,center)
   };
-
-  class PointCloud : public Compound<Vertex3f>
+/*
+  class PointCloud : public Compound<Vertex3f,3,float>
   {
     public:
       typedef KDNode<Vertex3f> Node; 
@@ -32,7 +32,6 @@ namespace tomo
       PointCloud();
 
       void read(const string& filename);
-
       bool intersect(Ray3f& _ray, float& _tNear, float &_tFar, Vec3f* _normal = NULL) const { return false; }
 
       void update();
@@ -55,5 +54,5 @@ namespace tomo
     private:
       float splitPos(const PrimCont& _primList, NodeInner* _inner, const Bounds3f& _bounds) const;
       float nodeDistance(const Point3f& p, const BoundingBox& box) const;
-  };
+  };*/
 }

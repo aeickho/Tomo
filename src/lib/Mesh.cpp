@@ -53,139 +53,125 @@ namespace tomo
 
   void Mesh::slice(Slices& _slices) const
   {
+    #define NUM_THREADS 1
+// TODO: Parallelize this!   
+//    omp_set_num_threads(NUM_THREADS);
+    LineSegmentContainer* _lineSegmentContainer[NUM_THREADS];
+
+ //   #pragma omp parallel for
+    for (int i = 0; i < NUM_THREADS; i++)
+      _lineSegmentContainer[i] = new LineSegmentContainer(_slices);
+
     Mesh::ConstFaceIter    fIt(faces_begin()),fEnd(faces_end());
+//    #pragma omp parallel for
     for (; fIt!=fEnd; ++fIt)
-      sliceTriangle(fIt,_slices);
+      sliceTriangle(fIt,*_lineSegmentContainer[0]);
 
-
-    vector<Slice*> _allSlices = _slices.get();
-    BOOST_FOREACH( Slice* _slice, _allSlices )
+    for (int i = 1; i < NUM_THREADS; i++)
     {
-      _slice->makePolylines();
-      _slice->optimize(100000); // /Slice::resolution_);
-      //_slice.removeInvisibleSegments();
-      //_slice.generateFilling();
-      //_slice.generateBorderTracks();
+      _lineSegmentContainer[0]->aggregate(*_lineSegmentContainer[i]);
     }
+
+    _lineSegmentContainer[0]->produceSlices();
+
+    for (int i = 0; i < NUM_THREADS; i++)
+      delete _lineSegmentContainer[i];
   }
 
-  std::pair<Mesh,Mesh> Mesh::split(const Plane& splitPlane)
+  void Mesh::slice(LineSegmentContainer& _lineSegmentContainer) const
   {
-    /*
-       std::pair<Mesh,Mesh> halves;
-
-       BOOST_FOREACH ( Triangle& tri, objs_ )
-       splitTriangle(tri,splitPlane,halves);
-
-       halves.first.calcBoundingBox();
-       halves.first.build(halves.first.objs_,halves.first.boundingBox_);    
-       halves.second.calcBoundingBox();
-       halves.second.build(halves.second.objs_,halves.first.boundingBox_);
-       */
-    return std::pair<Mesh,Mesh>();
+    Mesh::ConstFaceIter    fIt(faces_begin()),fEnd(faces_end());
+//    #pragma omp parallel for
+    for (; fIt!=fEnd; ++fIt)
+      sliceTriangle(fIt,_lineSegmentContainer);
   }
-
-  void Mesh::splitTriangle(ConstFaceIter _faceIter, const Plane& plane, 
-      std::pair<Mesh,Mesh>& _halves)
-  {
-    // TODO To be adapted for OpenMesh
-    /* 
-       vector<Triangle> triangles;
-       Point3f V[3]; 
-       for (int i = 0; i < 3; i++)
-       V[i] = tri.v[i];
-
-       int signCount = 0;
-       bool signs[3];
-
-       for (int i = 0; i < 3; i++)
-       {
-       signs[i] = dot(V[i] - plane.center_,plane.normal_);
-       signCount += int(signs[i] < 0);
-       }
-
-       vector<Triangle> *q = &_halves.first.objs_, *r = &_halves.second.objs_;
-       if (signCount >= 2) swap(q,r);
-
-       if (signCount == 0 || signCount == 3) 
-       {
-       r->push_back(tri);
-       return;
-       }
-
-       int k = 0;
-       for (int i = 1; i < 3; i++)
-       if ((signCount == 1) ? signs[i] : !signs[i]) k = i;
-       int u = (k+1) % 3, v = (k+2) % 3;
-
-       Vec3f A = V[u] - V[k], B = V[v] - V[k]; 
-       Point3f iPoint[2];
-       iPoint[0] = V[k] + A*(dot(plane.normal_,plane.center_ - V[k]) / dot(A,plane.normal_));
-       iPoint[1] = V[k] + B*(dot(plane.normal_,plane.center_ - V[k]) / dot(A,plane.normal_));
-
-       q->push_back(Triangle(V[k],iPoint[0],iPoint[1],tri.normal()));
-       r->push_back(Triangle(V[u],V[v],iPoint[0],tri.normal()));
-       r->push_back(Triangle(V[u],iPoint[0],iPoint[1],tri.normal()));*/
-  }
-
-  void Mesh::sliceTriangle(ConstFaceIter _faceIter, Slices& _slices) const
+  void Mesh::sliceTriangle(ConstFaceIter _faceIter, LineSegmentContainer& _lineSegmentContainer) const
   {
     Mesh::ConstFaceVertexIter fvIt = cfv_iter(_faceIter.handle());
     Point3f A = point(fvIt), B = point(++fvIt), C = point(++fvIt);
-    Slices::const_iterator _Ait = _slices.get(A.z()), 
-             _Bit = _slices.get(B.z()), 
-             _Cit = _slices.get(C.z()),
-             it;
+    LineSegmentContainer::const_iterator _Ait = _lineSegmentContainer.get(A.z()), 
+                                      _Bit = _lineSegmentContainer.get(B.z()), 
+                                      _Cit = _lineSegmentContainer.get(C.z()),
+                                      it;
 
-    Slice* _sliceA = const_cast<Slice*>(&(*_Ait));
-    Slice* _sliceB = const_cast<Slice*>(&(*_Bit));
-    Slice* _sliceC = const_cast<Slice*>(&(*_Cit));
+    LineSegmentPlane* _lineSegmentPlaneA = const_cast<LineSegmentPlane*>(&(_Ait->second));
+    LineSegmentPlane* _lineSegmentPlaneB = const_cast<LineSegmentPlane*>(&(_Bit->second));
+    LineSegmentPlane* _lineSegmentPlaneC = const_cast<LineSegmentPlane*>(&(_Cit->second));
 
-    // If all vertices lay in the same slice, add a triangle
-    if ((_Ait == _Bit) && (_Bit == _Cit)) 
+    // If all vertices lay in the same lineSegmentPlane, add a triangle
+    // XXX: Skip this for now...
+    /*if ((_Ait == _Bit) && (_Bit == _Cit)) 
     {  
-      _sliceA->addSegment(A,B);
-      _sliceA->addSegment(A,C);
-      _sliceA->addSegment(B,C);
+      _lineSegmentPlaneA->addSegment(A,B);
+      _lineSegmentPlaneA->addSegment(A,C);
+      _lineSegmentPlaneA->addSegment(B,C);
       return;
-    }
+    }*/
 
-    /// Sort vertices and corresponding slice iterators,
+    /// Sort vertices and corresponding lineSegmentPlane iterators,
     /// So that A is the lower, B in the middle and C the upper vertex
-    if (_sliceA->posZ_ > _sliceB->posZ_) { std::swap(_sliceA,_sliceB); std::swap(_Ait,_Bit); std::swap(A,B); }
-    if (_sliceB->posZ_ > _sliceC->posZ_) { std::swap(_sliceB,_sliceC); std::swap(_Bit,_Cit); std::swap(B,C); }
-    if (_sliceA->posZ_ > _sliceB->posZ_) { std::swap(_sliceA,_sliceB); std::swap(_Ait,_Bit); std::swap(A,B); }
+    ///       /C
+    ///      / |
+    ///      B |
+    ///      \ |
+    ///       \A
+    if (_Ait->first > _Bit->first) { std::swap(_lineSegmentPlaneA,_lineSegmentPlaneB); std::swap(_Ait,_Bit); std::swap(A,B); }
+    if (_Bit->first > _Cit->first) { std::swap(_lineSegmentPlaneB,_lineSegmentPlaneC); std::swap(_Bit,_Cit); std::swap(B,C); }
+    if (_Ait->first > _Bit->first) { std::swap(_lineSegmentPlaneA,_lineSegmentPlaneB); std::swap(_Ait,_Bit); std::swap(A,B); }
 
-    Vec3f b = B - A;
-    Vec3f c = C - A;
-    Vec3f d = C - B;
+    Point2f _Aproj = A.project(Z);
+    Vec3f b = B - A; float _invBz = 1.0 / b.z();
+    Vec3f c = C - A; float _invCz = 1.0 / c.z();
+    Vec3f d = C - B; float _invDz = 1.0 / d.z();
     Vec3f N = normal(_faceIter);
 
-    for (it = _Ait ; it != _Cit && it != _slices.end() ; ++it)
+    // TODO Extend this to be flexible with slicing axis (only Z axis is supported for now)
+
+    float _ratioR, _ratioS;
+    Vec2f r,s;
+
+    for (it = _Ait ; it != _Bit && it != _lineSegmentContainer.end(); ++it)
     {
-      Slice* _slice = const_cast<Slice*>(&(*it));
+      float _pos = it->first - A.z();      
+      LineSegmentPlane* _lineSegmentPlane = const_cast<LineSegmentPlane*>(&(it->second));
 
-      float _ratioR = (_slice->posZ_ - A.z()) / c.z();
-      Vec3f r(c.x()*_ratioR,c.y()*_ratioR,_slice->posZ_);
-      Vec3f s;
+      _ratioR = _pos * _invCz; 
+      _ratioS = _pos * _invBz;
 
-      if (_slice->posZ_ - A.z() < b.z())
-      {
-        float _ratioS = (_slice->posZ_ - A.z()) / b.z();
-        s(b.x()*_ratioS,b.y()*_ratioS,_slice->posZ_);
-      } else
-      {
-        float _ratioS = (_slice->posZ_ - B.z()) / d.z();
-        s = b + Vec3f(d.x()*_ratioS,d.y()*_ratioS,_slice->posZ_);
-      }
-
-      Point3f _p0 = A+r;
-      Point3f _p1 = A+s;
-      Vec3f _normal = _p1 - _p0;  // Normal of segment points
+      r(c.x()*_ratioR,c.y()*_ratioR);
+      s(b.x()*_ratioS,b.y()*_ratioS);
+      
+      Point2f _p0 = _Aproj+r, _p1 = _Aproj+s;
+      Vec2f _normal = _p1 - _p0;  // Normal of segment points
       if (_normal.sqrLength() == 0.0) continue;
-      _normal(-_normal[1],_normal[0],0);
-      if (dot(N,_normal) > 0.0) std::swap(_p0,_p1);
-      _slice->addSegment(_p0,_p1);
+      _normal(-_normal[1],_normal[0]);
+
+      /// Swap point to assure that points are in proper order to be able to make lineSegments
+      if (dot(Vec2f(N.x(),N.y()),_normal) > 0.0) std::swap(_p0,_p1);
+      _lineSegmentPlane->addSegment(_p0,_p1);
     }
+    
+    for (it = _Bit ; it != _Cit && it != _lineSegmentContainer.end(); ++it)
+    {
+      float _pos = it->first;      
+      LineSegmentPlane* _lineSegmentPlane = const_cast<LineSegmentPlane*>(&(it->second));
+
+      _ratioR = (_pos - A.z()) * _invCz;
+      _ratioS = (_pos - B.z()) * _invDz;
+      r(c.x()*_ratioR,c.y()*_ratioR);
+      s(b.x() + d.x()*_ratioS,b.y() + d.y()*_ratioS);
+
+      Point2f _p0 = _Aproj+r, _p1 = _Aproj+s;
+      Vec2f _normal = _p1 - _p0;  // Normal of segment points
+      if (_normal.sqrLength() == 0.0) continue;
+      _normal(-_normal[1],_normal[0]);
+
+      /// Swap point to assure that points are in proper order to be able to make lineSegments
+      if (dot(Vec2f(N.x(),N.y()),_normal) > 0.0) std::swap(_p0,_p1);
+      _lineSegmentPlane->addSegment(_p0,_p1);
+    }
+    
+
+
   }
 }

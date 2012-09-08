@@ -43,11 +43,11 @@ namespace tomo
    * @tparam DIMENSIONS Number of dimensions
    * @tparam COORD_TYPE Coordinate type
    */
-  template<int DIMENSIONS, typename Scalar = DEFAULT_TYPE>
+  template<int DIMENSIONS, typename SCALAR = DEFAULT_TYPE>
   struct Coords
   {
     /// Coordinate value type
-    typedef Scalar value_type;
+    typedef SCALAR value_type;
 
     /// Base constructor, all values are initially set to zero
     Coords()
@@ -181,7 +181,7 @@ namespace tomo
       return DIMENSIONS;
     }
 
-    Coords vectorize(const Scalar& _s) { TOMO_FOREACH_DIM a_[i] = _s; return *this; }
+    Coords vectorize(const SCALAR& _s) { TOMO_FOREACH_DIM a_[i] = _s; return *this; }
 
     operator std::string() const
     {
@@ -194,7 +194,7 @@ namespace tomo
 
   protected:
     /// Array to store coordinate values
-    Scalar a_[DIMENSIONS];
+    SCALAR a_[DIMENSIONS];
   };
 
   typedef enum { X,Y,Z,W } Axis;

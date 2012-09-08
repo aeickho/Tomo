@@ -55,6 +55,14 @@ namespace tomo
       return true;
     }
 
+    bool overlap(const Bounds& _bounds) const
+    {
+      TOMO_FOREACH_DIM {
+        if (min()[i] > _bounds.max()[i] || max()[i] < _bounds.min()[i]) return false;
+      }
+      return true;
+    }
+
     /// Return axis which largest extent
     Axis dominantAxis() const
     {

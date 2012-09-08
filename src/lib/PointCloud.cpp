@@ -11,6 +11,8 @@ using namespace std;
 
 namespace tomo
 {
+/*
+
   typedef pair<double,Vertex3f *> entry;
 
   PointSet::PointSet(Point3f _center, float _radius, int _k) : k_(_k), radius_(_radius), center_(_center)
@@ -163,5 +165,5 @@ namespace tomo
     float radius = (_v.v - _p).length();
     return collectInRadius(_p,radius).size() <= 1;
   }
-
+*/
 }

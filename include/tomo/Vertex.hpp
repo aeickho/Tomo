@@ -32,6 +32,7 @@ namespace tomo
     }
 
     bounds_type bounds() const { return bounds_type(v,v); }
+    point_type center() const { return v; }
 
     point_type v;
     vector_type n;
