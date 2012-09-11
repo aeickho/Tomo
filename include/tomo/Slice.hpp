@@ -15,29 +15,30 @@
 
 namespace tomo
 {
- typedef boost::geometry::model::d2::point_xy<float> PointXYf;
+  typedef boost::geometry::model::d2::point_xy<float> PointXYf;
   typedef boost::geometry::model::polygon< PointXYf > Polygon;
+  typedef std::vector<tomo::Polygon> MultiPolygon;
 
   using std::vector;
 
   struct Slice
   {
     Slice(float _pos);
-    
+
     void add(Polygon& _polygon);
     void clear();
     void optimize(float _threshold);
 
     TBD_PROPERTY_RO(float,pos)
-    TBD_PROPERTY_REF(std::vector<Polygon>,polygons)
+    TBD_PROPERTY_REF(MultiPolygon,polygons)
   };
 
   struct Slices : PlaneStack<float,Slice>
   {
   public:
-      Slices(float _thickness, Bounds3f _bounds);
+    Slices(float _thickness, Bounds3f _bounds);
 
-      void build(float _thickness, Bounds3f _bounds);
+    void build(float _thickness, Bounds3f _bounds);
   };
 
 }

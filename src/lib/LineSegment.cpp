@@ -3,16 +3,27 @@
 #include <boost/foreach.hpp>
 #include <boost/geometry/geometries/adapted/c_array.hpp>
 #include <tbd/log.h>
+#include <boost/geometry/multi/geometries/register/multi_polygon.hpp>
+
 
 using namespace std;
 using namespace boost::geometry;
 
 BOOST_GEOMETRY_REGISTER_C_ARRAY_CS(cs::cartesian);
 
+BOOST_GEOMETRY_REGISTER_MULTI_POLYGON(tomo::MultiPolygon);
+
 namespace tomo
 {
-//  BOOST_GEOMETRY_REGISTER_MULTI_POLYGON(vector<Polygon>);
+  
 
+  LineSegment::LineSegment(Point2f _front, Point2f _back) :
+    front_(_front), 
+    back_(_back), 
+    next_(NULL), 
+    prev_(NULL)
+  {
+  }
 
   Bounds2f LineSegment::bounds() const
   {
@@ -29,24 +40,69 @@ namespace tomo
                                _p >= _splitPos);
   }
 
-  Polygon LineSegmentPlane::asPolygon(LineSegment* _lineSegment) 
+  float LineSegmentPlane::orientation(const LineSegment* _a, const LineSegment* _b) const
   {
-    std::set<const LineSegment*> _usedSegments;
+    return (_a->front().x() - _a->back().x()) * (_b->front().y() - _a->front().y()) -
+           (_a->front().y() - _a->back().y()) * (_b->front().x() - _a->front().x());
+  }
+  
+  LineSegmentPlane::PolygonType LineSegmentPlane::asPolygon(
+                          const LineSegment* _lineSegment, 
+                          std::set<const LineSegment*>& _usedSegments,
+                          Polygon& _polygon) 
+  {
+    const LineSegment* _curSegment = _lineSegment;
 
-    Polygon _polygon;
-    LineSegment* _curSegment = _lineSegment;
+    /// This algorithm has an integrated orientation check for polygons 
+    /// Inspired by:
+    /// http://paulbourke.net/geometry/clockwise/source1.c
 
-    while (_usedSegments.find(_curSegment) != _usedSegments.end())
+    int _flag = 0;
+    float _orientationCoeff = 0.0;
+    PolygonType _polygonType = PT_NONE;
+    bool _polygonTypeDetermined = false;
+
+    while (_usedSegments.find(_curSegment) == _usedSegments.end())
     {
-      _curSegment->next(nearest(_curSegment));
       _polygon.outer().push_back(PointXYf(_curSegment->front().x(),_curSegment->front().y()));
-      _usedSegments.insert(_curSegment);
-      _curSegment = _curSegment->next();
 
-      if (!_curSegment) break;
+      LineSegment* _next = _curSegment->next();
+      if (!_next) return PT_NONE;
+     
+      if (_curSegment != _lineSegment)
+      _usedSegments.insert(_curSegment);
+
+      _orientationCoeff += orientation(_curSegment,_next);
+      if (_orientationCoeff < 0) 
+        _flag |= 1; 
+      else if (_orientationCoeff > 0)
+        _flag |= 2;
+      if (_flag == 3 && !_polygonTypeDetermined) 
+      {
+        _polygonType = PT_CLOSURE;
+        _polygonTypeDetermined = true;
+      }
+
+      _curSegment = _next;
     }
 
-    return _polygon;
+    if (_flag != 0 && !_polygonTypeDetermined)
+      _polygonType = PT_HOLE;
+
+    return _polygonType;
+  }
+
+  LineSegment* LineSegmentPlane::nearestSegment(LineSegment* _lineSegment)
+  {
+    /// @todo Improve this for handling of non-manifolds
+    vector<LineSegment*> _kNearest = collectKNearest(_lineSegment,40);
+   
+    BOOST_FOREACH( LineSegment* _nearest , _kNearest )
+      if (_nearest->front() != _nearest->back() && !_nearest->prev())
+        return _nearest;
+
+    LOG_MSG;
+    return NULL;
   }
 
   LineSegmentPlane::LineSegmentPlane(Slice* _slice) : slice_(_slice) 
@@ -59,40 +115,58 @@ namespace tomo
     return slice_->pos();
   }
 
-  vector<Polygon> LineSegmentPlane::makePolygons()
+
+
+  MultiPolygon LineSegmentPlane::makePolygons(float _simplifyThreshold)
   {
-    vector<Polygon> _closures;
-    vector<Polygon> _holes;
+    MultiPolygon _closures, _holes, _polygons;
 
-    update();
-
+    /// 1st step:
+    /// Find nearest neighbor for each LineSegment
     BOOST_FOREACH( LineSegment& _lineSegment, objs() )
-      if (!_lineSegment.next())
+    {
+      LineSegment* _nearest = nearestSegment(&_lineSegment);
+      _lineSegment.next(_nearest);
+      if (_nearest) _nearest->prev(&_lineSegment);
+    }
+
+    /// 2nd step:
+    /// Iterate over line 
+    std::set<const LineSegment*> _usedSegments;
+    BOOST_FOREACH( const LineSegment& _lineSegment, objs() )
+    {
+      if (_usedSegments.find(&_lineSegment) != _usedSegments.end()) continue;
+      Polygon _polygon;
+      MultiPolygon _simplified(1);
+      PolygonType _polygonType = asPolygon(&_lineSegment,_usedSegments,_polygon);
+      if (_simplifyThreshold > 0.0)
       {
-        LOG_MSG << fmt("(% %), number of segments = %") % _lineSegment.front().x() % _lineSegment.front().y() % objs().size();
-        Polygon _polygon = asPolygon(&_lineSegment);
-    /*    if (_polygon.isHole())
-        {
-          _holes.push_back(_polygon);
-        } else
-        {
-          _closures.push_back(_polygon);
-        }*/
+        boost::geometry::simplify(_polygon,_simplified[0],_simplifyThreshold);
+      } else
+      { 
+        _simplified[0] = _polygon;
       }
 
-    vector<Polygon> _polygons;
+      _polygons.push_back(_simplified[0]);
 /*
-    BOOST_FOREACH( Polygon& _polygon, _polygons )
-    {
-      boost::geometry::union_(_polygon,_slicePolygons,_slicePolygons);
-    }
-    BOOST_FOREACH( Polygon& _hole, _holes )
-    {
-      boost::geometry::difference(_slicePolygons,_hole,_slicePolygons);
-    }
-    BOOST_FOREACH( Polygon& _polygon, _slicePolygons )
-      slice_->add(_polygon);
+      switch (_polygonType)
+      {
+        case PT_HOLE: 
+          boost::geometry::union_(_holes,_simplified,_holes);
+          break;
+        case PT_CLOSURE: 
+          boost::geometry::union_(_closures,_simplified,_closures);
+          break;
+        case PT_NONE: break;
+      }
 */
+    }
+
+    /// 3nd step:
+    /// Subtract holes from closures
+//    boost::geometry::difference(_closures,_holes,_polygons);
+    
+    LOG_MSG << _polygons.size();
 
     return _polygons;
   }

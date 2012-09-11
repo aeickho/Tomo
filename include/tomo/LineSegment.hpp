@@ -6,16 +6,13 @@ namespace tomo
 {
   struct LineSegment : public Primitive2f
   {
-    LineSegment(Point2f _front, Point2f _back) : front_(_front), back_(_back), next_(NULL) {}
-
-  /*  bool isLine() const;
-    bool isHole() const;
-    bool closed() const;*/
+    LineSegment(Point2f _front, Point2f _back);
 
     bool intersect(Ray2f& _ray, float& _tNear, float& _tFar, Vec2f* _normal = NULL) const
     {
       return false;
     }
+
 
     Vec2f distanceVec(const Primitive& _p) const
     {
@@ -29,6 +26,7 @@ namespace tomo
     TBD_PROPERTY_REF(Point2f,front);
     TBD_PROPERTY_REF(Point2f,back);
     TBD_PROPERTY(LineSegment*,next);
+    TBD_PROPERTY(LineSegment*,prev);
   };
 
   /// The class LineSegmentContainer is used to store line segments to make polygons out of them
@@ -36,7 +34,7 @@ namespace tomo
   {
     LineSegmentPlane(Slice* _slice = NULL); 
 
-    std::vector<Polygon> makePolygons();
+    std::vector<Polygon> makePolygons(float _simplifyThreshold = 0.0);
 
     float pos() const;
     void addSegment(const Point2f& _p0, const Point2f& _p1);
@@ -45,7 +43,16 @@ namespace tomo
     TBD_PROPERTY_RO(Slice*,slice);
 
   private:
-    Polygon asPolygon(LineSegment* _lineSegment);
+    typedef enum { PT_NONE, PT_CLOSURE, PT_HOLE } PolygonType; 
+
+    /// Calculates the cross product of front and back and is used to determine orientation of the segment (CW or CCW)
+    float orientation(const LineSegment* _a, const LineSegment* _b) const;
+
+    PolygonType asPolygon(const LineSegment* _lineSegment, 
+                          std::set<const LineSegment*>& _usedSegments, 
+                          Polygon& _polygon);
+
+    LineSegment* nearestSegment(LineSegment* _lineSegment);
   };
 
   struct LineSegmentContainer : PlaneStack<float,LineSegmentPlane>

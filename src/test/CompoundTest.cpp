@@ -1,16 +1,12 @@
 #include <iostream>
-#include <boost/assign.hpp>
 
+#include "MagickWrapper.hpp"
 #include <tbd/log.h>
 #include <boost/program_options.hpp>
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <list>
-#include "tomo/Compound.hpp"
-#include "tomo/Vertex.hpp"
-#include "tomo/LineSegment.hpp"
-#include <Magick++.h>
 
 using namespace boost;
 namespace po = program_options;
@@ -24,42 +20,13 @@ string inputFile, outputFile;
 int resX = 100, resY = 100;
 int nPoints = 100;
 
-
-template <typename PRIMITIVE, int DIMENSIONS , typename SCALAR>
-void paintKDNode(const tomo::KDTree<PRIMITIVE,DIMENSIONS,SCALAR>& _kdTree,
-                 const tomo::KDNode<PRIMITIVE,DIMENSIONS,SCALAR>* _node,
-                 tomo::Bounds<DIMENSIONS,SCALAR> _bounds,
-                 Magick::Image& _image)
-{
-  if (_node->isLeaf()) return;
-
-  tomo::Bounds<DIMENSIONS,SCALAR> _left, _right;
-  tomo::Axis _axis = _node->inner_.axis();
-  SCALAR _splitPos = _node->inner_.splitPos();
-  _bounds.split(_splitPos,_axis,_left,_right);
-
-  switch (_axis)
-  {
-  case tomo::X:
-    _image.draw( Magick::DrawableLine(_splitPos,_bounds.min().y(),_splitPos,_bounds.max().y()) );
-    break;
-  case tomo::Y:
-    _image.draw( Magick::DrawableLine(_bounds.min().x(),_splitPos,_bounds.max().x(),_splitPos) );
-    break;
-  default:
-    break;
-  }
-
-  paintKDNode(_kdTree,_kdTree.node(_node->inner_.left()),_left,_image);
-  paintKDNode(_kdTree,_kdTree.node(_node->inner_.right()),_right,_image);
-}
-
 void vertexCompoundTest()
 {
   using tomo::Vertex2f;
   using tomo::Point2f;
   using tomo::Point2us;
   using tomo::Compound;
+  using tomo::magick::Wrapper;
 
   Compound<Vertex2f,2,float> _compound;
 
@@ -71,52 +38,37 @@ void vertexCompoundTest()
   // Generate bounds + kdTree
   _compound.update();
 
-  Magick::Image image( Magick::Geometry(resX,resY), Magick::Color("black") );
+  Magick::Image _image( Magick::Geometry(resX,resY), Magick::Color("black") );
+  Wrapper _wrapper(_image);
 
   // Draw KDTree
-  image.strokeColor("gray");
-  paintKDNode<Vertex2f,2,float>(_compound.kdTree(),&_compound.kdTree().root(),_compound.bounds(),image);
+  _wrapper.drawKDTree<Vertex2f,2,float>(_compound,"gray");
 
   // Draw all points
-  image.strokeColor("red");
-  BOOST_FOREACH ( Vertex2f& _vertex, _compound.objs() )
-  {
-    Point2us _p(_vertex.v.x(),_vertex.v.y());
-    image.draw( Magick::DrawableCircle(_p.x(),_p.y(),4+_p.x(),_p.y() ));
-  }
+  _wrapper.vertexWidth(4.0);
+  _wrapper.draw<Vertex2f,2,float>(_compound,"red");
 
   // Draw chosen point
-  image.strokeColor("yellow");
-  image.draw( Magick::DrawableCircle(_compound.objs()[nPoints/2].v.x(),_compound.objs()[nPoints/2].v.y(),
-                                     7+_compound.objs()[nPoints/2].v.x(),_compound.objs()[nPoints/2].v.y()));
+  _wrapper.draw(_compound.objs()[nPoints/2],"yellow");
 
   // Draw points which inside radius of chosen point
   std::vector<Vertex2f*> _inRadius = _compound.collectInRadius(&_compound.objs()[nPoints/2],sqrt((resX*resX + resY*resY))*0.125);
-  image.strokeColor("green");
-  BOOST_FOREACH ( Vertex2f* _vertex, _inRadius )
-  {
-    Point2us _p(_vertex->v.x(),_vertex->v.y());
-    image.draw( Magick::DrawableCircle(_p.x(),_p.y(),5+_p.x(),_p.y() ));
-  }
-
+  _wrapper.vertexWidth(5.0);
+  _wrapper.draw<Vertex2f>(_inRadius,"green");
+  
   // Draw nearest k points of chose point
   std::vector<Vertex2f*> _kNearest = _compound.collectKNearest(&_compound.objs()[nPoints/2],10);
-  image.strokeColor("blue");
-  BOOST_FOREACH ( Vertex2f* _vertex, _kNearest )
-  {
-    Point2us _p(_vertex->v.x(),_vertex->v.y());
-    image.draw( Magick::DrawableCircle(_p.x(),_p.y(),6+_p.x(),_p.y() ));
-  }
+  _wrapper.vertexWidth(6.0);
+  _wrapper.draw<Vertex2f>(_inRadius,"blue");
 
   // Draw nearest point
-  image.strokeColor("white");
+  _wrapper.vertexWidth(10.0);
   Vertex2f* _nearest = _compound.nearest(&_compound.objs()[nPoints/2]);
-  Point2us _p(_nearest->v.x(),_nearest->v.y());
-  image.draw( Magick::DrawableCircle(_p.x(),_p.y(),10+_p.x(),_p.y() ));
-
-  image.display();
+  _wrapper.draw(*_nearest,"white");
+  
+  _image.display();
   if (!outputFile.empty())
-    image.write(outputFile);
+    _image.write(outputFile);
 }
 
 void getPointFromStr(string _token, tomo::Point2f& _point)
@@ -126,8 +78,6 @@ void getPointFromStr(string _token, tomo::Point2f& _point)
 
   if (_tokens.size() != 2) return;
   _point(atof(_tokens[0].c_str()),atof(_tokens[1].c_str()));
-
-  LOG_MSG << fmt("% % = % %") % _tokens[0] % _tokens[1] % _point.x() % _point.y();
 }
 
 void readLineDescFile(string _filename, tomo::LineSegmentPlane& _plane, int& _resX, int& _resY)
@@ -140,8 +90,6 @@ void readLineDescFile(string _filename, tomo::LineSegmentPlane& _plane, int& _re
   {
     string _buf;
     getline(ifs,_buf);
-
-    LOG_MSG_(4) << _buf;
 
     vector<string> _tokens;
     boost::split(_tokens,_buf,boost::is_any_of("\t "), boost::token_compress_on);
@@ -170,22 +118,6 @@ void readLineDescFile(string _filename, tomo::LineSegmentPlane& _plane, int& _re
   ifs.close();
 }
 
-void paintLineSegment(const tomo::LineSegment& _segment, Magick::Image& _image, string _colorStr = "red", bool paintEndings = true )
-{
-  tomo::Point2f _b = _segment.back();
-  tomo::Point2f _f = _segment.front();
-
-  _image.strokeColor(_colorStr);
-  _image.draw( Magick::DrawableLine(_f.x(),_f.y(),_b.x(),_b.y()) );
-
-  if (paintEndings)
-  {
-    _image.strokeColor("yellow");
-    _image.draw( Magick::DrawableCircle(_f.x(),_f.y(),4+_f.x(),_f.y() ));
-    _image.strokeColor("blue");
-    _image.draw( Magick::DrawableCircle(_b.x(),_b.y(),7+_b.x(),_b.y() ));
-  }
-}
 
 void lineSegmentTest()
 {
@@ -193,43 +125,73 @@ void lineSegmentTest()
   using tomo::Point2f;
   using tomo::Point2us;
   using tomo::LineSegmentPlane;
+  using tomo::magick::Wrapper;
 
   LineSegmentPlane _plane;
   int resX,resY;
   readLineDescFile(inputFile,_plane,resX,resY);
   _plane.update();
 
-  Magick::Image image( Magick::Geometry(resX,resY), Magick::Color("black") );
-  image.fillColor("none");
+  Magick::Image _image( Magick::Geometry(resX,resY), Magick::Color("black") );
+  Wrapper _wrapper(_image);
 
   // Draw KDTree
-  image.strokeColor("gray");
-  paintKDNode<LineSegment,2,float>(_plane.kdTree(),&_plane.kdTree().root(),_plane.bounds(),image);
-
-  BOOST_FOREACH( LineSegment& _segment, _plane.objs() )
-  paintLineSegment(_segment,image);
-
+  _wrapper.drawKDTree<LineSegment,2,float>(_plane,"gray");
+  
+  _wrapper.drawEndings(true);
+  _wrapper.draw<LineSegment,2,float>(_plane,"red");
+  
+  _wrapper.drawEndings(false);
   LineSegment* _chosenSegment = &_plane.objs()[_plane.objs().size()/3];
-  paintLineSegment(*_chosenSegment,image,"yellow",false);
+  _wrapper.draw(*_chosenSegment,"yellow");
 
   // Draw nearest k segments of chose segment
   std::vector<LineSegment*> _kNearest = _plane.collectKNearest(_chosenSegment,10);
-  BOOST_FOREACH ( LineSegment* _segment, _kNearest )
-  {
-    paintLineSegment(*_segment,image,"blue",false);
-  }
-
+  _wrapper.draw<LineSegment>(_kNearest,"blue");
+  
   // Draw nearest segment
   LineSegment* _nearest = _plane.nearest(_chosenSegment);
-  if (_nearest)
-  {
-    paintLineSegment(*_nearest,image,"white",false);
-  }
+  if (_nearest) _wrapper.draw(*_nearest,"white");
 
-  image.display();
+  _image.display();
   if (!outputFile.empty())
-    image.write(outputFile);
+    _image.write(outputFile);
 }
+
+void polygonTest()
+{
+  using tomo::LineSegment;
+  using tomo::Point2f;
+  using tomo::Point2us;
+  using tomo::Polygon;
+  using tomo::MultiPolygon;
+  using tomo::LineSegmentPlane;
+  using tomo::magick::Wrapper;
+
+  LineSegmentPlane _plane;
+  int resX,resY;
+  readLineDescFile(inputFile,_plane,resX,resY);
+  _plane.update();
+
+  Magick::Image _image( Magick::Geometry(resX,resY), Magick::Color("black") );
+  Wrapper _wrapper(_image);
+
+  // Draw KDTree
+  _wrapper.drawKDTree<LineSegment,2,float>(_plane,"gray");
+
+  MultiPolygon _polygons = _plane.makePolygons();
+  BOOST_FOREACH( Polygon& _polygon, _polygons )
+  {
+    std::stringstream ss;
+  //  ss << "rgb(" << RND << "," << RND << "," << RND << ")";
+    _wrapper.draw(_polygon,Magick::Color(RND*65535,RND*65535,RND*65535));
+  }
+      
+  _image.display();
+  if (!outputFile.empty())
+    _image.write(outputFile);
+}
+
 
 
 int main(int ac, char* av[])
@@ -252,6 +214,7 @@ int main(int ac, char* av[])
   ("resy,y", po::value<int>(&resY), "Resolution Y")
   ("vertex", "Perform vertex compound test")
   ("linesegment", "Perform line segment test")
+  ("polygon","Perform polygon test")
   ;
   // Parse the command line arguments for all supported options
   po::variables_map vm;
@@ -266,6 +229,7 @@ int main(int ac, char* av[])
 
   if (vm.count("vertex")) vertexCompoundTest();
   if (vm.count("linesegment")) lineSegmentTest();
+  if (vm.count("polygon")) polygonTest();
 
   return EXIT_SUCCESS;
 }

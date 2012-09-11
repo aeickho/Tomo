@@ -1,28 +1,11 @@
 #include <iostream>
-#include <boost/assign.hpp>
 
 #include <tbd/log.h>
-
-
-#include <boost/mpl/assert.hpp>
-#include <boost/static_assert.hpp>
-
-#include <boost/assign.hpp>
-#include <boost/geometry/geometry.hpp> 
-
-
 #include <boost/program_options.hpp>
-#include <boost/foreach.hpp>
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/algorithm/string/split.hpp>
-#include <list>
-#include "tomo/Slice.hpp"
-#include <Magick++.h>
 
-#include <boost/geometry/geometries/linestring.hpp>
-#include <boost/geometry/multi/geometries/multi_linestring.hpp>
-#include <boost/geometry/multi/geometries/register/multi_linestring.hpp>
-#include <boost/geometry/multi/geometries/register/multi_polygon.hpp>
+#include <list>
+#include "MagickWrapper.hpp"
+
 
 using namespace tomo;
 
@@ -81,71 +64,7 @@ using namespace std;
 LOG_INIT;
 
 
-template <typename Point, typename Coord>
-struct CoordinateWrapper
-{
-  CoordinateWrapper(int _resX, int _resY) : resX_(_resX), resY_(_resY)
-  {
-  }
-
-  void operator()(const Point& p)
-  { 
-    using boost::geometry::get;
-    coords_->push_back(Coord(int(get<0>(p)*resX_),int(get<1>(p)*resY_)));
-  }
-
-  std::list<Coord>* coords_;
-  
-  TBD_PROPERTY(int,resX);
-  TBD_PROPERTY(int,resY);
-};
-
-typedef boost::geometry::model::linestring< tomo::PointXYf > LineString;
-typedef std::vector<LineString> MultiLineString;
-typedef std::vector<tomo::Polygon> MultiPolygon;
-BOOST_GEOMETRY_REGISTER_MULTI_LINESTRING(MultiLineString);
-BOOST_GEOMETRY_REGISTER_MULTI_POLYGON(MultiPolygon);
-
-void paintPolygon(const tomo::Polygon& _polygon, std::string _colorStr, Magick::Image& _image)
-{
-  CoordinateWrapper<tomo::PointXYf,Magick::Coordinate> _coordWrap(resX,resY);
-  std::list<Magick::Coordinate> _coords;
-  _coordWrap.coords_ = &_coords;
-
-  _image.fillColor("none");
-  boost::geometry::for_each_point( _polygon, _coordWrap );
-
-  _image.strokeColor(Magick::Color(_colorStr)); // Outline color 
-  LOG_MSG << _coords.size();
-  _image.draw( Magick::DrawablePolyline( _coords )) ;
-}
-
-void paintMultiPolygon(const MultiPolygon _multiPolygon, std::string _colorStr, Magick::Image& _image)
-{
-  BOOST_FOREACH( const tomo::Polygon& _polygon, _multiPolygon) 
-    paintPolygon(_polygon,_colorStr,_image);
-}
-
-
 //typedef boost::geometry::model::multi_linestring< LineString > MultiLineString;
-
-void paintLineString(const LineString& _lineString, std::string _colorStr, Magick::Image& _image)
-{
-  CoordinateWrapper<tomo::PointXYf,Magick::Coordinate> _coordWrap(resX,resY);
-  std::list<Magick::Coordinate> _coords;
-  _coordWrap.coords_ = &_coords;
-
-  boost::geometry::for_each_point( _lineString, _coordWrap );
-
-  _image.strokeColor(Magick::Color(_colorStr)); // Outline color 
-  _image.draw( Magick::DrawablePolyline( _coords )) ;
-}
-
-void paintMultiLineString(const MultiLineString& _multiLineString, std::string _colorStr, Magick::Image& _image)
-{
-  BOOST_FOREACH( const LineString& _lineString, _multiLineString) 
-    paintLineString(_lineString,_colorStr,_image);
-}
 
 void generateFilling(MultiLineString& _multiLineString)
 {
@@ -213,21 +132,23 @@ int main(int ac, char* av[])
   boost::geometry::read_wkt(
     "POLYGON((0.5 0.0 , 0.3 0.3 , 0.0 0.5 , 0.3 0.7 , 0.5 1.0 , 0.7 0.7 , 0.8 0.5 , 0.7 0.3 , 0.5 0.0))", _polygon2);
 
-  paintPolygon(_polygon1,"red",_image);
+
+  tomo::magick::Wrapper _wrapper(_image);
+
+  _wrapper.draw(_polygon1,"red");
 
   MultiLineString _fillingLines, _filling;
   generateFilling(_fillingLines);
 
-
   std::vector<Polygon> _polygons;
 
   boost::geometry::difference(_polygon2,_polygon1,_polygons);
-  paintMultiPolygon(_polygons,"green",_image);
+  _wrapper.draw(_polygons,"green");
 
   //boost::geometry::difference(_polygons,_fillingLines,_filling);
-  //paintMultiLineString(_filling,"blue",_image);
+  //drawMultiLineString(_filling,"blue",_image);
 //  boost::geometry::union_<MultiLineString,tomo::Polygon,MultiLineString>(_fillingLines,_polygon,_filling);    
-//  paintMultiLineString(_filling,_image);
+//  drawMultiLineString(_filling,_image);
 
   _image.display();
 
