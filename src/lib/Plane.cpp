@@ -1,25 +1,30 @@
-#include "tomo/Plane.hpp"
+#include "tomo/geometry/prim/Plane.hpp"
 
 namespace tomo 
 {
-  bool Plane::intersect(Ray3f& _ray, float& _tNear, float &_tFar, Vec3f* _normal) const
+  namespace geometry
   {
-    float dn = dot(_ray.dir(),normal_);
+    namespace prim 
+    {
+  bool Plane::intersect(ray_type& _ray, scalar_type& _tNear, scalar_type&_tFar, vector_type* _normal) const
+  {
+    scalar_type dn = dot(_ray.dir(),normal_);
     if (dn == 0.0f) return false;
 
-    Vec3f org = _ray.org() - center_;
-    float d = -dot(normal_,org) / dn;
+    vector_type org = _ray.org() - center_;
+
+    scalar_type d = -dot(normal_,org) / dn;
     if (d < 0) return false;
 
-    Vec3f iPoint = _ray.org() +_ray.dir() *d - center_;
+    vector_type iPoint = _ray.org() +_ray.dir() *d - center_;
 
     if (_normal) (*_normal)(normal_);
 
     return _ray.intersection(this->pointer(),d,_tNear,_tFar);
   }
 
-  Bounds3f Plane::bounds() const
+  Plane::bounds_type Plane::bounds() const
   {
-    return Bounds3f(Point3f(-INF,-INF,-INF),Point3f(INF,INF,INF));
+    return Plane::bounds_type(point_type(-INF,-INF,-INF),point_type(INF,INF,INF));
   }
-}
+    }}}

@@ -1,6 +1,6 @@
 #include <tomo/misc.hpp>
-#include <tomo/Mesh.hpp>
-#include <tomo/PrintBounds.hpp>
+#include <tomo/geometry/Mesh.hpp>
+#include <tomo/scene/PrintBounds.hpp>
 #include <cmath>
 
 /** @brief executes glRotate() for the given angles
@@ -59,7 +59,8 @@ inline void drawBackground()
   glPopMatrix();
 }
 
-void drawBounds(tomo::Bounds3f _bounds, const tomo::Color4f& _color)
+void drawBounds(tomo::geometry::aux::Bounds3f _bounds, 
+                const tomo::geometry::base::Color4f& _color)
 {
   float x = _bounds.min().x(), y = _bounds.min().y(), z = _bounds.min().z();
   float xs = _bounds.max().x(), ys = _bounds.max().y(), zs = _bounds.max().z();
@@ -145,7 +146,8 @@ template<class CAMERA> void realizeCamera(const CAMERA& _camera)
       );
 }
 
-inline void drawBedBorder( const tomo::PrintBounds& _bounds, const tomo::Color4f& _color )
+inline void drawBedBorder( const tomo::scene::PrintBounds& _bounds, 
+                           const tomo::geometry::base::Color4f& _color )
 {
   glMatrixMode(GL_MODELVIEW);
   // draw _bounds.min().
@@ -178,7 +180,8 @@ inline void drawBedBorder( const tomo::PrintBounds& _bounds, const tomo::Color4f
   glEnd();
 }
 
-inline void drawBed( const tomo::PrintBounds& _bounds, const tomo::Color4f& _color )
+inline void drawBed( const tomo::scene::PrintBounds& _bounds, 
+                     const tomo::geometry::base::Color4f& _color )
 {
   glMatrixMode(GL_MODELVIEW);
   // draw _bounds.min().
@@ -193,7 +196,7 @@ inline void drawBed( const tomo::PrintBounds& _bounds, const tomo::Color4f& _col
   glEnd();
 }
 
-inline void drawPrintRange( const tomo::PrintBounds& _bounds )
+inline void drawPrintRange( const tomo::scene::PrintBounds& _bounds )
 {
   // draw printable range
   glBegin(GL_QUADS);
@@ -227,7 +230,9 @@ inline void drawPrintRange( const tomo::PrintBounds& _bounds )
   glEnd();
 }
 
-inline void drawGrid( const tomo::PrintBounds& _bounds, const tomo::Color4f& xcolor_, const tomo::Color4f& ycolor_ )
+inline void drawGrid( const tomo::scene::PrintBounds& _bounds, 
+                      const tomo::geometry::base::Color4f& xcolor_, 
+                      const tomo::geometry::base::Color4f& ycolor_ )
 {
   // draw grid
   GLfloat tick=1.0;
@@ -364,22 +369,24 @@ template<class TRACKER, class COLOR> void drawTracker( const std::string& _name,
   glEnable(GL_DEPTH_TEST);
 }
 
-inline void draw( tomo::Mesh& _mesh )
+inline void draw( tomo::geometry::Mesh& _mesh )
 {
+  using tomo::geometry::Mesh;
+
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   {
-    tomo::Point3f c = _mesh.bounds().center();
+    tomo::geometry::base::Point3f c = _mesh.bounds().center();
     glTranslatef(-c.x(),-c.y(),0.0);
     glColor3f(0.8,0.8,0.8);
 
-    tomo::Mesh::ConstFaceIter    fIt(_mesh.faces_begin()),
+    Mesh::ConstFaceIter    fIt(_mesh.faces_begin()),
       fEnd(_mesh.faces_end());
-    tomo::Mesh::ConstFaceVertexIter fvIt;
+    Mesh::ConstFaceVertexIter fvIt;
 
     switch (_mesh.shadeMode())
     {
-      case tomo::Mesh::SM_FLAT:
+      case Mesh::SM_FLAT:
         glBegin(GL_TRIANGLES);
         for (; fIt!=fEnd; ++fIt)
         {
@@ -395,7 +402,7 @@ inline void draw( tomo::Mesh& _mesh )
         glEnd();
         break;
 
-      case tomo::Mesh::SM_GOURAUD:
+      case Mesh::SM_GOURAUD:
         glBegin(GL_TRIANGLES);
         for (; fIt!=fEnd; ++fIt)
         {
@@ -429,12 +436,12 @@ inline void draw( tomo::Polyline _polyline, float _posZ, tomo::Bounds2f _bounds)
   glEnd();
 }
 */
-inline void draw( tomo::Slices& _slices )
+inline void draw( tomo::slicing::Slices& _slices )
 {
+  glPushMatrix();
   //  std::vector<const tomo::Slice*> _allSlices = _slices.get();
 /*
   glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
   {
     //    tomo::Point3f c = _bounds.center();
     //    glTranslatef(-c.x(),-c.y(),0.0);

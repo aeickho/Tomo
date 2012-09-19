@@ -22,10 +22,11 @@ int nPoints = 100;
 
 void vertexCompoundTest()
 {
-  using tomo::Vertex2f;
-  using tomo::Point2f;
-  using tomo::Point2us;
-  using tomo::Compound;
+  namespace tg = tomo::geometry;
+  using tg::prim::Vertex2f;
+  using tg::base::Point2f;
+  using tg::base::Point2us;
+  using tg::aux::Compound;
   using tomo::magick::Wrapper;
 
   Compound<Vertex2f,2,float> _compound;
@@ -55,7 +56,7 @@ void vertexCompoundTest()
   std::vector<Vertex2f*> _inRadius = _compound.collectInRadius(&_compound.objs()[nPoints/2],sqrt((resX*resX + resY*resY))*0.125);
   _wrapper.vertexWidth(5.0);
   _wrapper.draw<Vertex2f>(_inRadius,"green");
-  
+
   // Draw nearest k points of chose point
   std::vector<Vertex2f*> _kNearest = _compound.collectKNearest(&_compound.objs()[nPoints/2],10);
   _wrapper.vertexWidth(6.0);
@@ -65,13 +66,13 @@ void vertexCompoundTest()
   _wrapper.vertexWidth(10.0);
   Vertex2f* _nearest = _compound.nearest(&_compound.objs()[nPoints/2]);
   _wrapper.draw(*_nearest,"white");
-  
+
   _image.display();
   if (!outputFile.empty())
     _image.write(outputFile);
 }
 
-void getPointFromStr(string _token, tomo::Point2f& _point)
+void getPointFromStr(string _token, tomo::geometry::base::Point2f& _point)
 {
   vector<string> _tokens;
   boost::split(_tokens,_token,boost::is_any_of(","), boost::token_compress_on);
@@ -80,7 +81,7 @@ void getPointFromStr(string _token, tomo::Point2f& _point)
   _point(atof(_tokens[0].c_str()),atof(_tokens[1].c_str()));
 }
 
-void readLineDescFile(string _filename, tomo::LineSegmentPlane& _plane, int& _resX, int& _resY)
+void readLineDescFile(string _filename, tomo::slicing::LineSegmentPlane& _plane, int& _resX, int& _resY)
 {
   ifstream ifs(_filename.c_str());
 
@@ -108,7 +109,7 @@ void readLineDescFile(string _filename, tomo::LineSegmentPlane& _plane, int& _re
     }
     else
     {
-      tomo::Point2f _p0,_p1;
+      tomo::geometry::base::Point2f _p0,_p1;
       getPointFromStr(_tokens[1],_p0);
       getPointFromStr(_tokens[2],_p1);
       _plane.addSegment(_p0,_p1);
@@ -121,10 +122,11 @@ void readLineDescFile(string _filename, tomo::LineSegmentPlane& _plane, int& _re
 
 void lineSegmentTest()
 {
-  using tomo::LineSegment;
-  using tomo::Point2f;
-  using tomo::Point2us;
-  using tomo::LineSegmentPlane;
+  namespace tg = tomo::geometry;
+  using tg::prim::LineSegment;
+  using tg::base::Point2f;
+  using tg::base::Point2us;
+  using tomo::slicing::LineSegmentPlane;
   using tomo::magick::Wrapper;
 
   LineSegmentPlane _plane;
@@ -137,10 +139,10 @@ void lineSegmentTest()
 
   // Draw KDTree
   _wrapper.drawKDTree<LineSegment,2,float>(_plane,"gray");
-  
+
   _wrapper.drawEndings(true);
   _wrapper.draw<LineSegment,2,float>(_plane,"red");
-  
+
   _wrapper.drawEndings(false);
   LineSegment* _chosenSegment = &_plane.objs()[_plane.objs().size()/3];
   _wrapper.draw(*_chosenSegment,"yellow");
@@ -148,7 +150,7 @@ void lineSegmentTest()
   // Draw nearest k segments of chose segment
   std::vector<LineSegment*> _kNearest = _plane.collectKNearest(_chosenSegment,10);
   _wrapper.draw<LineSegment>(_kNearest,"blue");
-  
+
   // Draw nearest segment
   LineSegment* _nearest = _plane.nearest(_chosenSegment);
   if (_nearest) _wrapper.draw(*_nearest,"white");
@@ -160,12 +162,13 @@ void lineSegmentTest()
 
 void polygonTest()
 {
-  using tomo::LineSegment;
-  using tomo::Point2f;
-  using tomo::Point2us;
-  using tomo::Polygon;
-  using tomo::MultiPolygon;
-  using tomo::LineSegmentPlane;
+  namespace tg = tomo::geometry;
+  using tg::prim::LineSegment;
+  using tg::base::Point2f;
+  using tg::base::Point2us;
+  using tg::prim::Polygon;
+  using tg::prim::MultiPolygon;
+  using tomo::slicing::LineSegmentPlane;
   using tomo::magick::Wrapper;
 
   LineSegmentPlane _plane;
@@ -183,10 +186,10 @@ void polygonTest()
   BOOST_FOREACH( Polygon& _polygon, _polygons )
   {
     std::stringstream ss;
-  //  ss << "rgb(" << RND << "," << RND << "," << RND << ")";
+    //  ss << "rgb(" << RND << "," << RND << "," << RND << ")";
     _wrapper.draw(_polygon,Magick::Color(RND*65535,RND*65535,RND*65535));
   }
-      
+
   _image.display();
   if (!outputFile.empty())
     _image.write(outputFile);

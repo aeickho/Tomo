@@ -6,7 +6,7 @@
 #include <boost/program_options.hpp>
 #include <boost/foreach.hpp>
 
-#include "tomo/PointCloud.hpp"
+#include "tomo/geometry/PointCloud.hpp"
 #include "tbd/log.h"
 
 

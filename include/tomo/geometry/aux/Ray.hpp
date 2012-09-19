@@ -1,16 +1,20 @@
 #pragma once 
-#include "tomo/Vector.hpp"
+#include "tomo/geometry/base/Vector.hpp"
 
 #include <vector>
 
 namespace tomo
 {
-  template<int DIMENSIONS, typename SCALAR = DEFAULT_TYPE>  
+  namespace geometry
+  { 
+    namespace aux
+    {
+  template<int DIMENSIONS, typename SCALAR = base::DEFAULT_TYPE>  
   struct Ray
   {
     typedef SCALAR Scalar;
-    typedef Point<DIMENSIONS,Scalar> point_type;
-    typedef Vec<DIMENSIONS,Scalar> vector_type;
+    typedef base::Point<DIMENSIONS,Scalar> point_type;
+    typedef base::Vec<DIMENSIONS,Scalar> vector_type;
 
     Ray(const point_type _org = point_type(), const vector_type _dir = vector_type(), 
         Scalar _tNear = 0.002, Scalar _tFar = std::numeric_limits<Scalar>::max()) : 
@@ -55,4 +59,4 @@ namespace tomo
   typedef Ray<3,float> Ray3f;
 
 }
-
+}}

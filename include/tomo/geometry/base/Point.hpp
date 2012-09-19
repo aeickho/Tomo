@@ -1,12 +1,16 @@
 #ifndef _POINT_HPP
 #define _POINT_HPP
 
-#include "tomo/Coord.hpp"
+#include "Coord.hpp"
 #include <boost/static_assert.hpp>
 #include <tbd/log.h>
 
 namespace tomo
 {
+  namespace geometry
+  {
+    namespace base
+    {
   /** @brief Template class to represent a point
    * @tparam DIMENSIONS Number of dimensions
    * @tparam Scalar_TYPE Coordinate type
@@ -82,5 +86,5 @@ namespace tomo
   typedef Point<2,unsigned short> Point2us;
   typedef Point<3,float> Point3f;
 }
-
+}}
 #endif /* _POINT_HPP */

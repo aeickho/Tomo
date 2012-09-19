@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "tomo/Median.hpp"
+#include "tomo/geometry/aux/Median.hpp"
 #include <algorithm>
 
 #define NUM_ELEMENTS 101
@@ -24,7 +24,7 @@ int main()
 	cout << endl;
 
 
-	double a = median(A);
+	double a = tomo::geometry::aux::median(A);
 	cout << "Median of A is: " << a << endl;
 
 	//cout << "

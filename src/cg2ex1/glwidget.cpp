@@ -1,7 +1,7 @@
 #include "glwidget.h"
 #include "helper.h"
 #include "tbd/log.h"
-#include "tomo/Vector.hpp"
+#include "tomo/geometry/base/Vector.hpp"
 #include <algorithm>
 #include <boost/foreach.hpp>
 #include <GL/glut.h>
@@ -176,10 +176,13 @@ void GLWidget::paintGL()
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
+
+  using tomo::geometry::base::Color4f;
+
   realizeCamera(camera_);
 
-  drawBedBorder(printRange_,tomo::Color4f(0.478,0.803,0.942,0.5));
-  drawGrid(printRange_,tomo::Color4f(0.478,0.803,0.942,0.5),tomo::Color4f(0.478,0.803,0.942,0.5));
+  drawBedBorder(printRange_,Color4f(0.478,0.803,0.942,0.5));
+  drawGrid(printRange_,Color4f(0.478,0.803,0.942,0.5),Color4f(0.478,0.803,0.942,0.5));
   drawLight(light_);
   drawPrintRange(printRange_);
 

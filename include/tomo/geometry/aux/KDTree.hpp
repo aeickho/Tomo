@@ -1,18 +1,23 @@
 #pragma once
 
-#include "tomo/BoundingBox.hpp"
+#include "tomo/geometry/prim/BoundingBox.hpp"
 
 #include <vector>
 #include <stack>
 
 namespace tomo 
 {
-  template <typename PRIMITIVE, int DIMENSIONS = 3, typename SCALAR = DEFAULT_TYPE> 
+  namespace geometry
+  {
+    namespace aux
+    {
+  template <typename PRIMITIVE, int DIMENSIONS = 3, typename SCALAR = base::DEFAULT_TYPE> 
   union KDNode
   {
-    typedef SCALAR Scalar;    
+    typedef SCALAR scalar_type;    
     typedef std::vector<PRIMITIVE*> PrimCont;
-    typedef Ray<DIMENSIONS,Scalar> ray_type;
+    typedef Ray<DIMENSIONS,scalar_type> ray_type;
+    typedef base::Vec<DIMENSIONS,scalar_type> vector_type;
     
     bool isLeaf() const { return !inner_.leafFlag(); }
 
@@ -23,10 +28,10 @@ namespace tomo
 
     public:
       inline bool leafFlag() const { return data_ & (1 << 31); }
-      inline Axis axis() const { return Axis(data_ & 3); }
+      inline base::Axis axis() const { return base::Axis(data_ & 3); }
 
       /// Insert children
-      inline void setup(NodeCont& _nodes, Axis _axis, Scalar _splitPos)
+      inline void setup(NodeCont& _nodes, base::Axis _axis, scalar_type _splitPos)
       {
         data_ = (0x7FFFFFFC & (_nodes.size() << 2)) | (1 << 31) | _axis;
         splitPos_ = _splitPos;
@@ -35,11 +40,11 @@ namespace tomo
       inline unsigned left() const { return (data_ & 0x7FFFFFFC) >> 2; }
       inline unsigned right() const { return ((data_ & 0x7FFFFFFC) >> 2) + 1; }
 
-      inline Scalar splitPos() const { return splitPos_; }
+      inline scalar_type splitPos() const { return splitPos_; }
  
     private:
       unsigned int data_;
-      Scalar splitPos_;
+      scalar_type splitPos_;
     };
 
     /// Leaf node
@@ -59,7 +64,7 @@ namespace tomo
           _dest[offset_+i] = _src[i];
       }
 
-      inline bool intersect(ray_type& _ray, const PrimCont& _primLists, Scalar _tNear, Scalar _tFar, Vec3f* _normal = NULL) const
+      inline bool intersect(ray_type& _ray, const PrimCont& _primLists, scalar_type _tNear, scalar_type _tFar, vector_type* _normal = NULL) const
       {
         bool _found = false;
         for (unsigned i = offset_; i < offset_ + size_; i++)
@@ -90,17 +95,17 @@ namespace tomo
 
   template <typename PRIMITIVE, 
             int DIMENSIONS = 3,
-            typename SCALAR = DEFAULT_TYPE> 
+            typename SCALAR = base::DEFAULT_TYPE> 
   struct KDTree
   {
     /// Node type
     typedef KDNode<PRIMITIVE,DIMENSIONS,SCALAR> Node;
     typedef typename KDNode<PRIMITIVE>::Inner NodeInner;
 
-    typedef SCALAR Scalar;
-    typedef Bounds<DIMENSIONS,Scalar> bounds_type;
-    typedef Vec<DIMENSIONS,Scalar> vector_type;
-    typedef Ray<DIMENSIONS,Scalar> ray_type;
+    typedef SCALAR scalar_type;
+    typedef base::Vec<DIMENSIONS,scalar_type> vector_type;
+    typedef Bounds<DIMENSIONS,scalar_type> bounds_type;
+    typedef Ray<DIMENSIONS,scalar_type> ray_type;
 
     /// Node container
     typedef std::vector<Node> NodeCont;
@@ -175,13 +180,13 @@ namespace tomo
       struct NodeTraversalStackItem
       {
         const Node* node_;
-        Scalar tNear_,tFar_;
+        scalar_type tNear_,tFar_;
       };
 
       NodeTraversalStackItem _stack[16];
       int _stackPt = -1;
 
-      Scalar _tNear = _ray.tNear(), _tFar = _ray.tFar();
+      scalar_type _tNear = _ray.tNear(), _tFar = _ray.tFar();
       
 
       ///@todo Make bounds intersection method
@@ -195,7 +200,7 @@ namespace tomo
         while (!_node->isLeaf())
         {
           int k = _node->inner_.axis();
-          Scalar d = (_node->inner_.splitPos() - _ray.org()[k]) / _ray.dir()[k];
+          scalar_type d = (_node->inner_.splitPos() - _ray.org()[k]) / _ray.dir()[k];
 
           const Node* _front = &nodes_[_node->inner_.left()];
           const Node* _back  = &nodes_[_node->inner_.right()];
@@ -267,8 +272,8 @@ namespace tomo
         // Perform depth-in first search until leaf node
         while (_nodePt->primList_.size() > _primitivesPerNode && _nodePt->depth_ < maxDepth()) 
         { 
-          Axis _axis = _nodePt->bounds_.dominantAxis(); 
-          Scalar _splitPos = 0.5*(_nodePt->bounds_.min()[_axis] + _nodePt->bounds_.max()[_axis]);
+          base::Axis _axis = _nodePt->bounds_.dominantAxis(); 
+          scalar_type _splitPos = 0.5*(_nodePt->bounds_.min()[_axis] + _nodePt->bounds_.max()[_axis]);
           
           _nodePt->node(nodes_)->inner_.setup(nodes_,_axis,_splitPos);
           nodes_.resize(nodes_.size()+2);
@@ -329,7 +334,7 @@ namespace tomo
         }
 
         // Setup node
-        Axis _axis = _bounds.dominantAxis(); 
+        base::Axis _axis = _bounds.dominantAxis(); 
         float _splitPos = 0.5*(_bounds.min()[_axis] + _bounds.max()[_axis]);
  
     //      std::cout << _axis << " " << _splitPos << std::endl;
@@ -347,8 +352,8 @@ namespace tomo
    }
 #endif
 
-   inline void insertion( Scalar _splitPos, 
-                     Axis _axis, 
+   inline void insertion( scalar_type _splitPos, 
+                     base::Axis _axis, 
                      bounds_type& _bounds, 
                      PrimCont& _primList, 
                      PrimCont& _leftList, 
@@ -360,7 +365,7 @@ namespace tomo
         for (unsigned i = 0; i < _primList.size(); i++)
         {
           PRIMITIVE* _prim = _primList[i];
-          SplitPlaneIntersect _result = _prim->intersect(_axis,_splitPos,_leftBounds,_rightBounds);
+          prim::SplitPlaneIntersect _result = _prim->intersect(_axis,_splitPos,_leftBounds,_rightBounds);
      
           if (_result.left())  _leftList.push_back(_prim);
           if (_result.right()) _rightList.push_back(_prim); 
@@ -376,4 +381,4 @@ namespace tomo
     static unsigned maxDepth() { return 16; }
   };
 }
-
+}}

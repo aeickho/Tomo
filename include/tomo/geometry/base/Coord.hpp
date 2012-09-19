@@ -8,6 +8,10 @@
 
 namespace tomo
 {
+  namespace geometry
+  {
+    namespace base
+    {
   class Matrix4f
   {
   public:
@@ -205,8 +209,9 @@ namespace tomo
 }
 
 template<int DIMENSIONS, class COORD>
-inline fmt operator%( fmt _fmt, const tomo::Coords<DIMENSIONS,COORD>& _coords)
+inline fmt operator%( fmt _fmt, const tomo::geometry::base::Coords<DIMENSIONS,COORD>& _coords)
 {
   return _fmt % (std::string)_coords;
 }
+}}
 #endif /* _COORD_HPP */

@@ -1,44 +1,30 @@
-#include "tomo/Slice.hpp"
-#include "tomo/Primitive.hpp"
-#include "tomo/Compound.hpp"
+#include "Slice.hpp"
+
+#include <tomo/geometry/aux/Compound.hpp>
+#include <tomo/geometry/prim/LineSegment.hpp>
 
 namespace tomo
 {
-  struct LineSegment : public Primitive2f
+  namespace slicing
   {
-    LineSegment(Point2f _front, Point2f _back);
-
-    bool intersect(Ray2f& _ray, float& _tNear, float& _tFar, Vec2f* _normal = NULL) const
-    {
-      return false;
-    }
-
-
-    Vec2f distanceVec(const Primitive& _p) const
-    {
-      return _p.center() - front();
-    }
-
-    Bounds2f bounds() const;
-    SplitPlaneIntersect intersect(Axis _axis, float _splitPos,
-                                  const Bounds2f& _boundsLeft, const Bounds2f& _boundsRight) const;
-
-    TBD_PROPERTY_REF(Point2f,front);
-    TBD_PROPERTY_REF(Point2f,back);
-    TBD_PROPERTY(LineSegment*,next);
-    TBD_PROPERTY(LineSegment*,prev);
-  };
+    using geometry::prim::LineSegment;
 
   /// The class LineSegmentContainer is used to store line segments to make polygons out of them
-  struct LineSegmentPlane : Compound<LineSegment,2,float>
+  struct LineSegmentPlane : geometry::aux::Compound<LineSegment,2,float>
   {
+    typedef float scalar_type;
+    typedef geometry::aux::Ray<2,scalar_type> ray_type;
+    typedef geometry::base::Vec<2,scalar_type> vector_type;
+    
     LineSegmentPlane(Slice* _slice = NULL); 
 
     std::vector<Polygon> makePolygons(float _simplifyThreshold = 0.0);
 
     float pos() const;
-    void addSegment(const Point2f& _p0, const Point2f& _p1);
+    void addSegment(const point_type& _p0, const point_type& _p1);
     void aggregate(const LineSegmentPlane& _lineSegmentPlane);
+  
+    virtual bool intersect(ray_type& _ray, scalar_type& _tNear, scalar_type& _tFar, vector_type* _normal = NULL) const { return false; }
 
     TBD_PROPERTY_RO(Slice*,slice);
 
@@ -51,6 +37,7 @@ namespace tomo
     PolygonType asPolygon(const LineSegment* _lineSegment, 
                           std::set<const LineSegment*>& _usedSegments, 
                           Polygon& _polygon);
+
 
     LineSegment* nearestSegment(LineSegment* _lineSegment);
   };
@@ -67,4 +54,4 @@ namespace tomo
 
     Slices& slices_;
   };
-}
+}}

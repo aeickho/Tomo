@@ -6,15 +6,15 @@
 #include <boost/program_options.hpp>
 #include <boost/foreach.hpp>
 
-#include "tomo/Vector.hpp"
-#include "tomo/Color.hpp"
+#include "tomo/geometry/base/Vector.hpp"
+#include "tomo/geometry/base/Color.hpp"
 #include "tbd/log.h"
 
 using namespace boost;
 namespace po = program_options;
 
 using namespace std;
-using namespace tomo;
+using namespace tomo::geometry::base;
 
 LOG_INIT;
 

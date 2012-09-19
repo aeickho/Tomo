@@ -1,9 +1,9 @@
 #include <Magick++.h>
-#include <tomo/Slice.hpp>
-#include <tomo/KDTree.hpp>
-#include "tomo/Compound.hpp"
-#include "tomo/Vertex.hpp"
-#include "tomo/LineSegment.hpp"
+#include <tomo/slicing/Slice.hpp>
+#include <tomo/geometry/aux/KDTree.hpp>
+#include "tomo/geometry/aux/Compound.hpp"
+#include "tomo/geometry/prim/Vertex.hpp"
+#include "tomo/slicing/LineSegmentPlane.hpp"
 
 #include <boost/foreach.hpp>
 #include <boost/geometry/geometry.hpp>
@@ -13,7 +13,7 @@
 #include <vector>
 
 
-typedef boost::geometry::model::linestring< tomo::PointXYf > LineString;
+typedef boost::geometry::model::linestring< tomo::geometry::prim::PointXYf > LineString;
 typedef std::vector<LineString> MultiLineString;
 BOOST_GEOMETRY_REGISTER_MULTI_LINESTRING(MultiLineString);
 
@@ -21,6 +21,17 @@ namespace tomo
 {
   namespace magick
   {
+    namespace tg = tomo::geometry;
+    using tg::prim::Polygon;
+    using tg::prim::MultiPolygon;
+    using tg::prim::LineSegment;
+    using tg::base::Point2f;
+    using tg::base::Point3f;
+    using tg::aux::Bounds;
+    using tg::aux::KDTree;
+    using tg::aux::KDNode;
+    using tg::aux::Compound;
+
     template <typename Point, typename Coord>
     struct CoordinateWrapper
     {
@@ -47,14 +58,16 @@ namespace tomo
 
     struct Wrapper
     {
+      typedef CoordinateWrapper<tg::prim::PointXYf,Magick::Coordinate> BoostToMagickCoord;
+
       Wrapper(Magick::Image& _image) : image_(_image) 
       {
         image_.fillColor("none");
       }
 
-      void draw(const tomo::Polygon& _polygon, Magick::Color _color)
+      void draw(const Polygon& _polygon, Magick::Color _color)
       {
-        CoordinateWrapper<tomo::PointXYf,Magick::Coordinate> _coordWrap(image_);
+        BoostToMagickCoord _coordWrap(image_);
         /// XXX: Improve this...
         _coordWrap.resX(1);
         _coordWrap.resY(1);
@@ -68,15 +81,15 @@ namespace tomo
         image_.draw( Magick::DrawablePolyline( _coords )) ;
       }
 
-      void draw(const tomo::MultiPolygon _multiPolygon, Magick::Color _color)
+      void draw(const MultiPolygon _multiPolygon, Magick::Color _color)
       {
-        BOOST_FOREACH( const tomo::Polygon& _polygon, _multiPolygon)
+        BOOST_FOREACH( const Polygon& _polygon, _multiPolygon)
         draw(_polygon,_color);
       }
 
       void draw(const LineString& _lineString, Magick::Color _color)
       {
-        CoordinateWrapper<tomo::PointXYf,Magick::Coordinate> _coordWrap(image_);
+        BoostToMagickCoord _coordWrap(image_);
         std::list<Magick::Coordinate> _coords;
         _coordWrap.coords_ = &_coords;
 
@@ -93,23 +106,23 @@ namespace tomo
       }
 
       template <typename PRIMITIVE, int DIMENSIONS , typename SCALAR>
-      void drawKDNode(const tomo::KDTree<PRIMITIVE,DIMENSIONS,SCALAR>& _kdTree,
-                 const tomo::KDNode<PRIMITIVE,DIMENSIONS,SCALAR>* _node,
-                 tomo::Bounds<DIMENSIONS,SCALAR> _bounds)
+      void drawKDNode(const KDTree<PRIMITIVE,DIMENSIONS,SCALAR>& _kdTree,
+                 const KDNode<PRIMITIVE,DIMENSIONS,SCALAR>* _node,
+                 Bounds<DIMENSIONS,SCALAR> _bounds)
       {
         if (_node->isLeaf()) return;
 
-        tomo::Bounds<DIMENSIONS,SCALAR> _left, _right;
-        tomo::Axis _axis = _node->inner_.axis();
+        Bounds<DIMENSIONS,SCALAR> _left, _right;
+        tg::base::Axis _axis = _node->inner_.axis();
         SCALAR _splitPos = _node->inner_.splitPos();
         _bounds.split(_splitPos,_axis,_left,_right);
 
         switch (_axis)
         {
-        case tomo::X:
+          case tg::base::X:
           image_.draw( Magick::DrawableLine(_splitPos,_bounds.min().y(),_splitPos,_bounds.max().y()) );
           break;
-        case tomo::Y:
+          case tg::base::Y:
           image_.draw( Magick::DrawableLine(_bounds.min().x(),_splitPos,_bounds.max().x(),_splitPos) );
           break;
         default:
@@ -121,7 +134,7 @@ namespace tomo
       }
 
       template <typename PRIMITIVE, int DIMENSIONS , typename SCALAR>
-      void drawKDTree(const tomo::Compound<PRIMITIVE,DIMENSIONS,SCALAR>& _compound, 
+      void drawKDTree(const Compound<PRIMITIVE,DIMENSIONS,SCALAR>& _compound, 
                         Magick::Color _color)
       {
         image_.strokeColor(_color);
@@ -129,7 +142,7 @@ namespace tomo
       }
 
       template <typename PRIMITIVE, int DIMENSIONS , typename SCALAR>
-      void draw(const tomo::Compound<PRIMITIVE,DIMENSIONS,SCALAR>& _compound, Magick::Color _color)
+      void draw(const Compound<PRIMITIVE,DIMENSIONS,SCALAR>& _compound, Magick::Color _color)
       {
         BOOST_FOREACH( const PRIMITIVE& _primitive, _compound.objs() )
           draw(_primitive,_color);
@@ -143,17 +156,17 @@ namespace tomo
       }
       
 
-      void draw(const tomo::Vertex2f& _vertex, Magick::Color _color)
+      void draw(const tg::prim::Vertex2f& _vertex, Magick::Color _color)
       {
         image_.strokeColor(_color);
-        Point2us _p(_vertex.v.x(),_vertex.v.y());  
+        tg::base::Point2us _p(_vertex.v.x(),_vertex.v.y());  
         image_.draw( Magick::DrawableCircle( _p.x(),_p.y(),vertexWidth_+_p.x(),_p.y() ));
       }
 
-      void draw(const tomo::LineSegment& _segment, Magick::Color _color)
+      void draw(const LineSegment& _segment, Magick::Color _color)
       {
-        tomo::Point2f _b = _segment.back();
-        tomo::Point2f _f = _segment.front();
+        Point2f _b = _segment.back();
+        Point2f _f = _segment.front();
         image_.strokeColor(_color);
         image_.draw( Magick::DrawableLine(_f.x(),_f.y(),_b.x(),_b.y()) );
 

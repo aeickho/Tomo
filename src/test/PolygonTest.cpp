@@ -69,7 +69,7 @@ LOG_INIT;
 void generateFilling(MultiLineString& _multiLineString)
 {
   float _posX = 0.0;
-  tomo::PointXYf _p0(0.0,0.0), _p1(0.0,1.0);
+  tomo::geometry::prim::PointXYf _p0(0.0,0.0), _p1(0.0,1.0);
   
   while (_posX < 1.0)
   {
@@ -120,7 +120,7 @@ int main(int ac, char* av[])
 
   Magick::Image _image( Magick::Geometry(resX,resY), Magick::Color("black") );
 
-  tomo::Polygon _polygon1, _polygon2;
+  tomo::geometry::prim::Polygon _polygon1, _polygon2;
  /*   boost::geometry::read_wkt(
         "POLYGON((0.4 0.26,0.48 0.34,0.58 0.36,0.68 0.24,0.74 0.32,0.68 0.4,0.82 0.6,1.0 0.52,1.0 0.24,0.98 0.16,0.58 0.14,0.4 0.26)"
             "(0.8 0.4, 0.82 0.28, 0.96 0.38, 0.88 0.44, 0.8 0.4))", _polygon);
@@ -140,7 +140,7 @@ int main(int ac, char* av[])
   MultiLineString _fillingLines, _filling;
   generateFilling(_fillingLines);
 
-  std::vector<Polygon> _polygons;
+  std::vector<tomo::geometry::prim::Polygon> _polygons;
 
   boost::geometry::difference(_polygon2,_polygon1,_polygons);
   _wrapper.draw(_polygons,"green");

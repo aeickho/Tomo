@@ -2,11 +2,11 @@
 
 namespace tomo
 {
-  typedef unsigned char   u8;
-  typedef unsigned short  u16;
-  typedef unsigned int    u32;
-
-/// Compiler macro to traverse through each channel
+  namespace geometry
+  {
+    namespace base
+    {
+  /// Compiler macro to traverse through each channel
 #define FOREACH_CHANNEL for (int i = 0; i < CHANNELS; i++) 
 
   template<int CHANNELS, class VALUE> 
@@ -119,4 +119,4 @@ namespace tomo
   typedef Color<3,u32> Color3u;
   typedef Color<4,u32> Color4u;
 }
-
+}}

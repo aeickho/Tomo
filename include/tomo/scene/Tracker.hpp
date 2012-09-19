@@ -1,10 +1,12 @@
 #pragma once
 #include <algorithm>
-#include "Point.hpp"
-#include "PolarVec.hpp"
+#include "tomo/geometry/base/Point.hpp"
+#include "tomo/geometry/base/PolarVec.hpp"
 
 namespace tomo
 {
+  namespace scene 
+  {
   template<
         class COORD,
         bool XNEG=false,
@@ -14,10 +16,10 @@ namespace tomo
   {
     typedef COORD Coord;
     /// point type
-    typedef Point<3,Coord> Point;
+    typedef geometry::base::Point<3,Coord> Point;
     /// vector type
-    typedef Vec<3,Coord> Vec;
-    typedef PolarVec<Coord> PolarVec;
+    typedef geometry::base::Vec<3,Coord> Vec;
+    typedef geometry::base::PolarVec<Coord> PolarVec;
     static const bool xNeg_ = XNEG;
     static const bool yNeg_ = YNEG;
     static const bool zNeg_ = ZNEG;
@@ -56,4 +58,5 @@ namespace tomo
     /// tracker's postion relatively to target
     TBD_PROPERTY_REF(PolarVec,direction);
   };
+  }
 }

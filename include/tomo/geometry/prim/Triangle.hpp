@@ -5,6 +5,10 @@
 
 namespace tomo
 {
+  namespace geometry 
+  {
+    namespace prim
+    {
   template<class POINT>
     struct TriangleConcept : public SlicableObject 
   {    
@@ -210,4 +214,4 @@ namespace tomo
     Vertex3f* v_[3];
   };
 
-}
+    }}}

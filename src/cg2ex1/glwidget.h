@@ -1,15 +1,15 @@
 #ifndef GLWIDGET_H
 #define GLWIDGET_H
 
-#include "tomo/Mesh.hpp"
-#include "tomo/PointCloud.hpp"
-#include "tomo/Camera.hpp"
-#include "tomo/Tracker.hpp"
-#include "tomo/Light.hpp"
-#include "tomo/Color.hpp"
-#include "tomo/PolarVec.hpp"
-#include "tomo/PrintBounds.hpp"
-#include "tomo/Slice.hpp"
+#include "tomo/geometry/Mesh.hpp"
+#include "tomo/geometry/PointCloud.hpp"
+#include "tomo/scene/Camera.hpp"
+#include "tomo/scene/Tracker.hpp"
+#include "tomo/scene/Light.hpp"
+#include "tomo/geometry/base/Color.hpp"
+#include "tomo/geometry/base/PolarVec.hpp"
+#include "tomo/scene/PrintBounds.hpp"
+#include "tomo/slicing/Slice.hpp"
 #include <QtOpenGL/QGLWidget>
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -39,15 +39,15 @@ class GLWidget : public QGLWidget
 {
   Q_OBJECT
 public:
-  typedef tomo::Color<4,float> Color;
-  typedef tomo::Point<3,float> Point;
-  typedef tomo::Vec<3,float> Vec;
-  typedef tomo::PolarVec<float,false> PolarVec;
-  typedef tomo::Tracker<float,false,true> LightTracker; 
-  typedef tomo::Light<LightTracker,Color> Light;
-  typedef tomo::Tracker<float,true,true> CameraTracker; 
-  typedef tomo::Camera<CameraTracker> Camera;
-  typedef tomo::PrintBounds PrintBounds;
+  typedef tomo::geometry::base::Color<4,float> Color;
+  typedef tomo::geometry::base::Point<3,float> Point;
+  typedef tomo::geometry::base::Vec<3,float> Vec;
+  typedef tomo::geometry::base::PolarVec<float,false> PolarVec;
+  typedef tomo::scene::Tracker<float,false,true> LightTracker; 
+  typedef tomo::scene::Light<LightTracker,Color> Light;
+  typedef tomo::scene::Tracker<float,true,true> CameraTracker; 
+  typedef tomo::scene::Camera<CameraTracker> Camera;
+  typedef tomo::scene::PrintBounds PrintBounds;
 
   struct Config 
   {
@@ -77,7 +77,7 @@ protected:
   void paintSelection();
 public:
   /// @todo replace with an vector<tomo::SceneObjects>
-  DisplayListed<tomo::Mesh> mesh_;
+  DisplayListed<tomo::geometry::Mesh> mesh_;
 
   /// @todo Obsolete since tomo::Slices does not have a default constructor anymore
   /// DisplayListed<tomo::Slices> slices_;

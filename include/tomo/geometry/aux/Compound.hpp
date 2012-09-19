@@ -1,30 +1,35 @@
 #pragma once
 
-#include "tomo/SlicableObject.hpp"
-#include "tomo/BoundingBox.hpp"
-#include "tomo/KDTree.hpp"
+#include "tomo/geometry/prim/BoundingBox.hpp"
+#include "KDTree.hpp"
 #include "tomo/misc.hpp"
 
 #include <boost/foreach.hpp>
 
 namespace tomo
 {
+  namespace geometry
+  {
+    namespace aux
+    {
   /** @brief A Compound is object is an object which consists of several primtives
    * @detail Moreover, a compound holds a KDTree structure for fast search
    * @tparam PRIMITIVE  Primitive type
    */
-  template <class PRIMITIVE, unsigned DIMENSIONS, class SCALAR = DEFAULT_TYPE>
-  class Compound
+  template <class PRIMITIVE, unsigned DIMENSIONS, class SCALAR = base::DEFAULT_TYPE>
+  class Compound : public prim::Primitive<DIMENSIONS,SCALAR>
   {
     /// TODO: Large code blocks of inRadius and kNearest are similar, refactor it
   public:
     typedef SCALAR scalar_type;
-    typedef Bounds<DIMENSIONS,SCALAR> bounds_type;
-    typedef KDTree<PRIMITIVE,DIMENSIONS,SCALAR> kdtree_type;
+    typedef Bounds<DIMENSIONS,scalar_type> bounds_type;
+    typedef KDTree<PRIMITIVE,DIMENSIONS,scalar_type> kdtree_type;
     typedef typename kdtree_type::Node node_type;
-    typedef std::multimap<SCALAR,PRIMITIVE*> map_type;
-    typedef std::pair<SCALAR,PRIMITIVE*> pair_type;
-    typedef std::vector<PRIMITIVE*> vector_type;
+    typedef std::multimap<scalar_type,PRIMITIVE*> map_type;
+    typedef std::pair<scalar_type,PRIMITIVE*> pair_type;
+    typedef std::vector<PRIMITIVE*> ptr_vector_type;
+    typedef aux::Ray<DIMENSIONS,scalar_type> ray_type;
+    typedef base::Vec<DIMENSIONS,scalar_type> vector_type;
 
     /// Aggregate another compound to this one 
     void aggregate(const Compound& _compound, bool _update = true)
@@ -36,10 +41,10 @@ namespace tomo
     }
 
     /// Collects k nearest primitives relative to a primitive _p
-    vector_type collectKNearest(const PRIMITIVE* _p, int _k) const
+    ptr_vector_type collectKNearest(const PRIMITIVE* _p, int _k) const
     {
       map_type _nearestPrimitives;
-      vector_type _kNearestPrimitives;
+      ptr_vector_type _kNearestPrimitives;
 
       kNearest(_p,&kdTree_.root(),bounds_,_nearestPrimitives,_k);
       BOOST_FOREACH( pair_type _prim, _nearestPrimitives )
@@ -51,16 +56,16 @@ namespace tomo
     /// Uses the kNearest algorithm to return the nearest object
     PRIMITIVE* nearest(const PRIMITIVE* _p) const
     {
-      vector_type _nearest = collectKNearest(_p,1);
+      ptr_vector_type _nearest = collectKNearest(_p,1);
       return (_nearest.empty()) ? NULL : _nearest[0];
     }
 
 
     /// Collects all objects inside a radius r
-    vector_type collectInRadius(const PRIMITIVE* _p, scalar_type _radius) const
+    ptr_vector_type collectInRadius(const PRIMITIVE* _p, scalar_type _radius) const
     {
       map_type _nearestPrimitives;
-      vector_type _primitivesInRadius;
+      ptr_vector_type _primitivesInRadius;
 
       inRadius(_p,&kdTree_.root(),bounds_,_nearestPrimitives,_radius);
       BOOST_FOREACH( pair_type _prim, _nearestPrimitives )
@@ -76,6 +81,8 @@ namespace tomo
       kdTree_.build(objs_,bounds(),3);
     }
 
+    virtual bool intersect(ray_type& _ray, scalar_type& _tNear, scalar_type& _tFar, vector_type* _normal = NULL) const { return false; }
+    
     TBD_PROPERTY_REF(std::vector<PRIMITIVE>,objs);
     TBD_PROPERTY_RO(bounds_type,bounds);
     TBD_PROPERTY_REF(kdtree_type,kdTree);
@@ -108,7 +115,7 @@ namespace tomo
 
       if (_node->isLeaf())
       {
-        vector_type _primitives = _node->leaf_.primitives(kdTree_.primLists_);
+        ptr_vector_type _primitives = _node->leaf_.primitives(kdTree_.primLists_);
         BOOST_FOREACH( PRIMITIVE* _nodePrim, _primitives )
         {
           if (_nodePrim == _p) continue;
@@ -156,7 +163,7 @@ namespace tomo
       scalar_type _sqrRadius = _radius * _radius;
       if (_node->isLeaf())
       {
-        vector_type _primitives = _node->leaf_.primitives(kdTree_.primLists_);
+        ptr_vector_type _primitives = _node->leaf_.primitives(kdTree_.primLists_);
         BOOST_FOREACH( PRIMITIVE* _nodePrim, _primitives )
         {
           if (_nodePrim == _p) continue;
@@ -206,4 +213,4 @@ namespace tomo
   };
 }
 
-
+}}

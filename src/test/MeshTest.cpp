@@ -7,7 +7,7 @@
 #include <boost/foreach.hpp>
 #include <tbd/log.h>
 
-#include "tomo/Mesh.hpp"
+#include "tomo/geometry/Mesh.hpp"
 
 using namespace boost;
 namespace po = program_options;
@@ -81,17 +81,17 @@ int main(int ac, char* av[])
 
   LOG->level(2);
 
-  tomo::Mesh mesh;
+  tomo::geometry::Mesh mesh;
   mesh.read(inputFile);
 
   float _thickness = mesh.bounds().size().z()/nSlices;
-  static tomo::Slices _slices(_thickness,mesh.bounds());
-  static tomo::LineSegmentContainer _pC(_slices);
+  static tomo::slicing::Slices _slices(_thickness,mesh.bounds());
+  static tomo::slicing::LineSegmentContainer _pC(_slices);
 
   LOG_MSG << "Slicing mesh...";
   mesh.slice(_pC);
 
-  std::vector<tomo::LineSegmentPlane*> _planes = _pC.fetch();
+  std::vector<tomo::slicing::LineSegmentPlane*> _planes = _pC.fetch();
 
   unsigned nSlice = 0;
   LOG_MSG << fmt("Got % slices, %") % _planes.size();
@@ -99,18 +99,18 @@ int main(int ac, char* av[])
   ofstream _ofs;
   _ofs.open(string(outputFile+".txt").c_str());
 
-  BOOST_FOREACH ( tomo::LineSegmentPlane* _p, _planes )
+  BOOST_FOREACH ( tomo::slicing::LineSegmentPlane* _p, _planes )
   {
     _ofs << "IMAGE " << outputFile << nSlice << ".png " << resX << " " << resY << endl;
 
     
-    BOOST_FOREACH ( tomo::LineSegment& _lineSegment, _p->objs() )
+    BOOST_FOREACH ( tomo::geometry::prim::LineSegment& _lineSegment, _p->objs() )
     {
       _ofs << "red ";
-      vector<Point2f> _points;
+      vector<tomo::geometry::base::Point2f> _points;
       _points.push_back(_lineSegment.front());
       _points.push_back(_lineSegment.back());
-      BOOST_FOREACH ( tomo::Point2f& _point, _points )
+      BOOST_FOREACH ( tomo::geometry::base::Point2f& _point, _points )
       {
         int posX = (_point.x() - mesh.bounds().min().x()) / mesh.bounds().size().x() * resX;
         int posY = (_point.y() - mesh.bounds().min().y()) / mesh.bounds().size().y() * resY;

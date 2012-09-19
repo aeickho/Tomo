@@ -1,6 +1,6 @@
 #pragma once
 
-#include "tomo/Vector.hpp"
+#include "tomo/geometry/base/Vector.hpp"
 #include "tomo/misc.hpp"
 
 #include <vector>
@@ -8,14 +8,18 @@
 
 namespace tomo 
 {
-  template<int DIMENSIONS, typename SCALAR = DEFAULT_TYPE>  
+  namespace geometry
+  {
+    namespace aux
+    {
+  template<int DIMENSIONS, typename SCALAR = base::DEFAULT_TYPE>  
   struct Bounds 
   {
-    typedef SCALAR Scalar;
-    typedef Point<DIMENSIONS,SCALAR> point_type;
-    typedef Vec<DIMENSIONS,SCALAR> vector_type;
+    typedef SCALAR scalar_type;
+    typedef base::Point<DIMENSIONS,scalar_type> point_type;
+    typedef base::Vec<DIMENSIONS,scalar_type> vector_type;
 
-    Bounds() { min_.vectorize(std::numeric_limits<Scalar>::max()); max_.vectorize(std::numeric_limits<Scalar>::min());  }
+    Bounds() { min_.vectorize(std::numeric_limits<scalar_type>::max()); max_.vectorize(std::numeric_limits<scalar_type>::min());  }
     Bounds(point_type _min, point_type _max) { this->operator()(_min,_max); }
 
     /// Retrieve the corners of bounds with as a vector of points
@@ -67,7 +71,7 @@ namespace tomo
     }
 
     /// Return axis which largest extent
-    Axis dominantAxis() const
+    base::Axis dominantAxis() const
     {
      return size().dominantAxis() ; 
     }
@@ -84,13 +88,13 @@ namespace tomo
     vector_type size() const { return max_ - min_; }
     
     /// Return bounds' radius 
-    Scalar radius() const { return size().length()/2; }
+    scalar_type radius() const { return size().length()/2; }
 
     /// Return bounds' center
     point_type center() { return 0.5*(max().vec() + min().vec()); }
 
     /// Split bounds in two halves 
-    void split(Scalar _splitPos, Axis _axis, Bounds& _left, Bounds& _right) const 
+    void split(scalar_type _splitPos, base::Axis _axis, Bounds& _left, Bounds& _right) const 
     {
       point_type _min = min(), _max = max();
       _min[_axis] = _splitPos; 
@@ -103,8 +107,8 @@ namespace tomo
     {
       TOMO_FOREACH_DIM
       {
-        if (min_[i] != std::numeric_limits<Scalar>::max() && 
-            max_[i] != std::numeric_limits<Scalar>::min())
+        if (min_[i] != std::numeric_limits<scalar_type>::max() && 
+            max_[i] != std::numeric_limits<scalar_type>::min())
           if (min_[i] > max_[i]) 
             std::swap(min_[i],max_[i]);
       }
@@ -116,4 +120,4 @@ namespace tomo
 
   typedef Bounds<2,float> Bounds2f;
   typedef Bounds<3,float> Bounds3f;
-}
+}}}

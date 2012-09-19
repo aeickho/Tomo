@@ -1,10 +1,14 @@
 #pragma once
 
-#include "tomo/Ray.hpp"
-#include "tomo/Bounds.hpp"
+#include "tomo/geometry/aux/Ray.hpp"
+#include "tomo/geometry/aux/Bounds.hpp"
 
 namespace tomo 
 {
+  namespace geometry
+  {
+    namespace prim
+    {
   /// Struct which holds the result of an intersection test between split plane and primitive
   struct SplitPlaneIntersect
   {
@@ -21,14 +25,14 @@ namespace tomo
   };
 
   /// A primitive is an object which has an extent and for which an intersection point can be found 
-  template<int DIMENSIONS, typename SCALAR = DEFAULT_TYPE>  
+  template<int DIMENSIONS, typename SCALAR = base::DEFAULT_TYPE>  
   struct Primitive
   {
     typedef SCALAR scalar_type;
-    typedef Bounds<DIMENSIONS,scalar_type> bounds_type;
-    typedef Point<DIMENSIONS,scalar_type> point_type;
-    typedef Vec<DIMENSIONS,scalar_type> vector_type;
-    typedef Ray<DIMENSIONS,scalar_type> ray_type;
+    typedef base::Point<DIMENSIONS,scalar_type> point_type;
+    typedef base::Vec<DIMENSIONS,scalar_type> vector_type;
+    typedef aux::Ray<DIMENSIONS,scalar_type> ray_type;
+    typedef aux::Bounds<DIMENSIONS,scalar_type> bounds_type;
 
     /** @brief Virtual method to determine intersection point
      * @param _ray        Ray for intersection
@@ -55,7 +59,10 @@ namespace tomo
      * @param _boundsLeft  Left bounds
      * @param _boundsRight Right bounds
      */
-    virtual SplitPlaneIntersect intersect(Axis _axis, scalar_type _splitPos, const bounds_type& _boundsLeft, const bounds_type& _boundsRight) const
+    SplitPlaneIntersect intersect(base::Axis _axis, 
+                                  scalar_type _splitPos, 
+                                  const bounds_type& _boundsLeft, 
+                                  const bounds_type& _boundsRight) const
     {
       if (bounds().max()[_axis] < _splitPos) return SplitPlaneIntersect(true,false);
       if (bounds().min()[_axis] > _splitPos) return SplitPlaneIntersect(false,true); 
@@ -93,5 +100,5 @@ namespace tomo
 
   typedef Primitive<2,float> Primitive2f;
   typedef Primitive<3,float> Primitive3f;
-
+  }}
 }

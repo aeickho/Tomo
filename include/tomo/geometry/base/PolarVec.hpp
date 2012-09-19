@@ -5,6 +5,10 @@
 
 namespace tomo
 {
+  namespace geometry
+  {
+    namespace base
+    {
   /** @brief polar 3D vector defined by th two angles phi, theta and a radial distance
     * @tparam COORD coordinate type
     * @tparam ALLOW_NEG_RADIUS allow negative radius
@@ -20,9 +24,9 @@ namespace tomo
     /// coordinate type
     typedef COORD Coord;
     /// substitute cartesian vector type
-    typedef tomo::Vec<3,Coord> Vec;
+    typedef base::Vec<3,Coord> Vec;
     /// generate cartesian vector type with for dimensions
-    typedef tomo::Vec<4,Coord> Vec4;
+    typedef base::Vec<4,Coord> Vec4;
     /// number of dimensions
     static const int dimensions_ = 3;
     /// default constructor
@@ -113,10 +117,11 @@ namespace tomo
   };
   namespace
   {
-    template<class COORD> inline fmt operator%(fmt _fmt, const tomo::PolarVec<COORD>& _pvec)
+    template<class COORD> inline fmt operator%(fmt _fmt, const tomo::geometry::base::PolarVec<COORD>& _pvec)
     {
       return _fmt % (std::string)_pvec;
     }
   }
-}
+
+}}}
 #endif /* _POLARVEC_HPP */
