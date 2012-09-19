@@ -3,7 +3,7 @@
 #include "tomo/Primitive.hpp"
 #include "tomo/Slice.hpp"
 
-namespace tomo 
+namespace tomo
 {
   struct SlicableObject : public Primitive3f
   {

@@ -3,102 +3,102 @@
 #include <boost/foreach.hpp>
 #include "tomo/defaults.h"
 
-namespace tomo 
+namespace tomo
 {
   /// animation processing
-  namespace anim 
+  namespace anim
   {
     /** basic acceleration processor with infinite acceleraton
      * @tparam TIME time type to use
      */
-    template<class TIME=DefTime> struct Acc 
+    template<class TIME=DefTime> struct Acc
     {
       /** define local time type */
       typedef TIME Time;
       /** create acceleration processor */
-      Acc( Time _start, Time _duration ) : start_(_start), duration_(_duration) 
+      Acc( Time _start, Time _duration ) : start_(_start), duration_(_duration)
       {
       }
-      Time elapsed(Time _time) const 
-      { 
+      Time elapsed(Time _time) const
+      {
         if( finished(_time) )
           return duration_;
         else
-          return _time - start_; 
+          return _time - start_;
       }
-      bool finished(Time _time) const 
+      bool finished(Time _time) const
       {
-        return _time >= start_ + duration_; 
+        return _time >= start_ + duration_;
       }
-      Time duration() const 
+      Time duration() const
       {
-        return duration_; 
+        return duration_;
       }
     protected:
       Time  start_;
       Time  duration_;
     };
-    template<class TIME=DefTime> struct Linear : public Acc<TIME> 
+    template<class TIME=DefTime> struct Linear : public Acc<TIME>
     {
       typedef TIME Time;
       typedef Acc<Time> Base;
-      Linear( Time _start, Time _duration ) : Base(_start, _duration) 
-      { 
+      Linear( Time _start, Time _duration ) : Base(_start, _duration)
+      {
       }
-      template<class TYPE> TYPE progress( Time _time ) const 
-      { 
+      template<class TYPE> TYPE progress( Time _time ) const
+      {
         return Base::elapsed(_time) / Base::duration_;
       }
     };
-    struct Objective 
+    struct Objective
     {
       virtual void begin(double _progress ) = 0;
       virtual void end() = 0;
     };
-    struct MatrixTransformation : Objective 
+    struct MatrixTransformation : Objective
     {
-      virtual void begin(double _progress) 
+      virtual void begin(double _progress)
       {
         glPushMatrix();
         transform(_progress);
       }
-      virtual void end() 
+      virtual void end()
       {
         glPopMatrix();
       }
     protected:
       virtual void transform( Type _progress ) = 0;
     };
-    template<class COORD=DefCoord> struct Rotation : MatrixTransformation<COORD> 
+    template<class COORD=DefCoord> struct Rotation : MatrixTransformation<COORD>
     {
       typedef TYPE Type;
       typedef MatrixTransformation<Type> Base;
-      Rotation(Type _angle, Type _x, Type _y, Type _z) 
-      : angle_(_angle) 
-      , x_(_x), y_(_y), z_(_z) 
+      Rotation(Type _angle, Type _x, Type _y, Type _z)
+        : angle_(_angle)
+        , x_(_x), y_(_y), z_(_z)
       {
       }
-      virtual void transform( Type _progress ) 
+      virtual void transform( Type _progress )
       {
         glRotate(_progress,x_,y_,z_);
       }
     protected:
       Type angle_, x_, y_, z_;
     };
-    template<class TYPE=DEFAULT_TYPE> struct Objectives : Objective<TYPE> 
+    template<class TYPE=DEFAULT_TYPE> struct Objectives : Objective<TYPE>
     {
       typedef TYPE Type;
       typedef boost::ptr_vector<Objective<TYPE> > Container;
       typedef Objective<Type> Base;
-      virtual void begin(const Type _progress) 
+      virtual void begin(const Type _progress)
       {
         BOOST_FOREACH( typename Container::reference r, transformations_ )
-          r.begin(_progress);
+        r.begin(_progress);
       }
-      virtual void end() 
+      virtual void end()
       {
         BOOST_FOREACH( typename Container::reference r, transformations_ )
-          r.end();
+        r.end();
       }
     protected:
       Container transformations_;
@@ -106,13 +106,13 @@ namespace tomo
   }
   typedef anim::Linear<> Linear;
   typedef anim::Rotation<> Rotation;
-  namespace examples 
+  namespace examples
   {
-    void f() 
+    void f()
     {
       Linear  acc(0.0,100.0);
       Rotation rot(180.0, 0.0, 0.0, 1.0);
-      for( anim::DEFAULT_TIME i=0.0; i<acc.duration(); i += 1.0 ) 
+      for( anim::DEFAULT_TIME i=0.0; i<acc.duration(); i += 1.0 )
       {
         anim::DEFAULT_TYPE progress=acc.progress<anim::DEFAULT_TIME>(i);
         rot.begin(progress);
@@ -121,4 +121,4 @@ namespace tomo
       }
     }
   }
- }
+}

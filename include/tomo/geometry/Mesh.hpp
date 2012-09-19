@@ -51,7 +51,7 @@ namespace tomo
       TBD_PROPERTY_RO(aux::Bounds3f,bounds);
     private:
 
-      void sliceTriangle(ConstFaceIter _faceIter, 
+      void sliceTriangle(ConstFaceIter _faceIter,
                          slicing::LineSegmentContainer& _lineSegmentContainer) const;
     };
   }

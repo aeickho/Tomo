@@ -78,16 +78,16 @@ namespace tomo
       for (; fIt!=fEnd; ++fIt)
         sliceTriangle(fIt,_lineSegmentContainer);
     }
-    void Mesh::sliceTriangle(ConstFaceIter _faceIter, 
+    void Mesh::sliceTriangle(ConstFaceIter _faceIter,
                              slicing::LineSegmentContainer& _lineSegmentContainer) const
     {
       Mesh::ConstFaceVertexIter fvIt = cfv_iter(_faceIter.handle());
       Point3f A = point(fvIt), B = point(++fvIt), C = point(++fvIt);
-      slicing::LineSegmentContainer::const_iterator 
-        _Ait = _lineSegmentContainer.get(A.z()),
-        _Bit = _lineSegmentContainer.get(B.z()),
-        _Cit = _lineSegmentContainer.get(C.z()),
-        it;
+      slicing::LineSegmentContainer::const_iterator
+      _Ait = _lineSegmentContainer.get(A.z()),
+      _Bit = _lineSegmentContainer.get(B.z()),
+      _Cit = _lineSegmentContainer.get(C.z()),
+      it;
 
       using slicing::LineSegmentPlane;
 

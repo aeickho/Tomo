@@ -15,7 +15,7 @@ namespace tomo
 //    Slices slice(const PointCloud& _pointCloud) const;
 
     TBD_PROPERTY_CFG(float,sliceHeight,"SLICE_HEIGHT_MM",0.2);
-    
+
     TBD_PROPERTY_CFG(int,numPerimeters,"NUM_PERIMETERS",3);
     TBD_PROPERTY_CFG(int,numSolidLayers,"NUM_SOLID_LAYERS",3);
 

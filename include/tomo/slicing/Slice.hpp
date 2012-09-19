@@ -19,7 +19,7 @@ namespace tomo
   {
     using geometry::prim::Polygon;
     using geometry::prim::MultiPolygon;
-    
+
     struct Slice
     {
 

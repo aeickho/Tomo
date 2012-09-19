@@ -3,8 +3,8 @@
 
 namespace tomo
 {
-  /** @brief Plane Stack is a class template to represent several planes ordered by position 
-   *  @details Internally, planes are stored in a map<POSITION,PLANE> 
+  /** @brief Plane Stack is a class template to represent several planes ordered by position
+   *  @details Internally, planes are stored in a map<POSITION,PLANE>
    */
   template<class POSITION, class PLANE>
   struct PlaneStack
@@ -32,12 +32,18 @@ namespace tomo
       return _planes;
     }
 
-    const map_type& get() const { return planes_; }
-    map_type& get() { return planes_; }
+    const map_type& get() const
+    {
+      return planes_;
+    }
+    map_type& get()
+    {
+      return planes_;
+    }
 
 
     /// Get slice by position
-    iterator get(POSITION _pos)  
+    iterator get(POSITION _pos)
     {
       return planes_.lower_bound(_pos);
     }
@@ -47,10 +53,22 @@ namespace tomo
       return planes_.lower_bound(_pos);
     }
 
-    iterator end() { return planes_.end(); }
-    iterator begin() { return planes_.begin(); }
-    const_iterator end() const { return planes_.end(); }
-    const_iterator begin() const { return planes_.begin(); }
+    iterator end()
+    {
+      return planes_.end();
+    }
+    iterator begin()
+    {
+      return planes_.begin();
+    }
+    const_iterator end() const
+    {
+      return planes_.end();
+    }
+    const_iterator begin() const
+    {
+      return planes_.begin();
+    }
 
   protected:
     map_type planes_;
