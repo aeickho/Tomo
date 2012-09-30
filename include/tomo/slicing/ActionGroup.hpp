@@ -6,10 +6,9 @@ namespace tomo
 {
   namespace slicing
   {
-    template<class ACTION, class STATE> class ActionGroup : public ACTION<STATE>
+    template<class ACTION> class ActionGroup 
     {
-      typedef ACTION<STATE> Action;
-      TBD_PROPERTY_REF(std::vector<Action>,actions);
+      TBD_PROPERTY_REF(std::vector<ACTION>,actions);
     };
   }
 }

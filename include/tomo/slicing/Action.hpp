@@ -6,9 +6,11 @@ namespace tomo
 {
   namespace slicing
   {
-    template<class State> class Action
+    template<class STATE> class Action
     {
     public:
+        typedef typename geometry::base::Point3f Point3f;
+        typedef STATE State;
       //    typedef State::Costs Costs;
         /// Generate GCode
       //    virtual GCode generate( State& _state ) = 0;

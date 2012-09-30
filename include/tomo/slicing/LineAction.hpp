@@ -10,16 +10,15 @@ namespace tomo
     {
     public:
       typedef Action<STATE> Action;
-  
+      typedef typename geometry::base::Point3f Point3f;
+
       LineAction( Point3f _begin, Point3f _end ) :
         begin_(_begin),
         end_(_end)
-      {
-      }
+      {}
 
       virtual void process( const STATE& _state )
       {
-        _state.pos(pos_);
       }
 
       TBD_PROPERTY(Point3f,begin);
