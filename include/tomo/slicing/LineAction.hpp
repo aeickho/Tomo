@@ -9,7 +9,8 @@ namespace tomo
     template<class STATE> class LineAction : public Action<STATE>
     {
     public:
-      typedef Action<STATE> Action;
+      typedef STATE State;
+      typedef Action<State> Action;
       typedef typename geometry::base::Point3f Point3f;
 
       LineAction( Point3f _begin, Point3f _end ) :
@@ -17,7 +18,7 @@ namespace tomo
         end_(_end)
       {}
 
-      virtual void process( const STATE& _state )
+      virtual void process( const State& _state )
       {
       }
 

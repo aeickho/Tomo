@@ -15,6 +15,21 @@ namespace po = program_options;
 
 using namespace std;
 
+  using tomo::geometry::base::Point2f;
+  using tomo::geometry::base::Point3f;
+  using tomo::slicing::Filling;
+  using tomo::geometry::prim::Polygon;
+  using tomo::geometry::prim::PointXYf;
+
+
+  struct State
+  {
+    float speed_, extrudedLength_;
+    float temperature_;
+    TBD_PROPERTY_REF(Point3f,pos);
+  };
+
+
 int main(int ac, char* av[])
 {
   cout << "Procedure Test 0.1 -- written by Wilston Oreo." << endl;
@@ -43,19 +58,6 @@ int main(int ac, char* av[])
     cout << desc << endl;
     return 1;
   }
-
-  using tomo::geometry::base::Point2f;
-  using tomo::geometry::base::Point3f;
-  using tomo::slicing::Filling;
-  using tomo::geometry::prim::Polygon;
-  using tomo::geometry::prim::PointXYf;
-
-  struct State
-  {
-    float speed_, extrudedLength_;
-    float temperature_;
-    TBD_PROPERTY_REF(Point3f,pos);
-  };
 
   Point2f _min(10.0,10.0);
   Point2f _max(20.0,20.0);

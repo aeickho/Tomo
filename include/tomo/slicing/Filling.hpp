@@ -12,7 +12,8 @@ namespace tomo
     class Filling : Procedure< LineAction<STATE> >
     {
     public:
-      typedef LineAction<STATE> LineAction;
+      typedef STATE State;
+      typedef LineAction<State> LineAction;
       typedef ActionGroup<LineAction> ActionGroup;
 
       ActionGroup operator()( const geometry::prim::Polygon& _in, 
