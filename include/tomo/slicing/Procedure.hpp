@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ACTIONGroup.hpp"
+#include "ActionGroup.hpp"
 #include "tomo/geometry/prim/Polygon"
 
 namespace tomo
@@ -15,7 +15,7 @@ namespace tomo
       using geometry::prim::Polygon;
  
       /// Polygon = Isle
-      GroupAction<ACTION,STATE> operator()( const geometry::prim::Polygon& _in, 
+      ActionGroup<ACTION,STATE> operator()( const geometry::prim::Polygon& _in, 
                                             const std::list<geometry::prim::Polygon>& _out, 
                                             STATE& _state );
     };
