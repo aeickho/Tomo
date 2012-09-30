@@ -77,6 +77,9 @@ TARGET_LINK_LIBRARIES(PolygonTest tomo boost_program_options rt Magick++)
 ADD_EXECUTABLE(CompoundTest ./src/test/CompoundTest.cpp)
 TARGET_LINK_LIBRARIES(CompoundTest tomo boost_program_options rt Magick++)
 
+ADD_EXECUTABLE(ProcedureTest ./src/test/ProcedureTest.cpp)
+TARGET_LINK_LIBRARIES(ProcedureTest tomo boost_program_options rt Magick++)
+
 #ADD_DEFINITIONS(-g -O2 -fsigned-char -freg-struct-return -Wall -W -Wshadow -Wpointer-arith -Wcast-qual -Winline)
 #ADD_DEFINITIONS(-g -O3 -fsigned-char -fopenmp -freg-struct-return -Wall -fPIC)
 ADD_DEFINITIONS(-g -O3 -fsigned-char -Wall -fPIC)
