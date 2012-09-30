@@ -17,6 +17,7 @@ namespace tomo
     {
       typedef boost::geometry::model::d2::point_xy<float> PointXYf;
       typedef boost::geometry::model::polygon<PointXYf> Polygon;
+      typedef boost::geometry::model::ring<PointXYf> Ring;
 
       /*
       struct Polygon : public Primitive2f

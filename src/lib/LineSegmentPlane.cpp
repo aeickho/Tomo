@@ -75,14 +75,14 @@ namespace tomo
     LineSegment* LineSegmentPlane::nearestSegment(LineSegment* _lineSegment)
     {
       /// @todo Improve this for handling of non-manifolds
-      vector<LineSegment*> _kNearest = collectKNearest(_lineSegment,40);
-
+    /*
+      vector<LineSegment*> _kNearest = collectKNearest(_lineSegment,1);
       BOOST_FOREACH( LineSegment* _nearest , _kNearest )
-      if (_nearest->front() != _nearest->back() && !_nearest->prev())
+      if (!_nearest->prev())
         return _nearest;
 
-      LOG_MSG;
-      return NULL;
+      LOG_MSG;*/
+      return nearest(_lineSegment);
     }
 
     LineSegmentPlane::LineSegmentPlane(Slice* _slice) : slice_(_slice)

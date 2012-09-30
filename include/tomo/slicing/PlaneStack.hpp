@@ -11,25 +11,48 @@ namespace tomo
   {
     typedef std::pair<POSITION,PLANE> key_value_type;
     typedef std::map<POSITION,PLANE> map_type;
+    typedef std::vector<PLANE*> vec_type;
+    typedef std::vector<const PLANE*> const_vec_type;
+
     typedef typename map_type::iterator iterator;
     typedef typename map_type::const_iterator const_iterator;
 
-    std::vector<PLANE*> fetch()
+    vec_type fetch(iterator _itBegin, iterator _itEnd)
     {
-      std::vector<PLANE*> _planes;
-      _planes.reserve(planes_.size());
-      for (iterator it = planes_.begin(); it != planes_.end(); ++it)
+      vec_type _planes;
+      _planes.reserve(std::distance(_itBegin,_itEnd));
+      for (iterator it = _itBegin; it != _itEnd; ++it)
         _planes.push_back(&it->second);
       return _planes;
     }
 
-    std::vector<const PLANE* > fetch() const
+    const_vec_type fetch(const_iterator _itBegin, const_iterator _itEnd) const
     {
-      std::vector< const PLANE* > _planes;
-      _planes.reserve(planes_.size());
-      for (const_iterator it = planes_.begin(); it != planes_.end(); ++it)
+      const_vec_type _planes;
+      _planes.reserve(std::distance(_itBegin,_itEnd));
+      for (const_iterator it = _itBegin; it != _itEnd; ++it)
         _planes.push_back(&it->second);
       return _planes;
+    }
+
+    vec_type fetch()
+    {
+      return fetch(planes_.begin(),planes_.end());
+    }
+
+    const_vec_type fetch() const
+    {
+      return fetch(planes_.begin(),planes_.end());
+    }
+
+    vec_type fetch(POSITION _begin, POSITION _end)
+    {
+      return fetch(get(_begin),get(_end));
+    }
+
+    const_vec_type fetch(POSITION _begin, POSITION _end) const
+    {
+      return fetch(get(_begin),get(_end));
     }
 
     const map_type& get() const
@@ -40,7 +63,6 @@ namespace tomo
     {
       return planes_;
     }
-
 
     /// Get slice by position
     iterator get(POSITION _pos)

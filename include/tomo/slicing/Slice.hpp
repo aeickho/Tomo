@@ -36,6 +36,7 @@ namespace tomo
     struct Slices : PlaneStack<float,Slice>
     {
     public:
+      Slices() {}
       Slices(float _thickness, geometry::aux::Bounds3f _bounds);
 
       void build(float _thickness, geometry::aux::Bounds3f _bounds);

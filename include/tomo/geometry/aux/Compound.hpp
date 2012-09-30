@@ -123,7 +123,7 @@ namespace tomo
             {
               if (_nodePrim == _p) continue;
               scalar_type _distance = _p->sqrDistance(*_nodePrim);
-              if (_distance < _sqrRadius )
+              if (_distance <= _sqrRadius )
                 _nearestPrimitives.insert(pair_type(_distance,_nodePrim));
 
               /// Only hold at most k nearest primitives
@@ -141,16 +141,16 @@ namespace tomo
 
           if (_leftDist < _rightDist)
           {
-            if (_leftDist < _sqrRadius)
+            if (_leftDist <= _sqrRadius)
               kNearest(_p,kdTree_.node(_node->inner_.left()),_left,_nearestPrimitives,_k);
-            if (_rightDist < _sqrRadius)
+            if (_rightDist <= _sqrRadius)
               kNearest(_p,kdTree_.node(_node->inner_.right()),_right,_nearestPrimitives,_k);
           }
           else
           {
-            if (_rightDist < _sqrRadius)
+            if (_rightDist <= _sqrRadius)
               kNearest(_p,kdTree_.node(_node->inner_.right()),_right,_nearestPrimitives,_k);
-            if (_leftDist < _sqrRadius)
+            if (_leftDist <= _sqrRadius)
               kNearest(_p,kdTree_.node(_node->inner_.left()),_left,_nearestPrimitives,_k);
           }
 
@@ -183,18 +183,18 @@ namespace tomo
           scalar_type _leftDist = nodeDistance(_p,_left);
           scalar_type _rightDist = nodeDistance(_p,_right);
 
-          if (_leftDist < _rightDist)
+          if (_leftDist <= _rightDist)
           {
-            if (_leftDist < _sqrRadius)
+            if (_leftDist <= _sqrRadius)
               inRadius(_p,kdTree_.node(_node->inner_.left()),_left,_nearestPrimitives,_radius);
-            if (_rightDist < _sqrRadius)
+            if (_rightDist <= _sqrRadius)
               inRadius(_p,kdTree_.node(_node->inner_.right()),_right,_nearestPrimitives,_radius);
           }
           else
           {
-            if (_rightDist < _sqrRadius)
+            if (_rightDist <= _sqrRadius)
               inRadius(_p,kdTree_.node(_node->inner_.right()),_right,_nearestPrimitives,_radius);
-            if (_leftDist < _sqrRadius)
+            if (_leftDist <= _sqrRadius)
               inRadius(_p,kdTree_.node(_node->inner_.left()),_left,_nearestPrimitives,_radius);
           }
         }

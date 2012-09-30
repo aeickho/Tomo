@@ -1,12 +1,18 @@
 #pragma once
 
-#include "tomo/Primitive.hpp"
-#include "tomo/Slice.hpp"
+#include "tomo/slicing/Slice.hpp"
+#include "tomo/geometry/prim/Primitive.hpp"
 
 namespace tomo
 {
-  struct SlicableObject : public Primitive3f
+  namespace slicing
   {
-    virtual void slice(Slices& _slices) const = 0;
-  };
+    struct SlicableObject : public geometry::prim::Primitive3f
+    {
+      virtual void slice() = 0;
+
+      TBD_PROPERTY_REF(geometry::base::Vec3f,pos);
+      TBD_PROPERTY_REF(Slices,slices);
+    };
+  }
 }

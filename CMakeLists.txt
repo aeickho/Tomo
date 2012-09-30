@@ -50,6 +50,14 @@ ADD_EXECUTABLE(cg2ex1
 TARGET_LINK_LIBRARIES(cg2ex1 tomo -lQtOpenGL -lQtGui -lQtCore -lGLU -lGL -lpthread -lrt)
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 
+# Apps
+# DebugSlices
+ADD_EXECUTABLE(tomo-debugslicer ./src/app/debugslicer/DebugSlicer.hpp ./src/app/debugslicer/debugslicer.cpp)
+TARGET_LINK_LIBRARIES(tomo-debugslicer boost_program_options tomo Magick++ rt)
+
+
+
+
 #Tests
 ADD_EXECUTABLE(mediantest ./src/test/mediantest.cpp)
 TARGET_LINK_LIBRARIES(mediantest boost_program_options tomo)
