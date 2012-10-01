@@ -106,7 +106,7 @@ namespace tomo
         }
 
         /// Return bounds' center
-        point_type center()
+        point_type center() const
         {
           return 0.5*(max().vec() + min().vec());
         }

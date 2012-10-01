@@ -23,21 +23,24 @@ namespace tomo
       struct Polygon : public Primitive2f
       {
         typedef enum { PT_NONE, PT_CLOSURE, PT_HOLE } Type;
-        typedef aux::Bounds2f Bounds2f;
-        typedef aux::Ray2f Ray2f;
 
-        Bounds2f bounds() const
+        bounds_type bounds() const
         {
           return bounds_;
         }
 
-        bool intersect(Ray2f& _ray, float& _tNear, float& _tFar, base::Vec2f* _normal = NULL) const
+        bool intersect(ray_type& _ray, float& _tNear, float& _tFar, vector_type* _normal = NULL) const
         {
           return false;
         }
 
-        void lineSegments(Ray2f& _ray, std::vector<LineSegment>& _lineSegments ) const;
-        
+        void lineSegments(ray_type& _ray, std::vector<LineSegment>& _lineSegments ) const;
+        std::vector<LineSegment> fetchLineSegments() const;
+
+        void addOuter(point_type _point);
+        void boundingRays(float _angle, ray_type& _rayBegin, ray_type& _rayEnd) const;
+
+        Polygon shrinked(float _factor) const;
 
         const BoostPolygon& operator()() const { return polygon_; }
         BoostPolygon& operator()() { return polygon_; }
@@ -45,15 +48,16 @@ namespace tomo
         TBD_PROPERTY(BoostPolygon,polygon);
       
       private:
-        Bounds2f bounds_;
+        bounds_type bounds_;
 
-        std::vector<LineSegment> fetchLineSegments() const;
-        std::vector<LineSegment> lineSegmentsFromRing(
+        void lineSegmentsFromRing(
             const Ring& _ring, 
             std::vector<LineSegment>& _lineSegments) const;
 
+        Ring shrinked(float _factor, const Ring& _in) const;
+
         void lineSegmentsFromSegMarkers(
-            const Ray2f& _ray,
+            const ray_type& _ray,
             const std::set<float>& _segMarkers,
             std::vector<LineSegment>& _lineSegments) const;
         

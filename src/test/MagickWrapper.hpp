@@ -31,6 +31,7 @@ namespace tomo
     using tg::aux::KDTree;
     using tg::aux::KDNode;
     using tg::aux::Compound;
+    using tg::aux::Ray2f;
 
     template <typename Point, typename Coord>
     struct CoordinateWrapper
@@ -60,7 +61,7 @@ namespace tomo
     {
       typedef CoordinateWrapper<tg::prim::PointXYf,Magick::Coordinate> BoostToMagickCoord;
 
-      Wrapper(Magick::Image& _image) : image_(_image) 
+      Wrapper(Magick::Image& _image) : vertexWidth_(4.0), drawEndings_(false), image_(_image) 
       {
         image_.fillColor("none");
       }
@@ -162,6 +163,27 @@ namespace tomo
         image_.strokeColor(_color);
         tg::base::Point2us _p(_vertex.v.x(),_vertex.v.y());  
         image_.draw( Magick::DrawableCircle( _p.x(),_p.y(),vertexWidth_+_p.x(),_p.y() ));
+      }
+
+      void draw(const tg::base::Point2f _point, Magick::Color _color)
+      {
+        tg::prim::Vertex2f _v(_point);
+        draw(_v,_color);
+      }
+
+      void draw(const tg::aux::Ray2f& _ray, Magick::Color _color)
+      {
+        image_.strokeColor(_color);
+
+        tg::base::Point2f _pNear = _ray.org() + _ray.tNear() * _ray.dir();
+        tg::base::Point2f _pFar = _ray.org() + _ray.tFar() * _ray.dir();
+        
+        tg::base::Point2us _f(_ray.org().x(),_ray.org().y()),
+                           _b(_pFar.x(),_pFar.y());
+
+        image_.draw( Magick::DrawableLine(_f.x(),_f.y(),_b.x(),_b.y()) );
+        draw( _pNear, Magick::Color("yellow") );
+        draw( _pFar, Magick::Color("blue") );
       }
 
       void draw(const LineSegment& _segment, Magick::Color _color)

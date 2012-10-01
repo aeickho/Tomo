@@ -22,7 +22,7 @@ namespace tomo
 
         bool intersection(void* _primitive, Scalar _t, Scalar _tNear, Scalar _tFar)
         {
-          if (_t >= _tNear && _t < _tFar)
+          if (_t >= _tNear && _t <= _tFar)
           {
             primitive_ = _primitive;
             tFar_ = _t;
@@ -38,7 +38,7 @@ namespace tomo
 
         point_type intersectionPoint() const
         {
-          return org_ + dir_ * tNear_;
+          return org_ + tFar_ * dir_;
         }
 
         void params(point_type _org, vector_type _dir)
