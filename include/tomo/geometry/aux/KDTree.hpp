@@ -29,7 +29,6 @@ namespace tomo
         {
           typedef std::vector<KDNode> NodeCont;
 
-        public:
           inline bool leafFlag() const
           {
             return data_ & (1 << 31);
@@ -68,7 +67,6 @@ namespace tomo
         /// Leaf node
         struct Leaf
         {
-        public:
           typedef std::vector<PRIMITIVE*> PrimCont;
 
           /// Insert Primitive pointers from _src into _dest

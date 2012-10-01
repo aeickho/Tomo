@@ -22,11 +22,11 @@ namespace tomo
       void Box::generateSlice(slicing::Slice* _slice) const
       {
         Polygon _polygon;
-        _polygon.outer().reserve(4);
-        _polygon.outer().push_back(PointXYf(min().x(),min().y()));
-        _polygon.outer().push_back(PointXYf(max().x(),min().y()));
-        _polygon.outer().push_back(PointXYf(max().x(),max().y()));
-        _polygon.outer().push_back(PointXYf(min().x(),max().y()));
+        _polygon().outer().reserve(4);
+        _polygon().outer().push_back(PointXYf(min().x(),min().y()));
+        _polygon().outer().push_back(PointXYf(max().x(),min().y()));
+        _polygon().outer().push_back(PointXYf(max().x(),max().y()));
+        _polygon().outer().push_back(PointXYf(min().x(),max().y()));
         _slice->add(_polygon);
       }
     }

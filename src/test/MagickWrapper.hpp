@@ -76,8 +76,9 @@ namespace tomo
         _coordWrap.coords_ = &_coords;
 
         image_.fillColor("none");
-        boost::geometry::for_each_point( _polygon, _coordWrap );
+        boost::geometry::for_each_point( _polygon(), _coordWrap );
         image_.strokeColor(Magick::Color(_color)); // Outline color
+        _coords.push_back(_coords.front());
         image_.draw( Magick::DrawablePolyline( _coords )) ;
       }
 

@@ -7,6 +7,7 @@
 #include <boost/geometry/geometries/polygon.hpp>
 
 #include "tomo/geometry/prim/Primitive.hpp"
+#include "tomo/geometry/prim/LineSegment.hpp"
 #include "tomo/geometry/aux/Bounds.hpp"
 
 namespace tomo
@@ -16,53 +17,40 @@ namespace tomo
     namespace prim
     {
       typedef boost::geometry::model::d2::point_xy<float> PointXYf;
-      typedef boost::geometry::model::polygon<PointXYf> Polygon;
+      typedef boost::geometry::model::polygon<PointXYf> BoostPolygon;
       typedef boost::geometry::model::ring<PointXYf> Ring;
 
-      /*
       struct Polygon : public Primitive2f
       {
-      typedef enum { PT_NONE, PT_CLOSURE, PT_HOLE } Type;
+        typedef enum { PT_NONE, PT_CLOSURE, PT_HOLE } Type;
+        typedef aux::Bounds2f Bounds2f;
 
-      Bounds2f bounds() const { return bounds_; }
-      bool intersect(Ray2f& _ray, float& _tNear, float& _tFar, Vec2f* _normal = NULL) const
-      {
-      return false;
-      }
+        Bounds2f bounds() const
+        {
+          return bounds_;
+        }
 
-      TODO:
-      struct Ring : Compound<Point2f,2,float>
-      {
-      typedef enum { WITHIN, INTERSECT, DISJOINT } RingIntersectResult;
-      void simplify();
-      friend RingIntersectResult intersect(Ring& a, Ring& b);
+        bool intersect(aux::Ray2f& _ray, float& _tNear, float& _tFar, base::Vec2f* _normal = NULL) const
+        {
+          return false;
+        }
 
-      intersect(ray& _ray);
+        void lineSegments(const aux::Ray2f& _ray, std::vector<LineSegment>& _lineSegments ) const
+        {
+        }
 
+        const BoostPolygon& operator()() const { return polygon_; }
+        BoostPolygon& operator()() { return polygon_; }
 
-      Type { Closure, Hole }
-
-
-      TBD_PROPERTY_REF(std::vector<Point2f>,points);
-      TBD_PROPERTY_REF(std::list<Ring>,holes);
-      TBD_PROPERTY_REF(std::list<Ring>,children);
-
+        TBD_PROPERTY(BoostPolygon,polygon);
+      
       private:
-      RingIntersectResult intersect(LineSegment);
+        Bounds2f bounds_;
+
+        std::vector<LineSegment> fetchLineSegments();
+        
       };
 
-
-
-      TBD_PROPERTY_REF(std::list<Polygon>,children);
-      TBD_PROPERTY_RO(Type,type);
-
-      private:
-      void calcBounds();
-      void calcType();
-
-      Bounds2f bounds_;
-      };
-      */
       typedef std::vector<Polygon> MultiPolygon;
     }
   }

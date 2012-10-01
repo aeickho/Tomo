@@ -45,10 +45,9 @@ namespace tomo
           PointXYf _innerPoint(_cos*innerRadius_,_sin*innerRadius_);
           PointXYf _outerPoint(_cos*outerRadius_,_sin*outerRadius_); 
           _inner.push_back(_innerPoint);
-          _polygon.inners().push_back(_inner);
-          _polygon.outer().push_back(_outerPoint);
+          _polygon().inners().push_back(_inner);
+          _polygon().outer().push_back(_outerPoint);
         }
-
 
         _slice->add(_polygon);
       }

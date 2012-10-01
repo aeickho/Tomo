@@ -59,14 +59,15 @@ int main(int ac, char* av[])
     return 1;
   }
 
-  Point2f _min(10.0,10.0);
-  Point2f _max(20.0,20.0);
+  Point2f _min(100.0,900.0);
+  Point2f _max(900.0,900.0);
 
   Polygon _polygon;
-  _polygon.outer().push_back(PointXYf(_min.x(),_min.y()));
-  _polygon.outer().push_back(PointXYf(_max.x(),_min.y()));
-  _polygon.outer().push_back(PointXYf(_max.x(),_max.y()));
-  _polygon.outer().push_back(PointXYf(_min.x(),_max.y()));
+  _polygon().outer().push_back(PointXYf(_min.x(),_min.y()));
+  _polygon().outer().push_back(PointXYf(_max.x(),_min.y()));
+  _polygon().outer().push_back(PointXYf(_max.x(),_max.y()));
+  _polygon().outer().push_back(PointXYf(_min.x(),_max.y()));
+
 
   Filling<State> _filling;
   Filling<State>::ActionGroup _actionGroup;
@@ -75,6 +76,13 @@ int main(int ac, char* av[])
   std::list<Polygon> _output;
   _actionGroup = _filling(_polygon,_output,_state);
 
+  Magick::Image _image( Magick::Geometry(1024,1024), Magick::Color("black") );
+
+  tomo::magick::Wrapper _wrapper(_image);
+
+  _wrapper.draw(_polygon,Magick::Color("red"));
+
+  _image.display();
 
   return EXIT_SUCCESS;
 }

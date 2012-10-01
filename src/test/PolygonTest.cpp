@@ -128,9 +128,9 @@ int main(int ac, char* av[])
 
 
   boost::geometry::read_wkt(
-    "POLYGON((0.5 0.0 , 0.4 0.4 , 0.0 0.5 , 0.4 0.6 , 0.5 1.0 , 0.6 0.6 , 1.0 0.5 , 0.6 0.4 , 0.5 0.0))", _polygon1);
+    "POLYGON((0.5 0.0 , 0.4 0.4 , 0.0 0.5 , 0.4 0.6 , 0.5 1.0 , 0.6 0.6 , 1.0 0.5 , 0.6 0.4 , 0.5 0.0))", _polygon1());
   boost::geometry::read_wkt(
-    "POLYGON((0.5 0.0 , 0.3 0.3 , 0.0 0.5 , 0.3 0.7 , 0.5 1.0 , 0.7 0.7 , 0.8 0.5 , 0.7 0.3 , 0.5 0.0))", _polygon2);
+    "POLYGON((0.5 0.0 , 0.3 0.3 , 0.0 0.5 , 0.3 0.7 , 0.5 1.0 , 0.7 0.7 , 0.8 0.5 , 0.7 0.3 , 0.5 0.0))", _polygon2());
 
 
   tomo::magick::Wrapper _wrapper(_image);
@@ -142,7 +142,7 @@ int main(int ac, char* av[])
 
   std::vector<tomo::geometry::prim::Polygon> _polygons;
 
-  boost::geometry::difference(_polygon2,_polygon1,_polygons);
+//  boost::geometry::difference(_polygon2(),_polygon1(),_polygons);
   _wrapper.draw(_polygons,"green");
 
   //boost::geometry::difference(_polygons,_fillingLines,_filling);

@@ -44,7 +44,7 @@ namespace tomo
 
       while (_usedSegments.find(_curSegment) == _usedSegments.end())
       {
-        _polygon.outer().push_back(PointXYf(_curSegment->front().x(),_curSegment->front().y()));
+        _polygon().outer().push_back(PointXYf(_curSegment->front().x(),_curSegment->front().y()));
 
         LineSegment* _next = _curSegment->next();
         if (!_next) return PT_NONE;
@@ -121,7 +121,7 @@ namespace tomo
         PolygonType _polygonType = asPolygon(&_lineSegment,_usedSegments,_polygon);
         if (_simplifyThreshold > 0.0)
         {
-          boost::geometry::simplify(_polygon,_simplified[0],_simplifyThreshold);
+          boost::geometry::simplify(_polygon(),_simplified[0](),_simplifyThreshold);
         }
         else
         {
