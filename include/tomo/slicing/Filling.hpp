@@ -25,20 +25,21 @@ namespace tomo
       {
         ActionGroup _actionGroup;
 
-        geometry::aux::Ray2f _ray(_in.bounds().min().vec(),Vec2f(_in.bounds().size().x(),0),0.0,1.0);
-        std::vector<LineSegment> _lineSegments;
-        
-        Vec2f _rayInc(gap_,0.0);
+        lineSegments_.clear();
+        geometry::aux::Ray2f _ray(_in.bounds().min().vec(),Vec2f(_in.bounds().size().x(),0),0.0,1.0); 
+        Vec2f _rayInc(0.0,gap_);
 
-        while (1)
+        while (_ray.org().y() < _in.bounds().max().y())
         {
           _ray.org() += _rayInc;
-          _in.lineSegments(_ray,_lineSegments);
+          _in.lineSegments(_ray,lineSegments_);
         }
 
         //_actionGroup.generate(_lineSegments,_state);
         return _actionGroup;
       }
+
+      std::vector<geometry::prim::LineSegment> lineSegments_;
 
       TBD_PROPERTY(float,gap);
     };

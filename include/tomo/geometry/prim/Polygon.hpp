@@ -24,20 +24,20 @@ namespace tomo
       {
         typedef enum { PT_NONE, PT_CLOSURE, PT_HOLE } Type;
         typedef aux::Bounds2f Bounds2f;
+        typedef aux::Ray2f Ray2f;
 
         Bounds2f bounds() const
         {
           return bounds_;
         }
 
-        bool intersect(aux::Ray2f& _ray, float& _tNear, float& _tFar, base::Vec2f* _normal = NULL) const
+        bool intersect(Ray2f& _ray, float& _tNear, float& _tFar, base::Vec2f* _normal = NULL) const
         {
           return false;
         }
 
-        void lineSegments(const aux::Ray2f& _ray, std::vector<LineSegment>& _lineSegments ) const
-        {
-        }
+        void lineSegments(Ray2f& _ray, std::vector<LineSegment>& _lineSegments ) const;
+        
 
         const BoostPolygon& operator()() const { return polygon_; }
         BoostPolygon& operator()() { return polygon_; }
@@ -47,7 +47,15 @@ namespace tomo
       private:
         Bounds2f bounds_;
 
-        std::vector<LineSegment> fetchLineSegments();
+        std::vector<LineSegment> fetchLineSegments() const;
+        std::vector<LineSegment> lineSegmentsFromRing(
+            const Ring& _ring, 
+            std::vector<LineSegment>& _lineSegments) const;
+
+        void lineSegmentsFromSegMarkers(
+            const Ray2f& _ray,
+            const std::set<float>& _segMarkers,
+            std::vector<LineSegment>& _lineSegments) const;
         
       };
 
