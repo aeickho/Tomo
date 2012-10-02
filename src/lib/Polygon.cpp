@@ -86,19 +86,34 @@ namespace tomo
 
       Ring Polygon::shrinked(float _factor, const Ring& _in) const
       {
+        if (_in.size() < 3) return Ring();
         Ring _ring;
-        _ring.reserve(polygon_.outer().size());
-/*        
-        PointXYf _lastPoint = _ring[_ring.size()-1].
-        BOOST_FOREACH ( PointXYf _point, _ring );
+        
+        size_t _n = _in.size();
+        
+        _ring.reserve(_n);
+
+        using boost::geometry::get;
+        point_type _lastPoint(get<0>(_in[_n-1]),
+                           get<1>(_in[_n-1]));
+        for (size_t i = 0; i < _in.size()-1; i++)
         {
-
-          Point2f _shrinkPoint(
-          _polygon.addOuter(_shrinkPoint);
-
-          _lastPoint = _point;
+          point_type _nextPoint(get<0>(_in[i+1]),get<1>(_in[i+1]));
+          point_type _point(get<0>(_in[i]),get<1>(_in[i]));
+          vector_type _normal = (0.5 * (_lastPoint.vec() + _nextPoint.vec()) - _point).normalized();
+          point_type _newPoint = _point + _factor * _normal;
+          _ring.push_back(PointXYf(_newPoint.x(),_newPoint.y()));
+          point_type _lastPoint = _point;
         }
-*/
+
+        point_type _nextPoint(get<0>(_in[0]),get<1>(_in[0]));
+        point_type _point(get<0>(_in[_n-1]),get<1>(_in[_n-1]));
+        vector_type _normal = (0.5 * (_lastPoint.vec() + _nextPoint.vec()) - _point).normalized();
+        point_type _newPoint = _point + _factor * _normal;
+        _ring.push_back(PointXYf(_newPoint.x(),_newPoint.y()));
+
+        LOG_MSG << _ring.size();
+
         return _ring;
       }
 
@@ -145,39 +160,6 @@ namespace tomo
           i++;
         }
       }
-        
-
-
-
-      /*
-        void Polygon::calcType()
-        {
-        }
-
-        void Polygon::calcBounds()
-        {
-        }
-
-        void sortPolygons(Polygon& _polygon, std::list<Polygon>& _polygons)
-        {
-
-
-          _polygon.children().push_back(*it);
-
-          sortPolygons(_polygons
-        }
-
-
-        void sortPolygons(std::list<Polygon>& _polygons)
-        {
-         std::list<Polygon>::iterator it = _polygons.begin();
-
-         while
-
-
-         for (
-        }
-        */
     }
   }
 }

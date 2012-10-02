@@ -9,6 +9,7 @@
 #include <list>
 
 #include "tomo/slicing/Filling.hpp"
+#include "tomo/slicing/Perimeter.hpp"
 
 using namespace boost;
 namespace po = program_options;
@@ -21,11 +22,12 @@ using namespace std;
   using tomo::geometry::base::Vec2f;
   using tomo::geometry::aux::Ray2f;
   using tomo::geometry::base::Point3f;
-  using tomo::slicing::Filling;
   using tomo::geometry::prim::Polygon;
   using tomo::geometry::prim::Ring;
   using tomo::geometry::prim::PointXYf;
   using tomo::geometry::prim::LineSegment;
+  using tomo::slicing::Filling;
+  using tomo::slicing::Perimeter;
 
 
   struct State
@@ -92,28 +94,37 @@ int main(int ac, char* av[])
   _ring2.push_back(PointXYf(150,250));
   _polygon().inners().push_back(_ring2);
 
+  Magick::Image _image( Magick::Geometry(1024,1024), Magick::Color("black") );
+  tomo::magick::Wrapper _wrapper(_image);
+  _wrapper.drawEndings(true);
+  
+  State _state;
+  std::list<Polygon> _output;
+
+  Perimeter<State> _perimeter;
+  _perimeter.borderWidth(50);
+  _perimeter(_polygon,_output,_state);
+
+  BOOST_FOREACH( const LineSegment& _lineSegment, _output.front().fetchLineSegments() )
+  {
+    _wrapper.draw(_lineSegment,Magick::Color("green"));
+  }
+
 
   Filling<State> _filling;
   _filling.gap(10);
   _filling.angle(10.0);
   Filling<State>::ActionGroup _actionGroup;
-
-  State _state;
-  std::list<Polygon> _output;
   _actionGroup = _filling(_polygon,_output,_state);
-
-  Magick::Image _image( Magick::Geometry(1024,1024), Magick::Color("black") );
-
-  tomo::magick::Wrapper _wrapper(_image);
-  
-  Ray2f _ray(Point2f(50.0,150.0),Vec2f(800.0,100.0),0.0,1.0);
  
   vector<LineSegment> _polygonSegments = _polygon.fetchLineSegments();
+
   BOOST_FOREACH( LineSegment& _lineSegment, _polygonSegments )
   {
     _wrapper.draw(_lineSegment,Magick::Color("red"));
   }
 
+  _wrapper.drawEndings(false);
   BOOST_FOREACH( LineSegment& _lineSegment, _filling.lineSegments_ )
   {
     _wrapper.draw(_lineSegment,Magick::Color("gray"));

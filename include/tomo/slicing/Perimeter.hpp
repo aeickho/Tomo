@@ -26,13 +26,11 @@ namespace tomo
       {
         ActionGroup _actionGroup;
 
+        _out.push_back(_in.shrinked(borderWidth_));
         return _actionGroup;
       }
 
-      std::vector<geometry::prim::LineSegment> lineSegments_;
-
-      TBD_PROPERTY(float,gap);
-      TBD_PROPERTY(float,angle);
+      TBD_PROPERTY(float,borderWidth);
     };
   }
 }

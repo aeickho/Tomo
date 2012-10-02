@@ -16,6 +16,7 @@ namespace tomo
   {
     namespace prim
     {
+      ///@todo: merge PointXYf with Point2f
       typedef boost::geometry::model::d2::point_xy<float> PointXYf;
       typedef boost::geometry::model::polygon<PointXYf> BoostPolygon;
       typedef boost::geometry::model::ring<PointXYf> Ring;
