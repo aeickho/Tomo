@@ -20,6 +20,7 @@ namespace tomo
       typedef boost::geometry::model::d2::point_xy<float> PointXYf;
       typedef boost::geometry::model::polygon<PointXYf> BoostPolygon;
       typedef boost::geometry::model::ring<PointXYf> Ring;
+      typedef std::vector<BoostPolygon> BoostMultiPolygon;
 
       struct Polygon : public Primitive2f
       {
@@ -41,7 +42,7 @@ namespace tomo
         void addOuter(point_type _point);
         void boundingRays(float _angle, ray_type& _rayBegin, ray_type& _rayEnd) const;
 
-        Polygon shrinked(float _factor) const;
+        BoostMultiPolygon shrinked(float _factor) const;
 
         const BoostPolygon& operator()() const { return polygon_; }
         BoostPolygon& operator()() { return polygon_; }

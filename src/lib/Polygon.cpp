@@ -3,6 +3,16 @@
 #include <boost/foreach.hpp>
 #include <tbd/log.h>
 #include <math.h>
+#include <boost/geometry/geometries/adapted/c_array.hpp>
+#include <boost/geometry/algorithms/buffer.hpp>
+#include <boost/geometry/multi/geometries/register/multi_polygon.hpp>
+
+using namespace boost::geometry;
+
+BOOST_GEOMETRY_REGISTER_C_ARRAY_CS(cs::cartesian);
+
+BOOST_GEOMETRY_REGISTER_MULTI_POLYGON(tomo::geometry::prim::BoostMultiPolygon);
+//BOOST_GEOMETRY_REGISTER_MULTI_POLYGON(tomo::geometry::prim::MultiPolygon);
 
 using namespace std;
 
@@ -20,7 +30,7 @@ namespace tomo
       
       void Polygon::lineSegments(ray_type& _ray, std::vector<LineSegment>& _lineSegments ) const
       {
-          set<float> _segMarkers;
+        std::set<float> _segMarkers;
           vector<LineSegment> _polygonSegments = fetchLineSegments();
 
           BOOST_FOREACH( const LineSegment& _lineSegment, _polygonSegments )
@@ -40,7 +50,7 @@ namespace tomo
       {
         float _radius = bounds_.radius();
         float _cos = _radius * cos(_angle*M_PI/180); 
-        float _sin = _radius * sin(_angle*M_PI/100);
+        float _sin = _radius * sin(_angle*M_PI/180);
 
         vector_type _cross(-_sin,_cos);
         _rayBegin.dir(vector_type(2*_cos,2*_sin));
@@ -70,18 +80,17 @@ namespace tomo
         return _lineSegments;
       }
 
-      Polygon Polygon::shrinked(float _factor) const
+      BoostMultiPolygon Polygon::shrinked(float _factor) const
       {
-        Polygon _polygon;
-        
-        _polygon().outer() = shrinked(_factor,polygon_.outer());
+/*        _polygon().outer() = shrinked(_factor,polygon_.outer());
 
         BOOST_FOREACH( const Ring& _inner, polygon_.inners() )
         {
           _polygon().inners().push_back(shrinked(-_factor,_inner));
         }
-
-        return _polygon;
+*/
+        return BoostMultiPolygon();
+    //    return boost::geometry::return_buffer<BoostMultiPolygon,BoostPolygon,float>(polygon_,_factor);
       }
 
       Ring Polygon::shrinked(float _factor, const Ring& _in) const
@@ -89,6 +98,8 @@ namespace tomo
         if (_in.size() < 3) return Ring();
         Ring _ring;
         
+
+
         size_t _n = _in.size();
         
         _ring.reserve(_n);
@@ -100,7 +111,7 @@ namespace tomo
         {
           point_type _nextPoint(get<0>(_in[i+1]),get<1>(_in[i+1]));
           point_type _point(get<0>(_in[i]),get<1>(_in[i]));
-          vector_type _normal = (0.5 * (_lastPoint.vec() + _nextPoint.vec()) - _point).normalized();
+          vector_type _normal = ( _point - _lastPoint.vec() + _point - _nextPoint.vec()).normalized();
           point_type _newPoint = _point + _factor * _normal;
           _ring.push_back(PointXYf(_newPoint.x(),_newPoint.y()));
           point_type _lastPoint = _point;
@@ -108,7 +119,7 @@ namespace tomo
 
         point_type _nextPoint(get<0>(_in[0]),get<1>(_in[0]));
         point_type _point(get<0>(_in[_n-1]),get<1>(_in[_n-1]));
-        vector_type _normal = (0.5 * (_lastPoint.vec() + _nextPoint.vec()) - _point).normalized();
+          vector_type _normal = ( _point - _lastPoint.vec() + _point - _nextPoint.vec()).normalized();        
         point_type _newPoint = _point + _factor * _normal;
         _ring.push_back(PointXYf(_newPoint.x(),_newPoint.y()));
 

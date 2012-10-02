@@ -26,7 +26,8 @@ namespace tomo
       {
         ActionGroup _actionGroup;
 
-        _out.push_back(_in.shrinked(borderWidth_));
+//        _out.push_back(_in.shrinked(borderWidth_));
+        _out.push_back(_in);
         return _actionGroup;
       }
 
