@@ -6,7 +6,7 @@
 #include <list>
 #include "MagickWrapper.hpp"
 
-#include "tomo/slicing/Filling.hpp"
+#include "tomo/slicing/LineFilling.hpp"
 #include "tomo/slicing/Perimeter.hpp"
 
 using namespace tomo;
@@ -31,7 +31,7 @@ using tomo::geometry::prim::Polygon;
 using tomo::geometry::prim::Ring;
 using tomo::geometry::prim::PointXYf;
 using tomo::geometry::prim::LineSegment;
-using tomo::slicing::Filling;
+using tomo::slicing::LineFilling;
 using tomo::slicing::Perimeter;
 
 LOG_INIT;
@@ -54,7 +54,7 @@ void fillingTest(Polygon& _polygon)
   State _state;
   std::list<Polygon> _output;
 
-  Filling<State> _filling;
+  LineFilling<State> _filling;
   _filling.gap(10);
   _filling.angle(30);
   _filling(_polygon,_output,_state);
@@ -83,7 +83,7 @@ void perimeterTest(Polygon& _polygon)
   State _state;
   std::list<Polygon> _output;
 
-  Filling<State> _filling;
+  LineFilling<State> _filling;
   _filling.gap(10);
   _filling.angle(30);
   _filling(_polygon,_output,_state);

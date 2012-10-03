@@ -9,7 +9,7 @@ namespace tomo
   namespace slicing
   {
     template<class STATE>
-    class Filling : Procedure< LineAction<STATE> >
+    class LineFilling 
     {
     public:
       typedef STATE State;
@@ -19,6 +19,7 @@ namespace tomo
       typedef geometry::base::Vec2f Vec2f;
       typedef geometry::base::Point2f Point2f;
       typedef geometry::aux::Ray2f Ray2f;
+      typedef geometry::prim::LineSegment Linesignemt;
 
       ActionGroup operator()( const Polygon& _in, 
                               std::list<Polygon>& _out, 
@@ -35,9 +36,9 @@ namespace tomo
         unsigned _nLines = _fillingDirection.length() / gap_;   
         Vec2f _rayInc = _fillingDirection * (1.0 / _nLines);
         
-        geometry::aux::Ray2f _ray(_rayBegin.org() + 0.5*_rayInc,_rayBegin.dir(),0.0,1.0);
+        Ray2f _ray(_rayBegin.org() + 0.5*_rayInc,_rayBegin.dir(),0.0,1.0);
 
-        for (unsigned i = 0; i < _nLines-1; i++)
+        for (unsigned i = 1; i < _nLines; ++i)
         {
           _in.lineSegments(_ray,lineSegments_);
           _ray.org() += _rayInc;

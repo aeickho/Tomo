@@ -8,7 +8,7 @@
 #include <boost/algorithm/string/split.hpp>
 #include <list>
 
-#include "tomo/slicing/Filling.hpp"
+#include "tomo/slicing/LineFilling.hpp"
 #include "tomo/slicing/Perimeter.hpp"
 
 using namespace boost;
@@ -26,7 +26,7 @@ using namespace std;
   using tomo::geometry::prim::Ring;
   using tomo::geometry::prim::PointXYf;
   using tomo::geometry::prim::LineSegment;
-  using tomo::slicing::Filling;
+  using tomo::slicing::LineFilling;
   using tomo::slicing::Perimeter;
 
 
@@ -111,10 +111,10 @@ int main(int ac, char* av[])
   }
 
 
-  Filling<State> _filling;
+  LineFilling<State> _filling;
   _filling.gap(10);
   _filling.angle(10.0);
-  Filling<State>::ActionGroup _actionGroup;
+  LineFilling<State>::ActionGroup _actionGroup;
   _actionGroup = _filling(_polygon,_output,_state);
  
   vector<LineSegment> _polygonSegments = _polygon.fetchLineSegments();
