@@ -2,19 +2,10 @@
 
 #include <boost/assign.hpp>
 #include <boost/foreach.hpp>
-#include <boost/geometry/geometries/adapted/c_array.hpp>
 #include <tbd/log.h>
-#include <boost/geometry/multi/geometries/register/multi_polygon.hpp>
-
 
 using namespace std;
-using namespace boost::geometry;
 using namespace tomo::geometry::prim;
-
-BOOST_GEOMETRY_REGISTER_C_ARRAY_CS(cs::cartesian);
-
-
-BOOST_GEOMETRY_REGISTER_MULTI_POLYGON(tomo::geometry::prim::MultiPolygon);
 
 namespace tomo
 {
@@ -42,9 +33,10 @@ namespace tomo
       PolygonType _polygonType = PT_NONE;
       bool _polygonTypeDetermined = false;
 
+      Ring _ring;
       while (_usedSegments.find(_curSegment) == _usedSegments.end())
       {
-        _polygon().outer().push_back(PointXYf(_curSegment->front().x(),_curSegment->front().y()));
+        _ring.add(_curSegment->front());
 
         LineSegment* _next = _curSegment->next();
         if (!_next) return PT_NONE;
@@ -103,7 +95,7 @@ namespace tomo
 
       /// 1st step:
       /// Find nearest neighbor for each LineSegment
-      BOOST_FOREACH( LineSegment& _lineSegment, objs() )
+      BOOST_FOREACH( LineSegment& _lineSegment, lineSegments() )
       {
         LineSegment* _nearest = nearestSegment(&_lineSegment);
         _lineSegment.next(_nearest);
@@ -113,9 +105,10 @@ namespace tomo
       /// 2nd step:
       /// Iterate over line
       std::set<const LineSegment*> _usedSegments;
-      BOOST_FOREACH( const LineSegment& _lineSegment, objs() )
+      BOOST_FOREACH( const LineSegment& _lineSegment, lineSegments() )
       {
         if (_usedSegments.find(&_lineSegment) != _usedSegments.end()) continue;
+       /*
         Polygon _polygon;
         MultiPolygon _simplified(1);
         PolygonType _polygonType = asPolygon(&_lineSegment,_usedSegments,_polygon);
@@ -129,7 +122,7 @@ namespace tomo
         }
 
         _polygons.push_back(_simplified[0]);
-        /*
+      
               switch (_polygonType)
               {
                 case PT_HOLE:
@@ -154,8 +147,8 @@ namespace tomo
 
     void LineSegmentPlane::addSegment(const point_type& _p0, const point_type& _p1)
     {
-      if (objs().size() % 1024 == 0) objs().reserve(objs().size()+1024);
-      objs().push_back(LineSegment(_p0,_p1));
+      if (lineSegments().size() % 1024 == 0) lineSegments().reserve(lineSegments().size()+1024);
+      lineSegments().push_back(LineSegment(_p0,_p1));
     }
 
     void LineSegmentPlane::aggregate(const LineSegmentPlane& _lineSegmentPlane)

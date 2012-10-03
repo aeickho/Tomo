@@ -12,6 +12,8 @@ namespace tomo
     /// The class LineSegmentContainer is used to store line segments to make polygons out of them
     struct LineSegmentPlane : geometry::aux::Compound<LineSegment,2,float>
     {
+      TOMO_COMPOUND_PRIMITIVE_NAME(lineSegments);
+
       typedef float scalar_type;
       typedef geometry::aux::Ray<2,scalar_type> ray_type;
       typedef geometry::base::Vec<2,scalar_type> vector_type;

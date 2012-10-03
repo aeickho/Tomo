@@ -36,7 +36,7 @@ namespace tomo
       float _slicePos = _bounds.min().z() + _thickness / 2.0 ;
 
       while (_slicePos <= _bounds.max().z())
-      {
+       {
         Slice _slice(_slicePos);
         planes_.insert(make_pair<float,Slice>(_slicePos,_slice));
         _slicePos += _thickness;

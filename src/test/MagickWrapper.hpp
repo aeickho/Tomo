@@ -3,28 +3,20 @@
 #include <tomo/geometry/aux/KDTree.hpp>
 #include "tomo/geometry/aux/Compound.hpp"
 #include "tomo/geometry/prim/Vertex.hpp"
+#include "tomo/geometry/prim/Polygon.hpp"
 #include "tomo/slicing/LineSegmentPlane.hpp"
 
 #include <boost/foreach.hpp>
-#include <boost/geometry/geometry.hpp>
-#include <boost/geometry/geometries/linestring.hpp>
-#include <boost/geometry/multi/geometries/multi_linestring.hpp>
-#include <boost/geometry/multi/geometries/register/multi_linestring.hpp>
 #include <vector>
-
-
-typedef boost::geometry::model::linestring< tomo::geometry::prim::PointXYf > LineString;
-typedef std::vector<LineString> MultiLineString;
-BOOST_GEOMETRY_REGISTER_MULTI_LINESTRING(MultiLineString);
 
 namespace tomo
 {
   namespace magick
   {
     namespace tg = tomo::geometry;
-    using tg::prim::Polygon;
-    using tg::prim::MultiPolygon;
     using tg::prim::LineSegment;
+    using tg::prim::Ring;
+    using tg::prim::Polygon;
     using tg::base::Point2f;
     using tg::base::Point3f;
     using tg::aux::Bounds;
@@ -33,103 +25,89 @@ namespace tomo
     using tg::aux::Compound;
     using tg::aux::Ray2f;
 
-    template <typename Point, typename Coord>
-    struct CoordinateWrapper
-    {
-      CoordinateWrapper(Magick::Image& _image)
-      {
-        resX(_image.columns());
-        resY(_image.rows());
-      }
-
-      CoordinateWrapper(int _resX, int _resY) : resX_(_resX), resY_(_resY)
-      {
-      }
-
-      void operator()(const Point& p)
-      {
-        using boost::geometry::get;
-        coords_->push_back(Coord(int(get<0>(p)*resX_),int(get<1>(p)*resY_)));
-      }
-
-      std::list<Coord>* coords_;
-      TBD_PROPERTY(int,resX);
-      TBD_PROPERTY(int,resY);
-    };
-
     struct Wrapper
     {
-      typedef CoordinateWrapper<tg::prim::PointXYf,Magick::Coordinate> BoostToMagickCoord;
-
       Wrapper(Magick::Image& _image) : vertexWidth_(4.0), drawEndings_(false), image_(_image) 
       {
         image_.fillColor("none");
       }
 
-      void draw(const Polygon& _polygon, Magick::Color _color)
+/*
+      template<typename STATE, typename NODE>
+      struct KDTreeVisitor
       {
-        BoostToMagickCoord _coordWrap(image_);
-        /// XXX: Improve this...
-        _coordWrap.resX(1);
-        _coordWrap.resY(1);
+        virtual void innerNode() = 0;
+        virtual void leafNode() = 0;
 
-        std::list<Magick::Coordinate> _coords;
-        _coordWrap.coords_ = &_coords;
+      };
 
-        image_.fillColor("none");
-        boost::geometry::for_each_point( _polygon(), _coordWrap );
-        image_.strokeColor(Magick::Color(_color)); // Outline color
-        _coords.push_back(_coords.front());
-        image_.draw( Magick::DrawablePolyline( _coords )) ;
-      }
-
-      void draw(const MultiPolygon _multiPolygon, Magick::Color _color)
+      struct KDTreeState
       {
-        BOOST_FOREACH( const Polygon& _polygon, _multiPolygon)
-        draw(_polygon,_color);
-      }
 
-      void draw(const LineString& _lineString, Magick::Color _color)
+      };
+
+      struct KDTreeDrawState : KDTreeState
       {
-        BoostToMagickCoord _coordWrap(image_);
-        std::list<Magick::Coordinate> _coords;
-        _coordWrap.coords_ = &_coords;
+        TBD_PROPERTY_REF(KDNODE*,node);
+        TBD_PROPERTY_REF(Bounds,bounds);
+      };
 
-        boost::geometry::for_each_point( _lineString, _coordWrap );
-
-        image_.strokeColor(Magick::Color(_color)); // Outline color
-        image_.draw( Magick::DrawablePolyline( _coords )) ;
-      }
-
-      void draw(const MultiLineString& _multiLineString, Magick::Color _color)
+      template<typename STATE>
+      struct KDTreeDrawVisitor : 
+        KDTreeVisitor< KDTreeDrawState<KDTree<2,float>::Node> >
       {
-        BOOST_FOREACH( const LineString& _lineString, _multiLineString)
-          draw(_lineString,_color);
-      }
+        SplitPlaneIntersect innerNode()
+        {
+          SplitPlaneIntersect _result;
+          Bounds<DIMENSIONS,SCALAR> _left, _right;
+          tg::base::Axis _axis = state_.node()->inner_.axis();
+          SCALAR _splitPos = state_.node()->inner_.splitPos();
+          state_.bounds().split(_splitPos,_axis,_left,_right);
 
+          switch (_axis)
+          {
+            case tg::base::X:
+            image_.draw( Magick::DrawableLine(_splitPos,_bounds.min().y(),_splitPos,_bounds.max().y()) );
+            break;
+            case tg::base::Y:
+            image_.draw( Magick::DrawableLine(_bounds.min().x(),_splitPos,_bounds.max().x(),_splitPos) );
+            break;
+          default:
+            break;
+          }
+        }
+
+        bool leafNode() { return false; }
+      
+        TBD_PROPERTY(Image&,image);
+        TBD_PROPERTY(Magick::Color,color);
+        
+      private:
+        STATE state_;
+      };
+*/
       template <typename PRIMITIVE, int DIMENSIONS , typename SCALAR>
       void drawKDNode(const KDTree<PRIMITIVE,DIMENSIONS,SCALAR>& _kdTree,
                  const KDNode<PRIMITIVE,DIMENSIONS,SCALAR>* _node,
                  Bounds<DIMENSIONS,SCALAR> _bounds)
       {
-        if (_node->isLeaf()) return;
+      if (_node->isLeaf()) return;
+          Bounds<DIMENSIONS,SCALAR> _left, _right;
+          tg::base::Axis _axis = _node->inner_.axis();
+          SCALAR _splitPos = _node->inner_.splitPos();
+          _bounds.split(_splitPos,_axis,_left,_right);
 
-        Bounds<DIMENSIONS,SCALAR> _left, _right;
-        tg::base::Axis _axis = _node->inner_.axis();
-        SCALAR _splitPos = _node->inner_.splitPos();
-        _bounds.split(_splitPos,_axis,_left,_right);
-
-        switch (_axis)
-        {
-          case tg::base::X:
-          image_.draw( Magick::DrawableLine(_splitPos,_bounds.min().y(),_splitPos,_bounds.max().y()) );
-          break;
-          case tg::base::Y:
-          image_.draw( Magick::DrawableLine(_bounds.min().x(),_splitPos,_bounds.max().x(),_splitPos) );
-          break;
-        default:
-          break;
-        }
+          switch (_axis)
+          {
+            case tg::base::X:
+            image_.draw( Magick::DrawableLine(_splitPos,_bounds.min().y(),_splitPos,_bounds.max().y()) );
+            break;
+            case tg::base::Y:
+            image_.draw( Magick::DrawableLine(_bounds.min().x(),_splitPos,_bounds.max().x(),_splitPos) );
+            break;
+          default:
+            break;
+          }  
 
         drawKDNode(_kdTree,_kdTree.node(_node->inner_.left()),_left);
         drawKDNode(_kdTree,_kdTree.node(_node->inner_.right()),_right);
@@ -140,6 +118,13 @@ namespace tomo
                         Magick::Color _color)
       {
         image_.strokeColor(_color);
+
+
+
+
+        //KDTreeDrawVisitor _visitor(image_,_color);
+        //_compound.kdTree().traverse<KDTreeDrawVisitor>();
+        
         drawKDNode<PRIMITIVE,DIMENSIONS,SCALAR>(_compound.kdTree(),&_compound.kdTree().root(),_compound.bounds());
       }
 
@@ -200,6 +185,16 @@ namespace tomo
           image_.strokeColor("blue");
           image_.draw( Magick::DrawableCircle(_b.x(),_b.y(),7+_b.x(),_b.y() ));
         }
+      }
+
+      void draw(const Ring& _ring, Magick::Color _color)
+      {
+        draw<LineSegment,2,float>(_ring,_color);
+      }
+
+      void draw(const Polygon& _polygon, Magick::Color _color)
+      {
+        draw<Ring,2,float>(_polygon,_color);
       }
 
       TBD_PROPERTY(float,vertexWidth);
