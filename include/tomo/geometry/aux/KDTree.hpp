@@ -11,7 +11,9 @@ namespace tomo
   {
     namespace aux
     {
-      template <typename PRIMITIVE, int DIMENSIONS = 3, typename SCALAR = base::DEFAULT_TYPE>
+      template <typename PRIMITIVE, 
+                int DIMENSIONS = 3, 
+                typename SCALAR = base::DEFAULT_TYPE>
       union KDNode
       {
         typedef SCALAR scalar_type;
@@ -200,6 +202,71 @@ namespace tomo
               return INF;
             }*/
 
+/*
+        template<
+        VISITOR,
+        TRAVERSAL_STACKELEMENT
+        >
+        bool traversal()
+        {
+          TRAVERSAL_STACKELEMENT _stack[16];
+          int _stackPt = 0;
+
+          ///@todo Make bounds intersection method
+          if (!ROOT_INTERSECTION()) return false;
+
+          _stack[0].node_(&root());
+          bool _found = false;
+
+          while (1)
+          {
+            while (!_node->isLeaf())
+            {
+              _node = INNERNODE_INTERSECTION(_stack[_stackPt])
+
+                
+                int k = _node->inner_.axis();
+              scalar_type d = (_node->inner_.splitPos() - _ray.org()[k]) / _ray.dir()[k];
+
+              const Node* _front = &nodes_[_node->inner_.left()];
+              const Node* _back  = &nodes_[_node->inner_.right()];
+              if (_ray.dir()[k] < 0) std::swap(_front,_back);
+
+              if (d < _tNear)
+              {
+                _node = _back;
+              }
+              else if (d >= _tFar)
+              {
+                _node = _front;
+              }
+              else
+              {
+                _stackPt++;
+                _stack[_stackPt].node_  = _back;
+                _stack[_stackPt].tNear_ = d;
+                _stack[_stackPt].tFar_  = _tFar;
+
+                _node = _front;
+                _tFar = d;
+              }
+            }
+
+            //    LOG_MSG << fmt("% %") % _tNear % _ray.tFar();
+            _found |= LEAFNODE_INTERSECTION();
+            
+              //    LOG_MSG << fmt("% %") % _tNear % _ray.tFar();
+            if (_found) return true;
+            if (_stackPt <= 0) return _found;
+
+            _stack[0]  = _stack[_stackPt];
+            _stackPt--;
+          }
+          return _found;
+
+        }
+*/
+
         bool traversal(ray_type& _ray, const bounds_type& _bounds, vector_type* _normal = NULL) const
         {
           struct NodeTraversalStackItem
@@ -251,9 +318,8 @@ namespace tomo
               }
             }
 
-            //    LOG_MSG << fmt("% %") % _tNear % _ray.tFar();
             _found |= _node->leaf_.intersect(_ray,primLists_,_tNear,_ray.tFar(),_normal);
-            //    LOG_MSG << fmt("% %") % _tNear % _ray.tFar();
+            
             if (_found) return true;
             if (_stackPt < 0) return _found;
 
@@ -394,6 +460,7 @@ namespace tomo
           for (unsigned i = 0; i < _primList.size(); i++)
           {
             PRIMITIVE* _prim = _primList[i];
+            ///@todo Replace this by functors
             prim::SplitPlaneIntersect _result = _prim->intersect(_axis,_splitPos,_leftBounds,_rightBounds);
 
             if (_result.left())  _leftList.push_back(_prim);
@@ -412,6 +479,7 @@ namespace tomo
           return 16;
         }
       };
+
     }
   }
 }

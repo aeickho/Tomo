@@ -12,6 +12,7 @@ namespace tomo
     {
       using slicing::Slices;
       using slicing::Slice;
+      using base::Point2f;
 
       Tube::Tube(scalar_type _outerRadius, 
                  scalar_type _innerRadius,
@@ -33,8 +34,9 @@ namespace tomo
 
       void Tube::generateSlice(slicing::Slice* _slice) const
       {
+        Ring _outer(Ring::OUTER);
+        Ring _inner(Ring::INNER);
         Polygon _polygon;
-        Ring _inner;
 
         for (int i = 0; i < sides_; i++)
         {
@@ -42,12 +44,15 @@ namespace tomo
           float _cos = cos(_angle);
           float _sin = sin(_angle);
  
-          PointXYf _innerPoint(_cos*innerRadius_,_sin*innerRadius_);
-          PointXYf _outerPoint(_cos*outerRadius_,_sin*outerRadius_); 
-          _inner.push_back(_innerPoint);
-          _polygon().inners().push_back(_inner);
-          _polygon().outer().push_back(_outerPoint);
+          Point2f _innerPoint(_cos*innerRadius_,_sin*innerRadius_);
+          Point2f _outerPoint(_cos*outerRadius_,_sin*outerRadius_);  
+          _inner.add(_innerPoint);
+          _outer.add(_outerPoint);
         }
+
+        _polygon.add(_outer);
+        _polygon.add(_inner);
+        _polygon.update();
 
         _slice->add(_polygon);
       }

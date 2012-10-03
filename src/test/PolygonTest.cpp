@@ -29,7 +29,6 @@ using tomo::geometry::aux::Ray2f;
 using tomo::geometry::base::Point3f;
 using tomo::geometry::prim::Polygon;
 using tomo::geometry::prim::Ring;
-using tomo::geometry::prim::PointXYf;
 using tomo::geometry::prim::LineSegment;
 using tomo::slicing::Filling;
 using tomo::slicing::Perimeter;
@@ -76,31 +75,6 @@ void fillingTest(Polygon& _polygon)
 
 void perimeterTest(Polygon& _polygon)
 {
-  Magick::Image _image( IMAGE_SETTINGS );
-  tomo::magick::Wrapper _wrapper(_image);
-  _wrapper.drawEndings(true);
-
-  State _state;
-  std::list<Polygon> _output;
-
-  Filling<State> _filling;
-  _filling.gap(10);
-  _filling.angle(30);
-  _filling(_polygon,_output,_state);
-
-  vector<LineSegment> _polygonSegments = _polygon.fetchLineSegments();
-
-  BOOST_FOREACH( LineSegment& _lineSegment, _polygonSegments )
-  {
-    _wrapper.draw(_lineSegment,Magick::Color("red"));
-  }
-  _wrapper.drawEndings(false);
-  BOOST_FOREACH( LineSegment& _lineSegment, _filling.lineSegments_ )
-  {
-    _wrapper.draw(_lineSegment,Magick::Color("gray"));
-  }
-
-  _image.display();
 }
 
 void polygonSortTest(Polygon& _polygon)
@@ -147,25 +121,28 @@ int main(int ac, char* av[])
   Point2f _max(700.0,700.0);
 
   Polygon _polygon;
-  _polygon.addOuter(_min);
-  _polygon.addOuter(Point2f(_max.x(),_min.y()));
-  _polygon.addOuter(_max);
-  _polygon.addOuter(Point2f(_min.x(),_max.y()));
+  Ring _ring1(Ring::OUTER);
+  _ring1.add(_min);
+  _ring1.add(Point2f(_max.x(),_min.y()));
+  _ring1.add(_max);
+  _ring1.add(Point2f(_min.x(),_max.y()));
 
-  Ring _ring1;
-  _ring1.push_back(PointXYf(300,300));
-  _ring1.push_back(PointXYf(600,300));
-  _ring1.push_back(PointXYf(600,600));
-  _ring1.push_back(PointXYf(300,600));
-  _polygon().inners().push_back(_ring1);
+  Ring _ring2(Ring::INNER);
+  _ring2.add(Point2f(300,300));
+  _ring2.add(Point2f(600,300));
+  _ring2.add(Point2f(600,600));
+  _ring2.add(Point2f(300,600));
 
-  Ring _ring2;
-  _ring2.push_back(PointXYf(150,150));
-  _ring2.push_back(PointXYf(250,150));
-  _ring2.push_back(PointXYf(250,250));
-  _ring2.push_back(PointXYf(200,300));
-  _ring2.push_back(PointXYf(150,250));
-  _polygon().inners().push_back(_ring2);
+  Ring _ring3(Ring::INNER);
+  _ring3.add(Point2f(150,150));
+  _ring3.add(Point2f(250,150));
+  _ring3.add(Point2f(250,250));
+  _ring3.add(Point2f(200,300));
+  _ring3.add(Point2f(150,250));
+
+  _polygon.add(_ring1);
+  _polygon.add(_ring2);
+  _polygon.add(_ring3);
 
   if (vm.count("filling")) fillingTest(_polygon);
   if (vm.count("perimeter")) perimeterTest(_polygon);

@@ -17,7 +17,7 @@ LOG_INIT;
 
 
 string inputFile, outputFile;
-int resX = 100, resY = 100;
+int resX = 1024, resY = 1024;
 int nPoints = 100;
 
 void vertexCompoundTest()
@@ -52,11 +52,11 @@ void vertexCompoundTest()
   // Draw chosen point
   _wrapper.draw(_compound.objs()[nPoints/2],"yellow");
 
+/*
   // Draw points which inside radius of chosen point
   std::vector<Vertex2f*> _inRadius = _compound.collectInRadius(&_compound.objs()[nPoints/2],sqrt((resX*resX + resY*resY))*0.125);
   _wrapper.vertexWidth(5.0);
   _wrapper.draw<Vertex2f>(_inRadius,"green");
-
   // Draw nearest k points of chose point
   std::vector<Vertex2f*> _kNearest = _compound.collectKNearest(&_compound.objs()[nPoints/2],10);
   _wrapper.vertexWidth(6.0);
@@ -66,7 +66,7 @@ void vertexCompoundTest()
   _wrapper.vertexWidth(10.0);
   Vertex2f* _nearest = _compound.nearest(&_compound.objs()[nPoints/2]);
   _wrapper.draw(*_nearest,"white");
-
+*/
   _image.display();
   if (!outputFile.empty())
     _image.write(outputFile);

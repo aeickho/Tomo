@@ -21,6 +21,10 @@ namespace tomo
       {
         /// TODO: Large code blocks of inRadius and kNearest are similar, refactor it
       public:
+#define TOMO_COMPOUND_PRIMITIVE_NAME(name) \
+        ctnr_type& name() { return objs_; } \
+        const ctnr_type& name() const { return objs_; } 
+
         typedef SCALAR scalar_type;
         typedef Bounds<DIMENSIONS,scalar_type> bounds_type;
         typedef KDTree<PRIMITIVE,DIMENSIONS,scalar_type> kdtree_type;
@@ -28,15 +32,23 @@ namespace tomo
         typedef std::multimap<scalar_type,PRIMITIVE*> map_type;
         typedef std::pair<scalar_type,PRIMITIVE*> pair_type;
         typedef std::vector<PRIMITIVE*> ptr_vector_type;
+        typedef std::vector<PRIMITIVE> ctnr_type;
         typedef aux::Ray<DIMENSIONS,scalar_type> ray_type;
         typedef base::Vec<DIMENSIONS,scalar_type> vector_type;
+
+        TOMO_COMPOUND_PRIMITIVE_NAME(objs)
+
+        void add(const PRIMITIVE& _primitive)
+        {
+          objs_.push_back(_primitive);
+        }
 
         /// Aggregate another compound to this one
         void aggregate(const Compound& _compound, bool _update = true)
         {
-          objs().reserve(_compound.objs_.size() + objs_.size());
-          BOOST_FOREACH ( const PRIMITIVE& _obj , _compound.objs() )
-          objs().push_back(_obj);
+          objs_.reserve(_compound.objs_.size() + objs_.size());
+          BOOST_FOREACH ( const PRIMITIVE& _obj , _compound.objs_ )
+          objs_.push_back(_obj);
           if (_update) update();
         }
 
@@ -45,6 +57,7 @@ namespace tomo
         {
           map_type _nearestPrimitives;
           ptr_vector_type _kNearestPrimitives;
+//      kdTree_.traversal<InnerNodeIntersection,LeafNodeIntersection>();
 
           kNearest(_p,&kdTree_.root(),bounds_,_nearestPrimitives,_k);
           BOOST_FOREACH( pair_type _prim, _nearestPrimitives )
@@ -86,11 +99,11 @@ namespace tomo
           return false;
         }
 
-        TBD_PROPERTY_REF(std::vector<PRIMITIVE>,objs);
         TBD_PROPERTY_RO(bounds_type,bounds);
         TBD_PROPERTY_REF(kdtree_type,kdTree);
 
       protected:
+        ctnr_type objs_;
 
         /// Calculates the distance of a primitive to a kdtree node
         scalar_type nodeDistance(const PRIMITIVE* _p, const bounds_type _bounds) const
@@ -106,6 +119,7 @@ namespace tomo
           }
           return _minDist;
         }
+
 
         /// Finds the k nearest primitives starting from a certain node
         void kNearest(const PRIMITIVE* _p, const node_type* _node,
@@ -203,7 +217,7 @@ namespace tomo
         void calcBounds()
         {
           bounds_type _bounds;
-          BOOST_FOREACH ( PRIMITIVE& _obj , objs() )
+          BOOST_FOREACH ( PRIMITIVE& _obj , objs_ )
           _bounds.extend(_obj.bounds());
           _bounds.validate();
           bounds_ = _bounds;

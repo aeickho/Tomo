@@ -28,6 +28,7 @@ namespace tomo
         TBD_PROPERTY(LineSegment*,next);
         TBD_PROPERTY(LineSegment*,prev);
       };
+
     }
   }
 }
