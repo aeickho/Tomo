@@ -12,7 +12,7 @@ namespace tomo
           : center_(_center), radius_(_radius)
         {}
 
-        bool intersect(ray_type& _ray, scalar_type& _tNear, scalar_type& _tFar, vector_type* _normal = NULL) const;
+        bool intersect(ray_type& _ray, scalar_type& _tNear, scalar_type& _tFar, vec_type* _normal = NULL) const;
 
         bounds_type bounds() const;
 

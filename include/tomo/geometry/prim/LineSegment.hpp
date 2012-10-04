@@ -12,9 +12,9 @@ namespace tomo
       {
         LineSegment(point_type _front, point_type _back);
 
-        bool intersect(ray_type& _ray, scalar_type& _tNear, scalar_type& _tFar, vector_type* _normal = NULL) const;
+        bool intersect(ray_type& _ray, scalar_type& _tNear, scalar_type& _tFar, vec_type* _normal = NULL) const;
 
-        vector_type distanceVec(const Primitive& _p) const
+        vec_type distanceVec(const Primitive& _p) const
         {
           return _p.center() - front();
         }

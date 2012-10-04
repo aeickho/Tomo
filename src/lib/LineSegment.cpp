@@ -16,14 +16,14 @@ namespace tomo
       {
       }
 
-      bool LineSegment::intersect(ray_type& _ray, scalar_type& _tNear, scalar_type& _tFar, vector_type* _normal) const
+      bool LineSegment::intersect(ray_type& _ray, scalar_type& _tNear, scalar_type& _tFar, vec_type* _normal) const
       {
         /// The idea is to consider line segment as ray 
         
         point_type _p = front();
-        vector_type _r = back() - front();
+        vec_type _r = back() - front();
         point_type _q = _ray.org();
-        vector_type _s = _ray.dir();
+        vec_type _s = _ray.dir();
 
         scalar_type _denominator = _r.y() * _s.x() - _s.y() * _r.x();
 
@@ -31,7 +31,7 @@ namespace tomo
 
           scalar_type _invDenominator = -1.0 / _denominator;
           
-          vector_type _d = _q - _p;
+          vec_type _d = _q - _p;
           
           scalar_type _t = (_d.x() * _r.y() - _d.y() * _r.x()) * _invDenominator;
           scalar_type _u = (_d.x() * _s.y() - _d.y() * _s.x()) * _invDenominator;

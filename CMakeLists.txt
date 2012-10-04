@@ -51,7 +51,7 @@ TARGET_LINK_LIBRARIES(cg2ex1 tomo -lQtOpenGL -lQtGui -lQtCore -lGLU -lGL -lpthre
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 
 # Apps
-# DebugSlices
+# DebugSlicer
 ADD_EXECUTABLE(tomo-debugslicer ./src/app/debugslicer/DebugSlicer.hpp ./src/app/debugslicer/debugslicer.cpp)
 TARGET_LINK_LIBRARIES(tomo-debugslicer boost_program_options tomo Magick++ rt)
 
@@ -79,6 +79,9 @@ TARGET_LINK_LIBRARIES(CompoundTest tomo boost_program_options rt Magick++)
 
 ADD_EXECUTABLE(ProcedureTest ./src/test/ProcedureTest.cpp)
 TARGET_LINK_LIBRARIES(ProcedureTest tomo boost_program_options rt Magick++)
+
+ADD_EXECUTABLE(RingTest ./src/test/RingTest.cpp)
+TARGET_LINK_LIBRARIES(RingTest tomo boost_program_options rt Magick++)
 
 #ADD_DEFINITIONS(-g -O2 -fsigned-char -freg-struct-return -Wall -W -Wshadow -Wpointer-arith -Wcast-qual -Winline)
 #ADD_DEFINITIONS(-g -O3 -fsigned-char -fopenmp -freg-struct-return -Wall -fPIC)

@@ -19,7 +19,7 @@ namespace tomo
 
         void add(point_type _point);
 
-        bool intersect(ray_type& _ray, scalar_type& _tNear, scalar_type& _tFar, vector_type* _normal = NULL) const
+        bool intersect(ray_type& _ray, scalar_type& _tNear, scalar_type& _tFar, vec_type* _normal = NULL) const
         {
           return false;
         }

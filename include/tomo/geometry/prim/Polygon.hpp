@@ -15,7 +15,7 @@ namespace tomo
       {
         TOMO_COMPOUND_PRIMITIVE_NAME(rings);
 
-        bool intersect(ray_type& _ray, float& _tNear, float& _tFar, vector_type* _normal = NULL) const
+        bool intersect(ray_type& _ray, float& _tNear, float& _tFar, vec_type* _normal = NULL) const
         {
           return false;
         }

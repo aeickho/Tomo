@@ -19,9 +19,9 @@ namespace tomo
       		glPopMatrix();
       	}
       */
-      bool Sphere::intersect(ray_type& _ray, scalar_type& _tNear, scalar_type&_tFar, vector_type* _normal) const
+      bool Sphere::intersect(ray_type& _ray, scalar_type& _tNear, scalar_type&_tFar, vec_type* _normal) const
       {
-        vector_type o = _ray.org() - center_;
+        vec_type o = _ray.org() - center_;
         scalar_type a = dot(_ray.dir(),_ray.dir());
         scalar_type b = 2.0f * dot(_ray.dir(),o);
         scalar_type c = dot(o,o) - radius()*radius();

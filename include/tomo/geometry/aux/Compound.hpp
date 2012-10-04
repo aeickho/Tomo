@@ -27,14 +27,14 @@ namespace tomo
 
         typedef SCALAR scalar_type;
         typedef Bounds<DIMENSIONS,scalar_type> bounds_type;
-        typedef KDTree<PRIMITIVE,DIMENSIONS,scalar_type> kdtree_type;
+        typedef KDTree<PRIMITIVE> kdtree_type;
         typedef typename kdtree_type::Node node_type;
         typedef std::multimap<scalar_type,PRIMITIVE*> map_type;
         typedef std::pair<scalar_type,PRIMITIVE*> pair_type;
         typedef std::vector<PRIMITIVE*> ptr_vector_type;
         typedef std::vector<PRIMITIVE> ctnr_type;
         typedef aux::Ray<DIMENSIONS,scalar_type> ray_type;
-        typedef base::Vec<DIMENSIONS,scalar_type> vector_type;
+        typedef base::Vec<DIMENSIONS,scalar_type> vec_type;
 
         TOMO_COMPOUND_PRIMITIVE_NAME(objs)
 
@@ -93,7 +93,7 @@ namespace tomo
           kdTree_.build(objs_,3);
         }
 
-        virtual bool intersect(ray_type& _ray, scalar_type& _tNear, scalar_type& _tFar, vector_type* _normal = NULL) const
+        virtual bool intersect(ray_type& _ray, scalar_type& _tNear, scalar_type& _tFar, vec_type* _normal = NULL) const
         {
           return false;
         }

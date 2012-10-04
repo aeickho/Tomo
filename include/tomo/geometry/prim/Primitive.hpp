@@ -45,7 +45,7 @@ namespace tomo
       {
         typedef SCALAR scalar_type;
         typedef base::Point<DIMENSIONS,scalar_type> point_type;
-        typedef base::Vec<DIMENSIONS,scalar_type> vector_type;
+        typedef base::Vec<DIMENSIONS,scalar_type> vec_type;
         typedef aux::Ray<DIMENSIONS,scalar_type> ray_type;
         typedef aux::Bounds<DIMENSIONS,scalar_type> bounds_type;
 
@@ -54,7 +54,7 @@ namespace tomo
          * @param _normal     Pointer to normal determined from intersection
          * @param _texCoords  Pointer to texCoords to be returned
          */
-        inline bool intersect(ray_type& _ray, vector_type* _normal = NULL) const
+        inline bool intersect(ray_type& _ray, vec_type* _normal = NULL) const
         {
           return intersect(_ray,_ray.tNear(),_ray.tFar(),_normal);
         }
@@ -66,7 +66,7 @@ namespace tomo
          * @param _normal     Pointer to normal determined from intersection
          * @param _texCoords  Pointer to texCoords to be returned
          */
-        virtual bool intersect(ray_type& _ray, scalar_type& _tNear, scalar_type& _tFar, vector_type* _normal = NULL) const = 0;
+        virtual bool intersect(ray_type& _ray, scalar_type& _tNear, scalar_type& _tFar, vec_type* _normal = NULL) const = 0;
 
         /** @brief Method to determine the intersection between primitive and split plane
          * @param _axis        Axis of split plane
@@ -93,7 +93,7 @@ namespace tomo
         }
 
 
-        virtual vector_type distanceVec(const Primitive& _p) const
+        virtual vec_type distanceVec(const Primitive& _p) const
         {
           return _p.center() - center();
         }

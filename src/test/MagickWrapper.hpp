@@ -127,11 +127,11 @@ namespace tomo
         const KDTREE& kdTree_;
       };
 
-      template <typename PRIMITIVE, int DIMENSIONS , typename SCALAR>
-      void draw(const KDTree<PRIMITIVE,DIMENSIONS,SCALAR>& _kdTree, 
+      template <typename PRIMITIVE>
+      void draw(const KDTree<PRIMITIVE>& _kdTree, 
                         Magick::Color _color)
       {
-        KDTreeDrawVisitor< KDTree<PRIMITIVE,DIMENSIONS,SCALAR> > _visitor(_kdTree,image_,_color);  
+        KDTreeDrawVisitor< KDTree<PRIMITIVE> > _visitor(_kdTree,image_,_color);  
         _kdTree.traversal(_visitor);
       }
 

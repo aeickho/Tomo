@@ -48,8 +48,8 @@ namespace tomo
         float _cos = _radius * cos(_angle*M_PI/180);
         float _sin = _radius * sin(_angle*M_PI/180);
 
-        vector_type _cross(-_sin,_cos);
-        _rayBegin.dir(vector_type(2*_cos,2*_sin));
+        vec_type _cross(-_sin,_cos);
+        _rayBegin.dir(vec_type(2*_cos,2*_sin));
         _rayEnd.dir(_rayBegin.dir());
         _rayBegin.tNear(0.0);
         _rayBegin.tFar(1.0);
@@ -57,8 +57,8 @@ namespace tomo
         _rayEnd.tFar(1.0);
 
         point_type _center = bounds().center();
-        _rayBegin.org(_center - _cross - vector_type(_cos,_sin));
-        _rayEnd.org(_center + _cross - vector_type(_cos,_sin));
+        _rayBegin.org(_center - _cross - vec_type(_cos,_sin));
+        _rayEnd.org(_center + _cross - vec_type(_cos,_sin));
       }
 
       vector<LineSegment> Polygon::fetchLineSegments() const
