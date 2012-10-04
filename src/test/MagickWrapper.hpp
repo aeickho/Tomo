@@ -6,6 +6,8 @@
 #include "tomo/geometry/prim/Polygon.hpp"
 #include "tomo/slicing/LineSegmentPlane.hpp"
 
+#include "tomo/geometry/aux/Visitor.hpp"
+
 #include <boost/foreach.hpp>
 #include <vector>
 
@@ -22,6 +24,8 @@ namespace tomo
     using tg::aux::Bounds;
     using tg::aux::KDTree;
     using tg::aux::KDNode;
+    using tg::aux::KDTreeVisitor;
+    using tg::aux::KDTreeState;
     using tg::aux::Compound;
     using tg::aux::Ray2f;
 
@@ -32,100 +36,103 @@ namespace tomo
         image_.fillColor("none");
       }
 
-/*
-      template<typename STATE, typename NODE>
-      struct KDTreeVisitor
-      {
-        virtual void innerNode() = 0;
-        virtual void leafNode() = 0;
 
+      template<typename KDTREE>
+      struct KDTreeDrawState 
+      {
+        typedef typename KDTREE::bounds_type bounds_type;
+        typedef typename KDTREE::Node Node;
+        TBD_PROPERTY_REF(bounds_type,bounds);
+        TBD_PROPERTY(const Node*,node);
       };
 
-      struct KDTreeState
+      template<typename KDTREE>
+      struct KDTreeDrawVisitor  
       {
-
-      };
-
-      struct KDTreeDrawState : KDTreeState
-      {
-        TBD_PROPERTY_REF(KDNODE*,node);
-        TBD_PROPERTY_REF(Bounds,bounds);
-      };
-
-      template<typename STATE>
-      struct KDTreeDrawVisitor : 
-        KDTreeVisitor< KDTreeDrawState<KDTree<2,float>::Node> >
-      {
-        SplitPlaneIntersect innerNode()
+        KDTreeDrawVisitor(const KDTREE& _kdTree, Magick::Image& _image, Magick::Color _color) :
+          color_(_color),
+          image_(_image),
+          kdTree_(_kdTree)
         {
-          SplitPlaneIntersect _result;
-          Bounds<DIMENSIONS,SCALAR> _left, _right;
+          state_.node(_kdTree.root());
+          state_.bounds(_kdTree.bounds_);
+        }
+
+        typedef KDTreeDrawState<KDTREE> State;
+        typedef typename KDTREE::bounds_type bounds_type;
+        typedef typename KDTREE::scalar_type scalar_type;
+
+        /// Define what to do in the root node (draw bounding box) 
+        bool root() 
+        { 
+          image_.strokeColor(color_);
+          image_.draw( Magick::DrawableRectangle( 
+              kdTree_.bounds_.min().x(),
+              kdTree_.bounds_.min().y(),
+              kdTree_.bounds_.max().x(),
+              kdTree_.bounds_.max().y() ));
+          return true; 
+        }
+
+        void traverseLeft(State& _state)
+        {
+          _state.node(kdTree_.node(state_.node()->inner_.left()));
+        }
+
+        void traverseRight(State& _state)
+        {
+          _state.node(kdTree_.node(state_.node()->inner_.right()));
+        }
+
+        /// Define what to do in an inner node (draw split plane)
+        bool inner(State& _nextState)
+        {
+          bounds_type _left, _right;
           tg::base::Axis _axis = state_.node()->inner_.axis();
-          SCALAR _splitPos = state_.node()->inner_.splitPos();
+          scalar_type _splitPos = state_.node()->inner_.splitPos();
           state_.bounds().split(_splitPos,_axis,_left,_right);
 
           switch (_axis)
           {
             case tg::base::X:
-            image_.draw( Magick::DrawableLine(_splitPos,_bounds.min().y(),_splitPos,_bounds.max().y()) );
+            image_.draw( Magick::DrawableLine(_splitPos,
+                                              state_.bounds().min().y(),
+                                              _splitPos,
+                                              state_.bounds().max().y()) );
             break;
             case tg::base::Y:
-            image_.draw( Magick::DrawableLine(_bounds.min().x(),_splitPos,_bounds.max().x(),_splitPos) );
+            image_.draw( Magick::DrawableLine(state_.bounds().min().x(),
+                                              _splitPos,
+                                              state_.bounds().max().x(),
+                                              _splitPos) );
             break;
           default:
             break;
           }
+
+          traverseRight(_nextState);
+          _nextState.bounds(_right);
+          traverseLeft(state_);
+          state_.bounds(_left);
+          return true; 
         }
 
-        bool leafNode() { return false; }
-      
-        TBD_PROPERTY(Image&,image);
+        /// Define what to do in a leaf node (nothingg)
+        bool leaf() { return false; }
+    
         TBD_PROPERTY(Magick::Color,color);
-        
+        TBD_PROPERTY_REF(State,state);
       private:
-        STATE state_;
+        Magick::Image& image_;
+        const KDTREE& kdTree_;
       };
-*/
-      template <typename PRIMITIVE, int DIMENSIONS , typename SCALAR>
-      void drawKDNode(const KDTree<PRIMITIVE,DIMENSIONS,SCALAR>& _kdTree,
-                 const KDNode<PRIMITIVE,DIMENSIONS,SCALAR>* _node,
-                 Bounds<DIMENSIONS,SCALAR> _bounds)
-      {
-      if (_node->isLeaf()) return;
-          Bounds<DIMENSIONS,SCALAR> _left, _right;
-          tg::base::Axis _axis = _node->inner_.axis();
-          SCALAR _splitPos = _node->inner_.splitPos();
-          _bounds.split(_splitPos,_axis,_left,_right);
-
-          switch (_axis)
-          {
-            case tg::base::X:
-            image_.draw( Magick::DrawableLine(_splitPos,_bounds.min().y(),_splitPos,_bounds.max().y()) );
-            break;
-            case tg::base::Y:
-            image_.draw( Magick::DrawableLine(_bounds.min().x(),_splitPos,_bounds.max().x(),_splitPos) );
-            break;
-          default:
-            break;
-          }  
-
-        drawKDNode(_kdTree,_kdTree.node(_node->inner_.left()),_left);
-        drawKDNode(_kdTree,_kdTree.node(_node->inner_.right()),_right);
-      }
 
       template <typename PRIMITIVE, int DIMENSIONS , typename SCALAR>
-      void drawKDTree(const Compound<PRIMITIVE,DIMENSIONS,SCALAR>& _compound, 
+      void draw(const KDTree<PRIMITIVE,DIMENSIONS,SCALAR>& _kdTree, 
                         Magick::Color _color)
       {
-        image_.strokeColor(_color);
-
-
-
-
-        //KDTreeDrawVisitor _visitor(image_,_color);
-        //_compound.kdTree().traverse<KDTreeDrawVisitor>();
-        
-        drawKDNode<PRIMITIVE,DIMENSIONS,SCALAR>(_compound.kdTree(),&_compound.kdTree().root(),_compound.bounds());
+        KDTreeDrawVisitor< KDTree<PRIMITIVE,DIMENSIONS,SCALAR> > _visitor(_kdTree,image_,_color);  
+        _kdTree.traversal(_visitor);
       }
 
       template <typename PRIMITIVE, int DIMENSIONS , typename SCALAR>
@@ -141,7 +148,17 @@ namespace tomo
         BOOST_FOREACH( PRIMITIVE* _primitive, _primitives )
           draw(*_primitive,_color);
       }
-      
+     
+      void draw(const tg::aux::Bounds2f& _bounds, Magick::Color _color)
+      {
+        image_.strokeColor(_color);
+        image_.draw( Magick::DrawableRectangle( 
+              _bounds.min().x(),
+              _bounds.min().y(),
+              _bounds.max().x(),
+              _bounds.max().y() ));
+
+      }
 
       void draw(const tg::prim::Vertex2f& _vertex, Magick::Color _color)
       {

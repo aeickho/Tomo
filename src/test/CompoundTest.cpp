@@ -43,7 +43,7 @@ void vertexCompoundTest()
   Wrapper _wrapper(_image);
 
   // Draw KDTree
-  _wrapper.drawKDTree<Vertex2f,2,float>(_compound,"gray");
+  _wrapper.draw<Vertex2f,2,float>(_compound.kdTree(),"gray");
 
   // Draw all points
   _wrapper.vertexWidth(4.0);
@@ -138,7 +138,7 @@ void lineSegmentTest()
   Wrapper _wrapper(_image);
 
   // Draw KDTree
-  _wrapper.drawKDTree<LineSegment,2,float>(_plane,"gray");
+  _wrapper.draw<LineSegment,2,float>(_plane.kdTree(),"gray");
 
   _wrapper.drawEndings(true);
   _wrapper.draw<LineSegment,2,float>(_plane,"red");
@@ -180,7 +180,7 @@ void polygonTest()
   Wrapper _wrapper(_image);
 
   // Draw KDTree
-  _wrapper.drawKDTree<LineSegment,2,float>(_plane,"gray");
+  _wrapper.draw<LineSegment,2,float>(_plane.kdTree(),"gray");
 
   MultiPolygon _polygons = _plane.makePolygons();
   BOOST_FOREACH( Polygon& _polygon, _polygons )

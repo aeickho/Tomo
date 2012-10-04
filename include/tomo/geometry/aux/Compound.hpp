@@ -59,7 +59,7 @@ namespace tomo
           ptr_vector_type _kNearestPrimitives;
 //      kdTree_.traversal<InnerNodeIntersection,LeafNodeIntersection>();
 
-          kNearest(_p,&kdTree_.root(),bounds_,_nearestPrimitives,_k);
+          kNearest(_p,kdTree_.root(),kdTree_.bounds_,_nearestPrimitives,_k);
           BOOST_FOREACH( pair_type _prim, _nearestPrimitives )
           _kNearestPrimitives.push_back(_prim.second);
 
@@ -80,7 +80,7 @@ namespace tomo
           map_type _nearestPrimitives;
           ptr_vector_type _primitivesInRadius;
 
-          inRadius(_p,&kdTree_.root(),bounds_,_nearestPrimitives,_radius);
+          inRadius(_p,kdTree_.root(),kdTree_.bounds_,_nearestPrimitives,_radius);
           BOOST_FOREACH( pair_type _prim, _nearestPrimitives )
           _primitivesInRadius.push_back(_prim.second);
 
@@ -90,8 +90,7 @@ namespace tomo
         /// Calculates bounds and constructs kdtree
         void update()
         {
-          calcBounds();
-          kdTree_.build(objs_,bounds(),3);
+          kdTree_.build(objs_,3);
         }
 
         virtual bool intersect(ray_type& _ray, scalar_type& _tNear, scalar_type& _tFar, vector_type* _normal = NULL) const
@@ -99,7 +98,8 @@ namespace tomo
           return false;
         }
 
-        TBD_PROPERTY_RO(bounds_type,bounds);
+        bounds_type bounds() const { return kdTree_.bounds_; }
+
         TBD_PROPERTY_REF(kdtree_type,kdTree);
 
       protected:
@@ -211,16 +211,6 @@ namespace tomo
             if (_leftDist <= _sqrRadius)
               inRadius(_p,kdTree_.node(_node->inner_.left()),_left,_nearestPrimitives,_radius);
           }
-        }
-
-        /* @brief Determine compound's bounds, O(n) complexity */
-        void calcBounds()
-        {
-          bounds_type _bounds;
-          BOOST_FOREACH ( PRIMITIVE& _obj , objs_ )
-          _bounds.extend(_obj.bounds());
-          _bounds.validate();
-          bounds_ = _bounds;
         }
 
         inline scalar_type largestValue(const map_type& _nearestPrimitives) const
