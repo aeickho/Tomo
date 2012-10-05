@@ -8,6 +8,7 @@ namespace tomo
 {
   namespace slicing
   {
+    /// concecpt: Procedure
     template<class STATE>
     class LineFilling 
     {
@@ -19,7 +20,7 @@ namespace tomo
       typedef geometry::base::Vec2f Vec2f;
       typedef geometry::base::Point2f Point2f;
       typedef geometry::aux::Ray2f Ray2f;
-      typedef geometry::prim::LineSegment Linesignemt;
+      typedef geometry::prim::LineSegment LineSegment;
 
       ActionGroup operator()( const Polygon& _in, 
                               std::list<Polygon>& _out, 
@@ -48,7 +49,7 @@ namespace tomo
         return _actionGroup;
       }
 
-      std::vector<geometry::prim::LineSegment> lineSegments_;
+      std::vector<LineSegment> lineSegments_;
 
       TBD_PROPERTY(float,gap);
       TBD_PROPERTY(float,angle);

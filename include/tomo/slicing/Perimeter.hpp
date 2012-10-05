@@ -8,8 +8,9 @@ namespace tomo
 {
   namespace slicing
   {
+    /// concept: Procedure 
     template<class STATE>
-    class Perimeter : Procedure< LineAction<STATE> >
+    class Perimeter 
     {
     public:
       typedef STATE State;

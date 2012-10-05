@@ -6,10 +6,11 @@ namespace tomo
 {
   namespace slicing
   {
-    template<class ACTION> class ActionGroup 
+    template<class ACTION, class CONT=std::vector<ACTION> > class ActionGroup 
     {
       typedef typename ACTION::State State;
       typedef typename ACTION::Point3f Point3f;
+      typedef CONT Cont;
 
       Point3f begin() const
       {
@@ -20,7 +21,7 @@ namespace tomo
         return actions_.back().end();
       }
 
-      TBD_PROPERTY_REF(std::vector<ACTION>,actions);
+      TBD_PROPERTY_REF(Cont,actions);
     };
   }
 }

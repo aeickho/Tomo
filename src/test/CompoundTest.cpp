@@ -6,6 +6,7 @@
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
+#include <boost/timer/timer.hpp>
 #include <list>
 
 using namespace boost;
@@ -36,8 +37,10 @@ void vertexCompoundTest()
   {
     _compound.objs().push_back(Vertex2f(Point2f(RND*resX,RND*resY)));
   }
+  boost::timer::auto_cpu_timer t;
   // Generate bounds + kdTree
   _compound.update();
+  std::cout << boost::timer::format(t.elapsed()) << std::endl;
 
   Magick::Image _image( Magick::Geometry(resX,resY), Magick::Color("black") );
   Wrapper _wrapper(_image);

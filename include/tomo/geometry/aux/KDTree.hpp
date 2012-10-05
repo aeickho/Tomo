@@ -91,16 +91,19 @@ namespace tomo
         void build(std::vector<PRIMITIVE>& _objs, unsigned _primitivesPerNode = 10)
         {
           primLists_.clear();
+          primLists_.reserve(_objs.size()*2);
           nodes_.clear();
+          nodes_.reserve(2*_objs.size()/_primitivesPerNode);
           nodes_.resize(1);
           PrimCont _nodeObjs;
           _nodeObjs.reserve(_objs.size());
 
+          typename std::vector<PRIMITIVE>::iterator it;
           bounds_type _bounds;
-          for (unsigned i = 0; i < _objs.size(); i++)
+          for (it = _objs.begin() ; it != _objs.end() ; ++it )
           {
-            _bounds.extend(_objs[i].bounds());
-            _nodeObjs.push_back(&_objs[i]);
+            _bounds.extend(it->bounds());
+            _nodeObjs.push_back(&(*it));
           } 
           bounds_ = _bounds;
           divideNode(0,bounds_,_nodeObjs,0,_primitivesPerNode);
@@ -117,7 +120,7 @@ namespace tomo
 
           // Setup node
           base::Axis _axis = _bounds.dominantAxis();
-          float _splitPos = 0.5*(_bounds.min()[_axis] + _bounds.max()[_axis]);
+          scalar_type _splitPos = (_bounds.min()[_axis] + _bounds.max()[_axis])/2;
 
           nodes_[nodeIndex].inner_.setup(nodes_,_axis,_splitPos);
           bounds_type _leftBounds, _rightBounds;
@@ -141,29 +144,26 @@ namespace tomo
                                bounds_type& _rightBounds)
         {
           _bounds.split(_splitPos,_axis,_leftBounds,_rightBounds);
-          for (unsigned i = 0; i < _primList.size(); i++)
+          typename PrimCont::iterator it;
+          for (it = _primList.begin(); it != _primList.end() ; ++it)
           {
-            PRIMITIVE* _prim = _primList[i];
-            ///@todo Replace this by functors
-            prim::SplitPlaneIntersect _result = _prim->intersect(_axis,_splitPos,_leftBounds,_rightBounds);
+            prim::SplitPlaneIntersect _result = (*it)->intersect(_axis,_splitPos,_leftBounds,_rightBounds);
 
-            if (_result.left())  _leftList.push_back(_prim);
-            if (_result.right()) _rightList.push_back(_prim);
+            if (_result.left())  _leftList.push_back(*it);
+            if (_result.right()) _rightList.push_back(*it);
           }
           _primList.clear();
         }
 
-        virtual float splitPos(const PrimCont& _primList, NodeInner* _inner, const bounds_type& _bounds) const
+        float splitPos(const PrimCont& _primList, NodeInner* _inner, const bounds_type& _bounds) const
         {
-          return 0.5*(_bounds.min()[_inner->axis()] + _bounds.max()[_inner->axis()]);
+          return (_bounds.min()[_inner->axis()] + _bounds.max()[_inner->axis()])/2;
         }
 
         static unsigned maxDepth()
         {
           return 16;
         }
-
-
       };
 
     }

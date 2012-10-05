@@ -7,17 +7,16 @@ namespace tomo
 {
   namespace slicing
   {
-    using geometry::prim::LineSegment;
-
     /// The class LineSegmentContainer is used to store line segments to make polygons out of them
-    struct LineSegmentPlane : geometry::aux::Compound<LineSegment,2,float>
+    struct LineSegmentPlane : geometry::aux::Compound<geometry::prim::LineSegment,2,float>
     {
       TOMO_COMPOUND_PRIMITIVE_NAME(lineSegments);
 
-      typedef float scalar_type;
-      typedef geometry::aux::Ray<2,scalar_type> ray_type;
-      typedef geometry::base::Vec<2,scalar_type> vector_type;
-
+      typedef float Scalar;
+      typedef geometry::prim::LineSegment LineSegment;
+      typedef geometry::aux::Ray<2,Scalar> Ray;
+      typedef geometry::base::Vec<2,Scalar> Vec;
+      
       LineSegmentPlane(Slice* _slice = NULL);
 
       std::vector<Polygon> makePolygons(float _simplifyThreshold = 0.0);
@@ -26,7 +25,7 @@ namespace tomo
       void addSegment(const point_type& _p0, const point_type& _p1);
       void aggregate(const LineSegmentPlane& _lineSegmentPlane);
 
-      virtual bool intersect(ray_type& _ray, scalar_type& _tNear, scalar_type& _tFar, vector_type* _normal = NULL) const
+      bool intersect(Ray& _ray, Scalar& _tNear, Scalar& _tFar, Vec* _normal = NULL) const
       {
         return false;
       }

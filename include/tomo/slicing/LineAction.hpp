@@ -6,7 +6,7 @@ namespace tomo
 {
   namespace slicing
   {
-    template<class STATE> struct LineAction 
+    template<class STATE> struct LineAction
     {
       typedef STATE State;
       typedef Action<State> Action;
@@ -15,11 +15,12 @@ namespace tomo
       LineAction( Point3f _begin, Point3f _end ) :
         begin_(_begin),
         end_(_end)
-      {}
+      {
+      }
       void process( const State& _state )
       {
       }
-      
+
       TBD_PROPERTY(Point3f,begin);
       TBD_PROPERTY(Point3f,end);
     };

@@ -132,7 +132,8 @@ namespace tomo
 
           if (_node->isLeaf())
           {
-            ptr_vector_type _primitives = _node->leaf_.primitives(kdTree_.primLists_);
+            ptr_vector_type _primitives;
+            _node->leaf_.primitives(kdTree_.primLists_, _primitives);
             BOOST_FOREACH( PRIMITIVE* _nodePrim, _primitives )
             {
               if (_nodePrim == _p) continue;

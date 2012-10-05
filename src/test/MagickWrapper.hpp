@@ -92,7 +92,10 @@ namespace tomo
           tg::base::Axis _axis = state_.node()->inner_.axis();
           scalar_type _splitPos = state_.node()->inner_.splitPos();
           state_.bounds().split(_splitPos,_axis,_left,_right);
-
+          
+          unsigned _alphaValue = 10000+55000*state_.bounds().radius()/kdTree_.bounds_.radius();
+          image_.strokeColor(Magick::Color(_alphaValue,_alphaValue,_alphaValue));
+          
           switch (_axis)
           {
             case tg::base::X:
