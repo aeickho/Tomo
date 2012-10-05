@@ -46,6 +46,12 @@ namespace tomo
           return _ray.intersection(Primitive2f::pointer(),_t,_tNear,_tFar);
       }
 
+      LineSegment::vec_type LineSegment::normal() const
+      {
+        vec_type _d = front() - back();
+        return vec_type(-_d.y(),_d.x());
+      }
+
       LineSegment::bounds_type LineSegment::bounds() const
       {
         bounds_type _bounds;

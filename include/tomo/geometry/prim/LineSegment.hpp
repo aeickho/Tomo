@@ -19,6 +19,8 @@ namespace tomo
           return _p.center() - front();
         }
 
+        vec_type normal() const;
+        
         bounds_type bounds() const;
         SplitPlaneIntersect intersect(base::Axis _axis, scalar_type _splitPos,
                                       const bounds_type& _boundsLeft, const bounds_type& _boundsRight) const;

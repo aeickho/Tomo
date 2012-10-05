@@ -2,6 +2,7 @@
 
 #include "tomo/geometry/aux/Compound.hpp"
 #include "LineSegment.hpp"
+#include "Vertex.hpp"
 
 namespace tomo
 {
@@ -30,12 +31,19 @@ namespace tomo
           return SplitPlaneIntersect();
         }
 
+        std::vector<Vertex2f> fetchVertices();
+        
+        void resize(scalar_type _distance, std::vector<Ring>& _rings);
+
         friend void resize(Ring& _in, scalar_type _distance, std::vector<Ring>& _out);
         friend void difference(Ring& _in, std::vector<Ring>& _out);
         friend void unification(Ring& _in, std::vector<Ring>& _out);
         friend bool intersect(Ring& _ring1, Ring& _ring2);
       
         TBD_PROPERTY(Location,location);
+
+      private:
+        void adapt();
       };
 
     }

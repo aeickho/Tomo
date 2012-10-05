@@ -20,6 +20,7 @@ namespace tomo
     using tg::prim::Ring;
     using tg::prim::Polygon;
     using tg::base::Point2f;
+    using tg::base::Vec2f;
     using tg::base::Point3f;
     using tg::aux::Bounds;
     using tg::aux::KDTree;
@@ -202,6 +203,14 @@ namespace tomo
           image_.strokeColor("blue");
           image_.draw( Magick::DrawableCircle(_b.x(),_b.y(),7+_b.x(),_b.y() ));
         }
+
+        if (drawNormals_)
+        {
+          image_.strokeColor("green");
+          Vec2f _c = 0.5*(_b.vec() + _f.vec());
+          Vec2f _n = _segment.normal();
+          image_.draw( Magick::DrawableLine( _c.x(),_c.y(),_c.x()+_n.x(),_c.y()+_n.y()) );
+        }
       }
 
       void draw(const Ring& _ring, Magick::Color _color)
@@ -216,6 +225,7 @@ namespace tomo
 
       TBD_PROPERTY(float,vertexWidth);
       TBD_PROPERTY(bool,drawEndings);
+      TBD_PROPERTY(bool,drawNormals);
 
     private:
       Magick::Image& image_;
