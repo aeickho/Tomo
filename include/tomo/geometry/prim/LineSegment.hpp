@@ -14,11 +14,6 @@ namespace tomo
 
         bool intersect(ray_type& _ray, scalar_type& _tNear, scalar_type& _tFar, vec_type* _normal = NULL) const;
 
-        vec_type distanceVec(const Primitive& _p) const
-        {
-          return _p.center() - front();
-        }
-
         vec_type normal() const;
         
         bounds_type bounds() const;

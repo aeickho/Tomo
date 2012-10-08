@@ -2,6 +2,10 @@
 
 #include <vector>
 #include <set>
+#include <boost/type_traits/is_const.hpp>
+#include <boost/type_traits/remove_reference.hpp>
+
+#include <boost/geometry/geometries/polygon.hpp>
 #include "Ring.hpp"
 #include "tomo/geometry/aux/Bounds.hpp"
 
@@ -11,32 +15,27 @@ namespace tomo
   {
     namespace prim
     {
-      struct Polygon : public aux::Compound<Ring,2,float>
+      typedef boost::geometry::model::polygon<base::BoostPoint2> BoostPolygon;
+      typedef std::vector<BoostPolygon> BoostMultiPolygon;
+
+      struct Polygon : Primitive2f
       {
-        TOMO_COMPOUND_PRIMITIVE_NAME(rings);
-
-        bool intersect(ray_type& _ray, float& _tNear, float& _tFar, vec_type* _normal = NULL) const
-        {
-          return false;
-        }
-
-        ctnr_type& lineSegments() { return objs_; }
-        const ctnr_type& lineSegments() const { return objs_; }
-
         void lineSegments(ray_type& _ray, std::vector<LineSegment>& _lineSegments ) const;
-        std::vector<LineSegment> fetchLineSegments() const;
+        void fetchLineSegments(std::vector<LineSegment>& _lineSegments) const;
+        void boundingRays(float _angle, ray_type& _rayBegin, ray_type& _rayEnd) const;  
+        void add(const Ring& _ring);
 
-        void fetch(Ring::Location& _location, ptr_vector_type& _output);
+        const BoostPolygon& operator()() const { return polygon_; }
+        BoostPolygon& operator()() { return polygon_; }
 
-        void boundingRays(float _angle, ray_type& _rayBegin, ray_type& _rayEnd) const;
+        TBD_PROPERTY(BoostPolygon,polygon);
+        TBD_PROPERTY_REF(bounds_type,bounds);
 
       private:
-
         void lineSegmentsFromSegMarkers(
             const ray_type& _ray,
             const std::set<float>& _segMarkers,
             std::vector<LineSegment>& _lineSegments) const;
-        
       };
 
       typedef std::vector<Polygon> MultiPolygon;

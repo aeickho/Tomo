@@ -28,7 +28,6 @@ using namespace std;
   using tomo::slicing::LineFilling;
   using tomo::slicing::Perimeter;
 
-
   struct State
   {
     float speed_, extrudedLength_;
@@ -107,7 +106,10 @@ int main(int ac, char* av[])
   _perimeter.borderWidth(50);
   _perimeter(_polygon,_output,_state);
 
-  BOOST_FOREACH( const LineSegment& _lineSegment, _output.front().fetchLineSegments() )
+  std::vector<LineSegment> _lineSegments;
+  _output.front().fetchLineSegments(_lineSegments);
+
+  BOOST_FOREACH( const LineSegment& _lineSegment, _lineSegments )
   {
     _wrapper.draw(_lineSegment,Magick::Color("green"));
   }
@@ -119,7 +121,8 @@ int main(int ac, char* av[])
   LineFilling<State>::ActionGroup _actionGroup;
   _actionGroup = _filling(_polygon,_output,_state);
  
-  vector<LineSegment> _polygonSegments = _polygon.fetchLineSegments();
+  vector<LineSegment> _polygonSegments;
+  _polygon.fetchLineSegments(_polygonSegments);
 
   BOOST_FOREACH( LineSegment& _lineSegment, _polygonSegments )
   {

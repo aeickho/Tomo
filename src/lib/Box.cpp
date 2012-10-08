@@ -24,7 +24,7 @@ namespace tomo
       {
         Polygon _polygon;
         Ring _outer(Ring::OUTER);
-        _outer.lineSegments().reserve(4);
+        _outer().reserve(4);
         _outer.add(Point2f(min().x(),min().y()));
         _outer.add(Point2f(max().x(),min().y()));
         _outer.add(Point2f(max().x(),max().y()));

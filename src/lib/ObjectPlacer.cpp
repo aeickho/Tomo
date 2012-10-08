@@ -29,7 +29,7 @@ namespace tomo
 
       for (map_type::iterator it = _objects.begin(); it != _objects.end(); ++it)
       {
-        Bounds3f _bounds = it->first->bounds();
+/*        Bounds3f _bounds = it->first->bounds();
         Vec3f _size = _bounds.size(); 
         float _area = _size.x() * _size.y();
 
@@ -39,7 +39,7 @@ namespace tomo
 
         // Insert object into map, sorted by area
         _objectsByArea.insert(make_pair<float,SlicableObject*>(_area,it->first));
-      }
+  */    }
 
       std::vector<Bounds2f> _rectList;
 
@@ -53,6 +53,7 @@ namespace tomo
                              Slices* _slices,
                              vector<Bounds2f>& _rectList)
     {
+      /*
       Bounds3f _objBounds = _object->bounds(); 
       Bounds2f _printBounds(Vec2f(printBounds_.min().x(),printBounds_.min().y()),
                             Vec2f(printBounds_.max().x(),printBounds_.max().y()));
@@ -67,7 +68,7 @@ namespace tomo
         {
           /// TODO Use guillotine packing here...
         } 
-      }
+      }*/
     }
 
   }

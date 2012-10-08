@@ -170,7 +170,7 @@ void polygonTest()
   using tg::base::Point2f;
   using tg::base::Point2us;
   using tg::prim::Polygon;
-  using tg::prim::MultiPolygon;
+  using tg::prim::Ring;
   using tomo::slicing::LineSegmentPlane;
   using tomo::magick::Wrapper;
 
@@ -185,12 +185,14 @@ void polygonTest()
   // Draw KDTree
   _wrapper.draw<LineSegment>(_plane.kdTree(),"gray");
 
-  MultiPolygon _polygons = _plane.makePolygons();
-  BOOST_FOREACH( Polygon& _polygon, _polygons )
+  std::vector<Ring> _rings;
+  _plane.makeRings(_rings);
+
+  BOOST_FOREACH( Ring& _ring, _rings )
   {
     std::stringstream ss;
     //  ss << "rgb(" << RND << "," << RND << "," << RND << ")";
-    _wrapper.draw(_polygon,Magick::Color(RND*65535,RND*65535,RND*65535));
+    _wrapper.draw(_ring,Magick::Color(RND*65535,RND*65535,RND*65535));
   }
 
   _image.display();

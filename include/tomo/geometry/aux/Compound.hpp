@@ -26,15 +26,18 @@ namespace tomo
         const ctnr_type& name() const { return objs_; } 
 
         typedef SCALAR scalar_type;
-        typedef Bounds<DIMENSIONS,scalar_type> bounds_type;
+        typedef prim::Primitive<DIMENSIONS,scalar_type> primitive_type;
+        typedef typename primitive_type::vec_type vec_type;
+        typedef typename primitive_type::point_type point_type;
+        typedef typename primitive_type::ray_type ray_type;
+        typedef typename primitive_type::bounds_type bounds_type;
+
         typedef KDTree<PRIMITIVE> kdtree_type;
         typedef typename kdtree_type::Node node_type;
         typedef std::multimap<scalar_type,PRIMITIVE*> map_type;
         typedef std::pair<scalar_type,PRIMITIVE*> pair_type;
         typedef std::vector<PRIMITIVE*> ptr_vector_type;
         typedef std::vector<PRIMITIVE> ctnr_type;
-        typedef aux::Ray<DIMENSIONS,scalar_type> ray_type;
-        typedef base::Vec<DIMENSIONS,scalar_type> vec_type;
 
         TOMO_COMPOUND_PRIMITIVE_NAME(objs)
 
@@ -126,6 +129,7 @@ namespace tomo
                       const bounds_type& _bounds,
                       map_type& _nearestPrimitives, unsigned _k ) const
         {
+          /*
           if (!_node) return;
 
           scalar_type _sqrRadius = (_nearestPrimitives.size() < _k) ? INF : largestValue(_nearestPrimitives);
@@ -145,7 +149,6 @@ namespace tomo
               if (_nearestPrimitives.size() > _k)
                 _nearestPrimitives.erase(--_nearestPrimitives.end());
             }
-            return;
           }
 
           bounds_type _left, _right;
@@ -168,7 +171,7 @@ namespace tomo
             if (_leftDist <= _sqrRadius)
               kNearest(_p,kdTree_.node(_node->inner_.left()),_left,_nearestPrimitives,_k);
           }
-
+          */
         }
 
         /// Finds all primitives which lie inside a given radius, starting from a certain node

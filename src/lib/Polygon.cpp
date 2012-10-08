@@ -1,5 +1,6 @@
 #include "tomo/geometry/prim/Polygon.hpp"
 
+#include <boost/geometry/geometries/adapted/c_array.hpp>
 #include <boost/foreach.hpp>
 #include <tbd/log.h>
 #include <math.h>
@@ -7,27 +8,21 @@
 
 using namespace std;
 
+using namespace boost::geometry;
+
+BOOST_GEOMETRY_REGISTER_C_ARRAY_CS(cs::cartesian);
+
 namespace tomo
 {
   namespace geometry
   {
     namespace prim
     {
-      void Polygon::fetch(Ring::Location& _location, ptr_vector_type& _output)
-      {
-        BOOST_FOREACH( Ring& _ring, rings() )
-        {
-          if (_ring.location() == _location)
-          {
-            _output.push_back(&_ring);
-          }
-        }
-      }
-
       void Polygon::lineSegments(ray_type& _ray, std::vector<LineSegment>& _lineSegments ) const
       {
         std::set<float> _segMarkers;
-        vector<LineSegment> _polygonSegments = fetchLineSegments();
+        vector<LineSegment> _polygonSegments; 
+        fetchLineSegments(_polygonSegments);
 
         BOOST_FOREACH( const LineSegment& _lineSegment, _polygonSegments )
         {
@@ -61,21 +56,17 @@ namespace tomo
         _rayEnd.org(_center + _cross - vec_type(_cos,_sin));
       }
 
-      vector<LineSegment> Polygon::fetchLineSegments() const
+      void Polygon::fetchLineSegments(vector<LineSegment>& _lineSegments) const
       {
-        vector<LineSegment> _lineSegments;
-        /*
-                // Fetch outer segments
-                const Ring& _outer = polygon_.outer();
-                lineSegmentsFromRing(_outer,_lineSegments);
-
-                // Fetch inner segments
-                BOOST_FOREACH( const Ring& _inner, polygon_.inners() )
-                lineSegmentsFromRing(_inner,_lineSegments);
-        */
-        return _lineSegments;
+        Ring _outer(polygon_.outer());
+        _outer.fetchLineSegments(_lineSegments);
+       
+        BOOST_FOREACH( const BoostRing& _ring, polygon_.inners() )
+        {
+          Ring _inner(_ring);
+          _inner.fetchLineSegments(_lineSegments);
+        }
       }
-
 
       void Polygon::lineSegmentsFromSegMarkers(
         const ray_type& _ray,
@@ -93,6 +84,15 @@ namespace tomo
             _lineSegments.push_back(LineSegment(_points[0],_points[1]));
           }
           i++;
+        }
+      }
+
+      void Polygon::add(const Ring& _ring)
+      {
+        switch (_ring.location())
+        {
+          case Ring::INNER: polygon_.inners().push_back(_ring()); break;
+          case Ring::OUTER: polygon_.outer() = _ring(); break;
         }
       }
     }

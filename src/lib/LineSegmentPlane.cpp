@@ -89,10 +89,8 @@ namespace tomo
 
 
 
-    MultiPolygon LineSegmentPlane::makePolygons(float _simplifyThreshold)
+    void LineSegmentPlane::makeRings(std::vector<Ring>& _rings)
     {
-      MultiPolygon _closures, _holes, _polygons;
-
       /// 1st step:
       /// Find nearest neighbor for each LineSegment
       BOOST_FOREACH( LineSegment& _lineSegment, lineSegments() )
@@ -135,14 +133,6 @@ namespace tomo
               }
         */
       }
-
-      /// 3nd step:
-      /// Subtract holes from closures
-//    boost::geometry::difference(_closures,_holes,_polygons);
-
-      LOG_MSG << _polygons.size();
-
-      return _polygons;
     }
 
     void LineSegmentPlane::addSegment(const point_type& _p0, const point_type& _p1)

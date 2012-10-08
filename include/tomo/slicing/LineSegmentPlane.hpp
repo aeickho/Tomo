@@ -1,7 +1,7 @@
 #include "Slice.hpp"
 
 #include <tomo/geometry/aux/Compound.hpp>
-#include <tomo/geometry/prim/LineSegment.hpp>
+#include <tomo/geometry/prim/Ring.hpp>
 
 namespace tomo
 {
@@ -14,12 +14,13 @@ namespace tomo
 
       typedef float Scalar;
       typedef geometry::prim::LineSegment LineSegment;
+      typedef geometry::prim::Ring Ring;
       typedef geometry::aux::Ray<2,Scalar> Ray;
       typedef geometry::base::Vec<2,Scalar> Vec;
       
       LineSegmentPlane(Slice* _slice = NULL);
 
-      std::vector<Polygon> makePolygons(float _simplifyThreshold = 0.0);
+      void makeRings(std::vector<Ring>& _rings);
 
       float pos() const;
       void addSegment(const point_type& _p0, const point_type& _p1);

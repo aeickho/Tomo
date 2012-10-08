@@ -2,15 +2,16 @@
 #define _POINT_HPP
 
 #include "Coord.hpp"
-#include <boost/static_assert.hpp>
-#include <tbd/log.h>
+#include <boost/geometry/geometries/point_xy.hpp>
 
 namespace tomo
 {
   namespace geometry
   {
     namespace base
-    {
+    { 
+      typedef boost::geometry::model::d2::point_xy<DEFAULT_TYPE> BoostPoint2;
+
       /** @brief Template class to represent a point
        * @tparam DIMENSIONS Number of dimensions
        * @tparam Scalar_TYPE Coordinate type
@@ -29,6 +30,11 @@ namespace tomo
         Point( value_type _x, value_type _y ) : coord_type(_x,_y) { }
         Point( value_type _x, value_type _y, value_type _z ) : coord_type(_x,_y,_z) { }
         Point( value_type _x, value_type _y, value_type _z, value_type _w ) : coord_type(_x,_y,_z,_w) { }
+        Point ( BoostPoint2 _boostPoint ) : 
+          coord_type(boost::geometry::get<0>(_boostPoint),
+                     boost::geometry::get<1>(_boostPoint))
+        {}
+
 
         friend vector_type operator-( const Point& a, const Point& b)
         {
@@ -47,6 +53,12 @@ namespace tomo
           Point p;
           TOMO_FOREACH_DIM p[i] = a[i] + b[i];
           return p;
+        }
+
+        BoostPoint2 as() const 
+        {
+          BOOST_STATIC_ASSERT(DIMENSIONS == 2);
+          return BoostPoint2(this->x(),this->y());
         }
 
         operator const Scalar*() const

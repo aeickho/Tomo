@@ -23,23 +23,19 @@ LOG_INIT;
 
 float resX = 1024, resY = 1024;
 
-Ring makeCircle(Point2f _pos, float _radius, int _segments)
+void makeCircle(Point2f _pos, float _radius, int _segments, Ring& _ring)
 {
-  Ring _ring(Ring::OUTER);
-
   for (int i = 0; i < _segments; i++)
-  {
-    
+  {   
     float _angle = float(i)/float(_segments)*M_PI*2.0;
     float _sin = _radius*sin(_angle),
           _cos = _radius*cos(_angle);
     Point2f _point = Point2f(_cos,_sin) + _pos;
     _ring.add(_point);
   }
-  _ring.update();
-
-  return _ring;
 }
+
+
 
 
 void intersectTest()
@@ -49,22 +45,21 @@ void intersectTest()
 //  _wrapper.drawEndings(true);
   _wrapper.drawNormals(true);
 
-  Ring _ring = makeCircle(Point2f(resX/2,resY/2),resX/3,3);
+  Ring _ring(Ring::OUTER);
+  makeCircle(Point2f(resX/2,resY/2),resX/3,3,_ring);
 
   _wrapper.draw(_ring,Magick::Color("red"));
-
 
   vector<Ring> _rings;
   _ring.resize(30,_rings);
   //_wrapper.draw(_rings[0],Magick::Color("purple"));
 
-  vector<prim::Vertex2f> _vertices(_ring.fetchVertices());
+  vector<prim::Vertex2f> _vertices;
+  _ring.fetchVertices(_vertices);
 
   BOOST_FOREACH( prim::Vertex2f& _vertex, _vertices )
     _wrapper.draw(_vertex,Magick::Color("white"));
   
-
-
   _image.display();
 }
 

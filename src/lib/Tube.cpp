@@ -52,12 +52,8 @@ namespace tomo
 
         _polygon.add(_outer);
         _polygon.add(_inner);
-        _polygon.update();
-
         _slice->add(_polygon);
       }
-
-
     }
   }
 }

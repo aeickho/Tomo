@@ -43,7 +43,8 @@ void fillingTest(Polygon& _polygon)
   _filling.angle(30);
   _filling(_polygon,_output,_state);
 
-  vector<LineSegment> _polygonSegments = _polygon.fetchLineSegments();
+  vector<LineSegment> _polygonSegments;
+  _polygon.fetchLineSegments(_polygonSegments);
 
   BOOST_FOREACH( LineSegment& _lineSegment, _polygonSegments )
   {

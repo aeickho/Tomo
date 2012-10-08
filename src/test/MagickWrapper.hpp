@@ -167,7 +167,7 @@ namespace tomo
       void draw(const tg::prim::Vertex2f& _vertex, Magick::Color _color)
       {
         image_.strokeColor(_color);
-        tg::base::Point2us _p(_vertex.v.x(),_vertex.v.y());  
+        tg::base::Point2us _p(_vertex.v().x(),_vertex.v().y());  
         image_.draw( Magick::DrawableCircle( _p.x(),_p.y(),vertexWidth_+_p.x(),_p.y() ));
       }
 
@@ -216,14 +216,25 @@ namespace tomo
         }
       }
 
+
+      void draw(const std::vector<LineSegment>& _lineSegments, Magick::Color _color)
+      {
+        BOOST_FOREACH( const LineSegment& _lineSegment, _lineSegments )
+          draw(_lineSegment,_color);
+      }
+
       void draw(const Ring& _ring, Magick::Color _color)
       {
-        draw<LineSegment,2,float>(_ring,_color);
+        std::vector<LineSegment> _lineSegments;
+        _ring.fetchLineSegments(_lineSegments);
+        draw(_lineSegments,_color);
       }
 
       void draw(const Polygon& _polygon, Magick::Color _color)
       {
-        draw<Ring,2,float>(_polygon,_color);
+        std::vector<LineSegment> _lineSegments;
+        _polygon.fetchLineSegments(_lineSegments);
+        draw(_lineSegments,_color);
       }
 
       TBD_PROPERTY(float,vertexWidth);
