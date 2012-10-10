@@ -6,6 +6,11 @@
 #include <boost/assert.hpp>
 #include <boost/foreach.hpp>
 
+#include <boost/geometry.hpp>
+#include <boost/geometry/algorithms/union.hpp>
+#include <boost/geometry/algorithms/area.hpp>
+
+
 using namespace std;
 
 namespace tomo
@@ -16,6 +21,17 @@ namespace tomo
     {
       using boost::geometry::get;
       using base::BoostPoint2;
+      
+      Ring::Ring(Location _location) : 
+        location_(_location)
+      {
+      }
+      
+      Ring::Ring(const BoostRing& _boostRing) :
+        ring_(_boostRing)
+      {
+      }
+
 
       void Ring::add(point_type _point)
       {
@@ -77,6 +93,7 @@ namespace tomo
         BoostRing::const_iterator _prev, _next;
         nextPrev(it,_prev,_next);
         return 0.5*(getNormal(_prev,it) + getNormal(it,_next));
+
       }
 
       Ring::vec_type Ring::getNormal(BoostRing::const_iterator _p0, BoostRing::const_iterator _p1) const
@@ -100,8 +117,8 @@ namespace tomo
                           BoostRing::const_iterator& _next) const
       {
         BoostRing::const_iterator _last = --ring_.end();
-        _prev = (it == ring_.begin()) ? _last : --it,
-        _next = (it == _last) ? ring_.end() :  ++it;
+        _prev = (it == ring_.begin()) ? _last : it-1,
+        _next = (it == _last) ? ring_.begin() : it+1;
       }
 
       Ring::scalar_type Ring::determinant(BoostRing::const_iterator it) const
@@ -111,6 +128,49 @@ namespace tomo
         return (it->x()*_next->y() + _prev->x()*it->y() + _prev->y()*_next->x()) -
                (_prev->y()*it->x() + it->y()*_next->x() + _prev->x()*_next->y());
       }
+
+      Ring::IntersectResult intersect(const Ring& _a, const Ring& _b, vector<Ring> _output)
+      { 
+        /// Make Cheese and union
+        vector<BoostRing> _rings;
+        boost::geometry::union_(_a(),_b(),_rings);
+        
+        if (_rings.size() != 1)
+        {
+          BOOST_FOREACH( BoostRing& _ring, _rings )
+            _output.push_back(Ring(_ring));
+          return Ring::DISJOINT;
+        }
+        BoostRing& _unionRing = _output.front()();
+/*
+        if (_a().size() != _unionRing.size() && 
+            _b().size() != _unionRing.size()) goto overlap;
+
+        float _areaA = boost::geometry::area(_a()),
+              _areaB = boost::geometry::area(_b()),
+              _areaOutput = boost::geometry::area(_unionRing);
+                
+        if (_areaA == _areaOutput) 
+        {
+          if (_a.location() != _b.location()) goto overlap;
+          _output.push_back(_a);
+          _output.push_back(_b);
+          return Ring::B_WITHIN_A;
+        }
+        if (_areaB == _areaOutput) 
+        {
+          if (_a.location() != _b.location()) goto overlap;
+          _output.push_back(_a);
+          _output.push_back(_b);
+          return Ring::A_WITHIN_B;
+        }
+
+     overlap:
+        _output.push_back(_unionRing);*/
+        return Ring::OVERLAP;
+
+      }
+
     }
   }
 }

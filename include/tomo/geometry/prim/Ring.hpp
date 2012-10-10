@@ -14,27 +14,34 @@ namespace tomo
 
       struct Ring : Primitive2f
       {
-
+        enum IntersectResult { DISJOINT, OVERLAP, A_WITHIN_B, B_WITHIN_A };
         enum Location { INNER, OUTER };
 
         /// Orientation of ring (CW = clockwise, CCW = counter-clockwise)
         enum Orientation { CW, CCW };
 
-        Ring(Location _location = OUTER) : location_(_location) {}
-        Ring(const BoostRing& _boostRing) : ring_(_boostRing) {}
+        /// Default constructor
+        Ring(Location _location = OUTER);
+        
+        /// Boost wrapper constructor
+        Ring(const BoostRing& _boostRing);
 
         void add(point_type _point);
 
         void fetchLineSegments(std::vector<LineSegment>& _lineSegments) const;
+        void fetchLineSegments(
+            const LineSegment& _lineSegment, 
+            std::vector<LineSegment>& _lineSegments) const;
+        void fetchLineSegments(BoostRing::const_iterator it1, 
+                               BoostRing::const_iterator it2,
+                               std::vector<LineSegment>& _lineSegments) const;
+
         void fetchVertices(std::vector<Vertex2f>& _vertices) const;
         void resize(scalar_type _distance, std::vector<Ring>& _rings);
+        
+        friend IntersectResult intersect(const Ring& _a, const Ring& _b, std::vector<Ring>& _out);
 
         Orientation orientation() const;
-
-        friend void resize(Ring& _in, scalar_type _distance, std::vector<Ring>& _out);
-        friend void difference(Ring& _in, std::vector<Ring>& _out);
-        friend void unification(Ring& _in, std::vector<Ring>& _out);
-        friend bool intersect(Ring& _ring1, Ring& _ring2);
 
         const BoostRing& operator()() const { return ring_; }
         BoostRing& operator()() { return ring_; }

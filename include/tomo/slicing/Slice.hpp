@@ -1,16 +1,7 @@
 #pragma once
 
-#include <boost/geometry.hpp>
-#include <boost/geometry/geometries/point_xy.hpp>
-#include <boost/geometry/geometries/polygon.hpp>
-
-#include <vector>
-#include <tbd/property.h>
 #include "tomo/slicing/PlaneStack.hpp"
-#include "tomo/geometry/prim/Polygon.hpp"
-#include <boost/foreach.hpp>
-#include <set>
-#include <list>
+#include "tomo/geometry/prim/MultiPolygon.hpp"
 
 
 namespace tomo

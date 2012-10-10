@@ -16,10 +16,13 @@ namespace tomo
     namespace prim
     {
       typedef boost::geometry::model::polygon<base::BoostPoint2> BoostPolygon;
-      typedef std::vector<BoostPolygon> BoostMultiPolygon;
 
       struct Polygon : Primitive2f
       {
+        Polygon();
+        Polygon(const BoostPolygon& _boostPolygon);
+        Polygon(const Ring& _outer, const std::vector<Ring>& _inners);
+
         void lineSegments(ray_type& _ray, std::vector<LineSegment>& _lineSegments ) const;
         void fetchLineSegments(std::vector<LineSegment>& _lineSegments) const;
         void boundingRays(float _angle, ray_type& _rayBegin, ray_type& _rayEnd) const;  
@@ -37,8 +40,6 @@ namespace tomo
             const std::set<float>& _segMarkers,
             std::vector<LineSegment>& _lineSegments) const;
       };
-
-      typedef std::vector<Polygon> MultiPolygon;
     }
   }
 }

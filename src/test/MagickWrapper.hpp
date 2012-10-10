@@ -169,6 +169,13 @@ namespace tomo
         image_.strokeColor(_color);
         tg::base::Point2us _p(_vertex.v().x(),_vertex.v().y());  
         image_.draw( Magick::DrawableCircle( _p.x(),_p.y(),vertexWidth_+_p.x(),_p.y() ));
+
+        if (drawNormals_) 
+        {
+        image_.draw( Magick::DrawableLine(_p.x(),_p.y(),
+                                            _p.x() + _vertex.n().x(),
+                                            _p.y() + _vertex.n().y()));
+        }
       }
 
       void draw(const tg::base::Point2f _point, Magick::Color _color)

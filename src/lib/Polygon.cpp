@@ -18,6 +18,24 @@ namespace tomo
   {
     namespace prim
     {
+      Polygon::Polygon()
+      {
+      }
+
+      Polygon::Polygon(const BoostPolygon& _boostPolygon) : 
+        polygon_(_boostPolygon)
+      {
+      }
+
+      Polygon::Polygon(const Ring& _outer, const std::vector<Ring>& _inners)
+      {
+        polygon_.outer() = _outer();
+        BOOST_FOREACH ( const Ring& _inner, _inners )
+        {
+          polygon_.inners().push_back(_inner());
+        }
+      }
+
       void Polygon::lineSegments(ray_type& _ray, std::vector<LineSegment>& _lineSegments ) const
       {
         std::set<float> _segMarkers;

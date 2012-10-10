@@ -1,5 +1,7 @@
 #include "tomo/geometry/prim/Box.hpp"
 
+#include <boost/foreach.hpp>
+
 using namespace std;
 
 namespace tomo
