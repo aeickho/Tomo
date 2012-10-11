@@ -244,12 +244,12 @@ namespace tomo
         draw(_lineSegments,_color);
       }
 
+      Magick::Image& image_;
+
       TBD_PROPERTY(float,vertexWidth);
       TBD_PROPERTY(bool,drawEndings);
       TBD_PROPERTY(bool,drawNormals);
-
     private:
-      Magick::Image& image_;
     };
 
   }

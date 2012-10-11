@@ -10,6 +10,7 @@
 
 #include "MagickWrapper.hpp"
 #include "tomo/geometry/prim/MultiPolygon.hpp"
+#include <boost/intrusive/list.hpp>
 
 using namespace boost;
 namespace po = program_options;
@@ -123,52 +124,41 @@ typedef std::vector<Ring> Rings;
 
 void unify(const Rings& _input, Rings& _output)
 {
-  list<BoostRing> _inputRings, _outputRings;
+  typedef list<BoostRing> Container;
+  Container _inputRings;
 
   BOOST_FOREACH( const Ring& _ring, _input)
-  _inputRings.push_back(_ring());
-
-  typedef list<BoostRing>::iterator iterator;
-
-  multimap<BoostRing*,BoostRing*> _pairs;
-  multimap<int,int> _pairsDebug;
-
-  int i = 0, j = 0;
-
-  for (iterator it1 = _inputRings.begin() ; it1 != _inputRings.end(); ++it1)
   {
-    j = i;
-    for (iterator it2 = _inputRings.begin() ; it2 != _inputRings.end(); ++it2)
+    BoostRing _newRing(_ring());
+    boost::geometry::correct(_newRing);
+    _inputRings.push_back(_newRing);
+  }
+
+  typedef Container::iterator iterator;
+  for (iterator i = _inputRings.begin(); i != _inputRings.end(); ++i)
+  {
+    iterator j = i;
+    ++j;
+    for (; j != _inputRings.end(); ++j)
     {
-      if (it2 == it1) { j++;  continue; }
       vector<BoostRing> _newRings;
-      boost::geometry::intersection(*it1,*it2,_newRings);
+      boost::geometry::union_(*i,*j,_newRings);
       if (_newRings.size() == 1)
       {
-        _inputRings.erase(it2);
-        --it2;
-        *it2 = _newRings.front();
-        //++it2;
+        *i = _newRings.back();
+        _inputRings.erase(j);
+        j = i;
       }
-
-      _pairsDebug.insert(make_pair<int,int>(i,j));
-      j++;
     }
-    i++;
   }
-
-  for (multimap<int,int>::iterator it = _pairsDebug.begin(); 
-       it != _pairsDebug.end(); ++it)
-  {
-    LOG_MSG << fmt("% %") % it->first % it->second;
-  }
-
 
   BOOST_FOREACH ( const BoostRing& _inputRing, _inputRings )
-  _output.push_back(Ring(_inputRing));
-
-  LOG_MSG << _output.size();
+  {
+      _output.push_back(Ring(_inputRing));
+  }
 }
+
+
 
 
 void unifyTest()
@@ -178,20 +168,15 @@ void unifyTest()
 
   vector<Ring> _rings, _output;
   Point2f _pos(resX/6,resY/6);
-  for (int i = 0; i < 6; i++)
+  for (int i = 0; i < 8; i++)
   {
     Ring _ring(Ring::OUTER);
 
-    if (i == 3)
+    if (i != 2 && i != 4)
     {
-      makeCircle(Point2f(resX*2/3,resY/3),resX/10,24,false,_ring);
+      makeCircle(_pos,resX/10,24,false,_ring);
     }
-    else
-    {
-      makeCircle(_pos,resX/8,24,false,_ring);
-    }
-
-    _pos += Point2f(resX/9,resY/9);
+    _pos += Point2f(resX/10,resY/10);
     _rings.push_back(_ring);
   }
 
