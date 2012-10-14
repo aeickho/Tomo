@@ -3,6 +3,9 @@
 #include "tomo/geometry/prim/BoundingBox.hpp"
 #include "KDTree.hpp"
 #include "tomo/misc.hpp"
+#include "visitor/InRadius.hpp"
+#include "visitor/Nearest.hpp"
+#include "visitor/KNearest.hpp"
 
 #include <boost/foreach.hpp>
 
@@ -33,8 +36,8 @@ namespace tomo
         typedef typename primitive_type::bounds_type bounds_type;
 
         typedef KDTree<PRIMITIVE> kdtree_type;
-        typedef typename kdtree_type::Node node_type;
         typedef std::vector<PRIMITIVE> ctnr_type;
+        typedef std::vector<PRIMITIVE*> ptr_ctnr_type;
 
         TOMO_COMPOUND_PRIMITIVE_NAME(objs)
 
@@ -46,15 +49,9 @@ namespace tomo
         /// Aggregate another compound to this one
         void aggregate(const Compound& _compound, bool _update = true)
         {
-          objs_.reserve(_compound.objs_.size() + objs_.size());
-          BOOST_FOREACH ( const PRIMITIVE& _obj , _compound.objs_ )
-          objs_.push_back(_obj);
+          objs_.insert(objs_.end(),_compound.objs_.begin(),_compound.objs_.end());
           if (_update) update();
         }
-
-
-        /// Uses the kNearest algorithm to return the nearest object
-
 
         /// Calculates bounds and constructs kdtree
         void update()

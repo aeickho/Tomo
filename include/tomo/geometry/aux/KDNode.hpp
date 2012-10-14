@@ -69,6 +69,8 @@ namespace tomo
         struct Leaf
         {
           typedef std::vector<PRIMITIVE*> PrimCont;
+          typedef typename PrimCont::iterator iterator;
+          typedef typename PrimCont::const_iterator const_iterator;
 
           /// Insert Primitive pointers from _src into _dest
           inline void insert(const PrimCont& _src, PrimCont& _dest)
@@ -76,16 +78,27 @@ namespace tomo
             // Make leaf node
             offset_ = _dest.size();
             size_ = _src.size();
-            _dest.resize(offset_ + size_);
-            for (unsigned i = 0; i < size_; i++)
-              _dest[offset_+i] = _src[i];
+            _dest.insert(_dest.end(),_src.begin(),_src.end());
           }
 
-          inline void primitives(const PrimCont& _src, PrimCont& _dest) const
+          const_iterator begin(const PrimCont& _src) const
           {
-            _dest.resize(size_);
-            for (unsigned i = 0; i < size_; i++) 
-              _dest[i] = _src[offset_+i];
+            return _src.begin() + offset_;
+          }
+          
+          const_iterator end(const PrimCont& _src) const
+          {
+            return _begin(_src) + size_;
+          }
+
+          iterator begin(PrimCont& _src) const
+          {
+            return _src.begin() + offset_;
+          }
+          
+          iterator end(PrimCont& _src) const
+          {
+            return _begin(_src) + size_;
           }
 
         private:

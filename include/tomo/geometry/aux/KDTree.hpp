@@ -109,12 +109,12 @@ namespace tomo
           divideNode(0,bounds_,_nodeObjs,0,_primitivesPerNode);
         }
 
-        void divideNode(unsigned nodeIndex, bounds_type _bounds, PrimCont& _nodeObjs, unsigned depth, unsigned _primitivesPerNode)
+        void divideNode(unsigned nodeIndex, bounds_type _bounds, PrimCont& _primList, unsigned depth, unsigned _primitivesPerNode)
         {
-          if (depth >= maxDepth() || _nodeObjs.size() <= _primitivesPerNode )
+          if (depth >= maxDepth() || _primList.size() <= _primitivesPerNode )
           {
             // We have a leaf node!
-            nodes_[nodeIndex].leaf_.insert(_nodeObjs,primLists_);
+            nodes_[nodeIndex].leaf_.insert(_primList,primLists_);
             return;
           }
 
@@ -126,33 +126,20 @@ namespace tomo
           bounds_type _leftBounds, _rightBounds;
           nodes_.resize(nodes_.size()+2);
 
-          PrimCont _leftObjs, _rightObjs;
-          insertion(_splitPos,_axis,_bounds,_nodeObjs,_leftObjs,_rightObjs,_leftBounds,_rightBounds);
-
-          _nodeObjs.clear();
-          divideNode(nodes_[nodeIndex].inner_.left(),_leftBounds,_leftObjs,depth+1,_primitivesPerNode);
-          divideNode(nodes_[nodeIndex].inner_.right(),_rightBounds,_rightObjs,depth+1,_primitivesPerNode);
-        }
-
-        inline void insertion( scalar_type _splitPos,
-                               base::Axis _axis,
-                               bounds_type& _bounds,
-                               PrimCont& _primList,
-                               PrimCont& _leftList,
-                               PrimCont& _rightList,
-                               bounds_type& _leftBounds,
-                               bounds_type& _rightBounds)
-        {
+          PrimCont _leftList, _rightList;
           _bounds.split(_splitPos,_axis,_leftBounds,_rightBounds);
-          typename PrimCont::iterator it;
-          for (it = _primList.begin(); it != _primList.end() ; ++it)
+          
+          for (typename PrimCont::iterator it = _primList.begin(); 
+              it != _primList.end() ; ++it)
           {
             prim::SplitPlaneIntersect _result = (*it)->intersect(_axis,_splitPos,_leftBounds,_rightBounds);
-
             if (_result.left())  _leftList.push_back(*it);
             if (_result.right()) _rightList.push_back(*it);
           }
           _primList.clear();
+
+          divideNode(nodes_[nodeIndex].inner_.left(),_leftBounds,_leftList,depth+1,_primitivesPerNode);
+          divideNode(nodes_[nodeIndex].inner_.right(),_rightBounds,_rightList,depth+1,_primitivesPerNode);
         }
 
         scalar_type splitPos(const PrimCont& _primList, NodeInner* _inner, const bounds_type& _bounds) const

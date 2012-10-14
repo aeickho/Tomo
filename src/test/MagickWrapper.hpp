@@ -39,17 +39,18 @@ namespace tomo
 
 
       template<typename KDTREE>
-      struct KDTreeDrawState 
-      {
-        typedef typename KDTREE::bounds_type bounds_type;
-        typedef typename KDTREE::Node Node;
-        TBD_PROPERTY_REF(bounds_type,bounds);
-        TBD_PROPERTY(const Node*,node);
-      };
-
-      template<typename KDTREE>
       struct KDTreeDrawVisitor  
       {
+        typedef typename KDTREE::bounds_type bounds_type;
+        typedef typename KDTREE::scalar_type scalar_type;
+        typedef typename KDTREE::Node Node;
+  
+        struct State 
+        {
+          TBD_PROPERTY_REF(bounds_type,bounds);
+          TBD_PROPERTY(const Node*,node);
+        };
+
         KDTreeDrawVisitor(const KDTREE& _kdTree, Magick::Image& _image, Magick::Color _color) :
           color_(_color),
           image_(_image),
@@ -58,10 +59,6 @@ namespace tomo
           state_.node(_kdTree.root());
           state_.bounds(_kdTree.bounds_);
         }
-
-        typedef KDTreeDrawState<KDTREE> State;
-        typedef typename KDTREE::bounds_type bounds_type;
-        typedef typename KDTREE::scalar_type scalar_type;
 
         /// Define what to do in the root node (draw bounding box) 
         bool root() 
