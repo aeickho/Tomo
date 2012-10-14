@@ -6,8 +6,6 @@
 #include "tomo/geometry/prim/Polygon.hpp"
 #include "tomo/slicing/LineSegmentPlane.hpp"
 
-#include "tomo/geometry/aux/Visitor.hpp"
-
 #include <boost/foreach.hpp>
 #include <vector>
 
@@ -25,14 +23,16 @@ namespace tomo
     using tg::aux::Bounds;
     using tg::aux::KDTree;
     using tg::aux::KDNode;
-    using tg::aux::KDTreeVisitor;
-    using tg::aux::KDTreeState;
     using tg::aux::Compound;
     using tg::aux::Ray2f;
 
     struct Wrapper
     {
-      Wrapper(Magick::Image& _image) : vertexWidth_(4.0), drawEndings_(false), image_(_image) 
+      Wrapper(Magick::Image& _image) : 
+        image_(_image),
+        drawEndings_(false), 
+        drawNormals_(false),
+        vertexWidth_(4.0)
       {
         image_.fillColor("none");
       }
@@ -246,10 +246,9 @@ namespace tomo
 
       Magick::Image& image_;
 
-      TBD_PROPERTY(float,vertexWidth);
       TBD_PROPERTY(bool,drawEndings);
       TBD_PROPERTY(bool,drawNormals);
-    private:
+      TBD_PROPERTY(float,vertexWidth);
     };
 
   }

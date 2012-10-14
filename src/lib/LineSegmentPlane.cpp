@@ -73,8 +73,9 @@ namespace tomo
       if (!_nearest->prev())
         return _nearest;
 
-      LOG_MSG;*/
-      return nearest(_lineSegment);
+      LOG_MSG;
+      return nearest(_lineSegment);*/
+      return NULL;
     }
 
     LineSegmentPlane::LineSegmentPlane(Slice* _slice) : slice_(_slice)

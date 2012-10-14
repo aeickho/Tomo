@@ -109,7 +109,7 @@ namespace tomo
           divideNode(0,bounds_,_nodeObjs,0,_primitivesPerNode);
         }
 
-        virtual void divideNode(unsigned nodeIndex, bounds_type _bounds, PrimCont& _nodeObjs, unsigned depth, unsigned _primitivesPerNode)
+        void divideNode(unsigned nodeIndex, bounds_type _bounds, PrimCont& _nodeObjs, unsigned depth, unsigned _primitivesPerNode)
         {
           if (depth >= maxDepth() || _nodeObjs.size() <= _primitivesPerNode )
           {
@@ -155,7 +155,7 @@ namespace tomo
           _primList.clear();
         }
 
-        float splitPos(const PrimCont& _primList, NodeInner* _inner, const bounds_type& _bounds) const
+        scalar_type splitPos(const PrimCont& _primList, NodeInner* _inner, const bounds_type& _bounds) const
         {
           return (_bounds.min()[_inner->axis()] + _bounds.max()[_inner->axis()])/2;
         }

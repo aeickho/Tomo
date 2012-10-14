@@ -149,7 +149,7 @@ void lineSegmentTest()
   _wrapper.drawEndings(false);
   LineSegment* _chosenSegment = &_plane.objs()[_plane.objs().size()/3];
   _wrapper.draw(*_chosenSegment,"yellow");
-
+/*
   // Draw nearest k segments of chose segment
   std::vector<LineSegment*> _kNearest = _plane.collectKNearest(_chosenSegment,10);
   _wrapper.draw<LineSegment>(_kNearest,"blue");
@@ -157,7 +157,7 @@ void lineSegmentTest()
   // Draw nearest segment
   LineSegment* _nearest = _plane.nearest(_chosenSegment);
   if (_nearest) _wrapper.draw(*_nearest,"white");
-
+*/
   _image.display();
   if (!outputFile.empty())
     _image.write(outputFile);

@@ -24,7 +24,6 @@ namespace tomo
 
         /// Leaf node intersection
         bool leaf() { return false; }
-
       };
 
       template<typename KDTREE> 
