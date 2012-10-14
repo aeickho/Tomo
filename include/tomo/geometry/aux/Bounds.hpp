@@ -117,8 +117,8 @@ namespace tomo
           point_type _min = min(), _max = max();
           _min[_axis] = _splitPos;
           _max[_axis] = _splitPos;
-          _left(min(),_max);
           _right(_min,max());
+          _left(min(),_max);
         }
 
         void validate()

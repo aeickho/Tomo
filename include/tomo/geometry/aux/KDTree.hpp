@@ -9,11 +9,16 @@ namespace tomo
   {
     namespace aux
     {
-      template <typename PRIMITIVE>
+      template 
+        <
+          typename PRIMITIVE,
+          unsigned MAX_DEPTH = 16
+        >
       struct KDTree
-      {
+      {   
         /// Node type
         typedef KDNode<PRIMITIVE> Node;
+
         typedef typename KDNode<PRIMITIVE>::Inner NodeInner;
         typedef typename PRIMITIVE::scalar_type scalar_type;
         typedef typename PRIMITIVE::bounds_type vec_type;
@@ -57,6 +62,14 @@ namespace tomo
           return &nodes_[_nodeIndex];
         }
 
+          /// Insert Primitive pointers from _src into primLists_
+        void insertLeafNode(unsigned _nodeIndex, const PrimCont& _src)
+        {
+          nodes_[_nodeIndex].leaf_.offset(primLists_.size());
+          nodes_[_nodeIndex].leaf_.size(_src.size());
+          primLists_.insert(primLists_.end(),_src.begin(),_src.end());
+        }
+
         /// Iterative traversal with visitor
         template<typename VISITOR>
         bool traversal(VISITOR& _visitor) const
@@ -87,69 +100,99 @@ namespace tomo
           return _found;
         }
 
-
         void build(std::vector<PRIMITIVE>& _objs, unsigned _primitivesPerNode = 10)
         {
+          /// Clear data containers and reserve memory 
           primLists_.clear();
           primLists_.reserve(_objs.size()*2);
           nodes_.clear();
           nodes_.reserve(2*_objs.size()/_primitivesPerNode);
           nodes_.resize(1);
-          PrimCont _nodeObjs;
-          _nodeObjs.reserve(_objs.size());
 
+          /// State holder struct 
+          /// needed for stack for iterative build and initial state
+          struct State
+          {
+            State() : depth_(0), nodeIndex_(0) {}
+            unsigned depth_;
+            unsigned nodeIndex_;
+            TBD_PROPERTY_REF(bounds_type,bounds);
+            TBD_PROPERTY_REF(PrimCont,primList);
+          } _state;
+          
+          int _stackPt = -1;
+
+          /// Declare state and reserve memory for each stack item
+          State _stack[MAX_DEPTH];
+          for (int i = 0; i < MAX_DEPTH; i++) 
+            _stack[i].primList().reserve(_objs.size() >> i);
+
+          /// Fill initial primitive list with pointers of input objects
+          /// and calculate bounds on the fly
+          _state.primList().reserve(_objs.size());
           typename std::vector<PRIMITIVE>::iterator it;
-          bounds_type _bounds;
           for (it = _objs.begin() ; it != _objs.end() ; ++it )
           {
-            _bounds.extend(it->bounds());
-            _nodeObjs.push_back(&(*it));
+            _state.bounds().extend(it->bounds());
+            _state.primList().push_back(&(*it));
           } 
-          bounds_ = _bounds;
-          divideNode(0,bounds_,_nodeObjs,0,_primitivesPerNode);
-        }
+          bounds_ = _state.bounds();
 
-        void divideNode(unsigned nodeIndex, bounds_type _bounds, PrimCont& _primList, unsigned depth, unsigned _primitivesPerNode)
-        {
-          if (depth >= maxDepth() || _primList.size() <= _primitivesPerNode )
+          while (1)
           {
+            while (_state.depth_ < MAX_DEPTH && _state.primList().size() > _primitivesPerNode )
+            {
+              // Setup node
+              nodes_.resize(nodes_.size()+2);
+              Node* _node = &nodes_[_state.nodeIndex_];
+              base::Axis _axis = _state.bounds().dominantAxis();
+              scalar_type _splitPos = (_state.bounds().min()[_axis] + _state.bounds().max()[_axis])/2; ///@todo Insert functor here
+              _node->inner_.setup(nodes_,_axis,_splitPos);
+
+              /// Change state
+              _state.depth_++;
+              _state.nodeIndex_ = _node->inner_.left();
+             
+              /// Initialize state to be pushed
+              _stackPt++;
+              State& _right = _stack[_stackPt];
+              _right.primList().clear();
+              _right.depth_ = _state.depth_;
+              _right.nodeIndex_ = _state.nodeIndex_+1; /// Equal to _node->inner_.right(), but faster ;)
+              
+              /// Split node
+              _state.bounds().split(_splitPos,_axis,_state.bounds(),_right.bounds());
+             
+              /// Insert objects of current state into left and right subnode
+              typename PrimCont::iterator it = _state.primList().begin(), _leftIt = it;
+              for (; it != _state.primList().end() ; ++it)
+              {
+                prim::SplitPlaneIntersect _result = (*it)->intersect(_axis,_splitPos,_state.bounds(),_right.bounds());
+                if (_result.right()) _right.primList().push_back(*it);
+                if (_result.left()) 
+                {
+                  *_leftIt = *it; 
+                  ++_leftIt; 
+                } 
+              }
+              /// Erase remaining objects at back of container 
+              _state.primList().erase(_leftIt,_state.primList().end());
+            }
+           
             // We have a leaf node!
-            nodes_[nodeIndex].leaf_.insert(_primList,primLists_);
-            return;
+            insertLeafNode(_state.nodeIndex_,_state.primList());
+            
+            // Nothing left to do
+            if (_stackPt < 0) return;
+
+            _state = _stack[_stackPt];
+            _stackPt--;
           }
-
-          // Setup node
-          base::Axis _axis = _bounds.dominantAxis();
-          scalar_type _splitPos = (_bounds.min()[_axis] + _bounds.max()[_axis])/2;
-
-          nodes_[nodeIndex].inner_.setup(nodes_,_axis,_splitPos);
-          bounds_type _leftBounds, _rightBounds;
-          nodes_.resize(nodes_.size()+2);
-
-          PrimCont _leftList, _rightList;
-          _bounds.split(_splitPos,_axis,_leftBounds,_rightBounds);
-          
-          for (typename PrimCont::iterator it = _primList.begin(); 
-              it != _primList.end() ; ++it)
-          {
-            prim::SplitPlaneIntersect _result = (*it)->intersect(_axis,_splitPos,_leftBounds,_rightBounds);
-            if (_result.left())  _leftList.push_back(*it);
-            if (_result.right()) _rightList.push_back(*it);
-          }
-          _primList.clear();
-
-          divideNode(nodes_[nodeIndex].inner_.left(),_leftBounds,_leftList,depth+1,_primitivesPerNode);
-          divideNode(nodes_[nodeIndex].inner_.right(),_rightBounds,_rightList,depth+1,_primitivesPerNode);
         }
 
         scalar_type splitPos(const PrimCont& _primList, NodeInner* _inner, const bounds_type& _bounds) const
         {
           return (_bounds.min()[_inner->axis()] + _bounds.max()[_inner->axis()])/2;
-        }
-
-        static unsigned maxDepth()
-        {
-          return 16;
         }
       };
 

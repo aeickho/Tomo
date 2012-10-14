@@ -6,6 +6,7 @@
 #include "visitor/InRadius.hpp"
 #include "visitor/Nearest.hpp"
 #include "visitor/KNearest.hpp"
+#include "visitor/RayTraversal.hpp"
 
 #include <boost/foreach.hpp>
 

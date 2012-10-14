@@ -41,7 +41,7 @@ namespace tomo
           Nearest(KDTree* _kdTree, primitive_type* _primitive) :
             kdTree_(_kdTree),
             primitive_(_primitive)
-          {
+          { 
           }
 
           /// Set given state's node to left subnode  

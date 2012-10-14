@@ -72,15 +72,6 @@ namespace tomo
           typedef typename PrimCont::iterator iterator;
           typedef typename PrimCont::const_iterator const_iterator;
 
-          /// Insert Primitive pointers from _src into _dest
-          inline void insert(const PrimCont& _src, PrimCont& _dest)
-          {
-            // Make leaf node
-            offset_ = _dest.size();
-            size_ = _src.size();
-            _dest.insert(_dest.end(),_src.begin(),_src.end());
-          }
-
           const_iterator begin(const PrimCont& _src) const
           {
             return _src.begin() + offset_;
@@ -101,9 +92,8 @@ namespace tomo
             return _begin(_src) + size_;
           }
 
-        private:
-          uint32_t size_;
-          uint32_t offset_;
+          TBD_PROPERTY(uint32_t,size);
+          TBD_PROPERTY(uint32_t,offset);
         };
 
         Inner inner_;
