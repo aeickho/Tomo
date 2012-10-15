@@ -12,129 +12,230 @@ namespace tomo
   {
     namespace aux
     {
-      template<int DIMENSIONS, typename SCALAR = base::DEFAULT_TYPE>
+      /** @brief Rectangular bounding area
+       * @tparam DIMENSIONS number of dimensions of the underlying space
+       * @tparam SCALAR scalar type for each dimension
+       */
+      template<int DIMENSIONS, class SCALAR = base::DEFAULT_TYPE>
       struct Bounds
       {
         typedef SCALAR scalar_type;
         typedef base::Point<DIMENSIONS,scalar_type> point_type;
         typedef base::Vec<DIMENSIONS,scalar_type> vector_type;
 
+        /// Maximum corner
+        static const scalar_type maxmax()
+        {
+          return std::numeric_limits<scalar_type>::max();
+        }
+        /// Minimum corner
+        static const scalar_type minmin()
+        {
+          return std::numeric_limits<scalar_type>::min();
+        }
+
+        /// Default constructor
         Bounds()
         {
-          min_.vectorize(std::numeric_limits<scalar_type>::max());
-          max_.vectorize(std::numeric_limits<scalar_type>::min());
+          min_.vectorize(maxmax());
+          max_.vectorize(minmin());
         }
-        Bounds(point_type _min, point_type _max)
+        /** @brief Initialize bounds by two opposite corner points
+         * @param _min minimum coordinate
+         * @param _max maximum coordinate
+         */
+        Bounds(const point_type& _min, const point_type& _max)
         {
-          this->operator()(_min,_max);
+          operator()(_min,_max);
         }
-
-        /// Retrieve the corners of bounds with as a vector of points
-        std::vector<point_type> corners() const
+        
+        /** @brief Extend this bounds so that it includes the given bounds
+         * @param _that Bounds to include
+         * @attention assertion when this or _that are not valid
+         */
+        void extend(const Bounds& _that)
         {
-          int _nCorners = 1 << DIMENSIONS;
-          std::vector<point_type> _corners(_nCorners);
-          for (int _corner = 0; _corner < _nCorners; _corner++)
-            TOMO_FOREACH_DIM(i)
-            _corners[_corner][i] = (_corner & (1 << i)) ? max_[i] : min_[i];
-          return _corners;
-        }
-
-        void extend(const Bounds& _bounds)
-        {
+          BOOST_ASSERT(valid() && _that.valid());
           TOMO_FOREACH_DIM(i)
           {
-            min_[i] = std::min(_bounds.min_[i],min_[i]);
-            max_[i] = std::max(_bounds.max_[i],max_[i]);
+            min_[i] = std::min(_that.min_[i],min_[i]);
+            max_[i] = std::max(_that.max_[i],max_[i]);
           }
         }
-
-        void extend(const point_type& _point)
+        /** @brief Extend this bounds so that it includes the given point
+         * @param _that Point to include
+         * @attention assertion when this is not valid
+         */
+        void extend(const point_type& _that)
         {
+          BOOST_ASSERT(valid());
           TOMO_FOREACH_DIM(i)
           {
-            if (min_[i] > _point[i]) min_[i] = _point[i];
-            if (max_[i] < _point[i]) max_[i] = _point[i];
+            min_[i] = std::min(_that[i],min_[i]);
+            max_[i] = std::max(_that[i],max_[i]);
           }
         }
-
-        /// Test if point is inside bounds
-        bool inside(point_type _p) const
+        /** @brief Test if the given point is inside bounds
+         * @param _that point to check
+         * @return true if point was inside and false otherwise
+         * @attention assertion when this is not valid
+         */
+        bool inside(const point_type& _that) const
         {
+          BOOST_ASSERT(valid());
           TOMO_FOREACH_DIM(i)
           {
-            if (_p[i] < min_[i] || _p[i] > max_[i]) return false;
+            if (_that[i] < min_[i] || _that[i] > max_[i]) 
+              return false;
+          }
+          return true;
+        }
+        /** @brief Test if two bounds overlap
+         * @param _first first bounds
+         * @param _second second bounds
+         * @return true if _first and _second share some points
+         * @attention assertion when _first or _second are not valid
+         */
+        friend bool overlap(const Bounds& _first, const Bounds& _second)
+        {
+          BOOST_ASSERT(_first.valid() && _second.valid());
+          TOMO_FOREACH_DIM(i)
+          {
+            if (_first.min_[i] > _second.max_[i] || _first.max_[i] < _second.min_[i]) 
+              return false;
           }
           return true;
         }
 
-
-        /// Test if two bounds overlap
-        friend bool overlap(const Bounds& _a, const Bounds& _b)
-        {
-          TOMO_FOREACH_DIM(i)
-          {
-            if (_a.min()[i] > _b.max()[i] || _a.max()[i] < _b.min()[i]) return false;
-          }
-          return true;
-        }
-
-        /// Return axis which largest extent
+        /** @brief Return axis with largest extent
+         * @return axis with largest extent
+         */
         base::Axis dominantAxis() const
         {
           return size().dominantAxis() ;
         }
 
-        /// Set new values and validate
-        void operator()(const point_type& _min, const point_type& _max)
+        /** @brief Set to the smallest bounds that include two points
+         * @param _first first point
+         * @param _second second point
+         */
+        void operator()(const point_type& _first, const point_type& _second)
         {
-          min_ = _min;
-          max_ = _max;
+          min_ = _first;
+          max_ = _second;
           validate();
         }
 
-        /// Return the size vector
+        /** @brief Return the size of this bounds
+         * @return size of this bounds as vector
+         */
         vector_type size() const
         {
+          BOOST_ASSERT(valid());
           return max_ - min_;
         }
 
-        /// Return bounds' radius
+        /** @brief Return radius of this bounds
+         * @return radius as scalar
+         */
         scalar_type radius() const
         {
           return size().length()/2;
         }
-
-        /// Return bounds' center
-        point_type center() const
+        /** @brief Return center of this bounds
+         * @return center as point
+         */
+        const point_type center() const
         {
-          return 0.5*(max().vec() + min().vec());
+          return 0.5*(max_.vec() + min_.vec());
         }
 
-        /// Split bounds in two halves
-        void split(scalar_type _splitPos, base::Axis _axis, Bounds& _left, Bounds& _right) const
+        /** @brief Split bounds in two halves
+         * @param _splitPos scalar position on the given axis where to split this bounds
+         * @param _axis axis to split along
+         * @param _first [OUT] first half result
+         * @param _second [OUT] second half result
+         * @return true if _first and _second become the same, otherwise false
+         */
+        bool split(scalar_type _splitPos, base::Axis _axis, Bounds& _first, Bounds& _second) const
         {
-          point_type _min = min(), _max = max();
+          BOOST_ASSERT(valid());
+          // split position must be within bounds!
+          BOOST_ASSERT(_splitPos >= min_[_axis] && _splitPos <= max_[_axis]);
+          // calculate bounds
+          point_type _min = min_, _max = max_;
           _min[_axis] = _splitPos;
           _max[_axis] = _splitPos;
-          _right(_min,max());
-          _left(min(),_max);
+          _second(_min,max_);
+          _first(min_,_max);
+          // check if bounds has no extension on the given axis
+          return min_[_axis] == max_[_axis];
         }
-
+        /// normalize the coordinates in that bounds
         void validate()
         {
           TOMO_FOREACH_DIM(i)
           {
-            if (min_[i] != std::numeric_limits<scalar_type>::max() &&
-            max_[i] != std::numeric_limits<scalar_type>::min())
-              if (min_[i] > max_[i])
-                std::swap(min_[i],max_[i]);
+            if (!valid_dim(i))
+              std::swap(min_[i],max_[i]);
           }
+        }
+        /** @brief check if the coordinates in this bounds are normalized
+         * @return true if coordinates are valid
+         */
+        bool valid() const
+        {
+          TOMO_FOREACH_DIM(i)
+          {
+            if (!valid_dim(i))
+             return false; 
+          }
+          return true;
+        }
+        /** @brief check if some coordinates in this bounds are normalized
+         * @param i dimension of the coordinate to check
+         * @return true if coordinates are valid
+         */
+        bool valid_dim(int i) const
+        {
+          /// @todo I don't understand why you have to check min_ for maxmax and max_ for minmin. Please explain!
+          if( min_[i] != maxmax() &&  max_[i] != minmin() )
+            if (min_[i] > max_[i] )
+              return false;
+          return true;
         }
 
         TBD_PROPERTY_MON(point_type,min,validate);
         TBD_PROPERTY_MON(point_type,max,validate);
       };
+
+      // Bounds operators
+      namespace 
+      {
+        template<class T,int DIMENSIONS, class SCALAR> 
+          inline const Bounds<DIMENSIONS,SCALAR>& operator|=(Bounds<DIMENSIONS,SCALAR>& _lvalue, const T& _rvalue) 
+        { 
+          _lvalue.extend(_rvalue); 
+          return _lvalue; 
+        }
+        template<class T,int DIMENSIONS, class SCALAR> 
+          inline Bounds<DIMENSIONS,SCALAR>&& operator|(const Bounds<DIMENSIONS,SCALAR>& _first, const T& _second) 
+        {
+          Bounds<DIMENSIONS,SCALAR> _result = _first;
+          _result.extend(_second); 
+          return _result; 
+        }
+        template<class T,int DIMENSIONS, class SCALAR> 
+          inline bool operator&&(const Bounds<DIMENSIONS,SCALAR>& _first,  const T& _second)  
+        { 
+          return _first.inside(_second); 
+        }
+        template<int DIMENSIONS, class SCALAR> 
+          inline bool operator&&(const Bounds<DIMENSIONS,SCALAR>& _first,  const Bounds<DIMENSIONS,SCALAR>& _second)
+        { 
+          return _first.overlap(_second); 
+        }
+      }
 
       typedef Bounds<2,float> Bounds2f;
       typedef Bounds<3,float> Bounds3f;
