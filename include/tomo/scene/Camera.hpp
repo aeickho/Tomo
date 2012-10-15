@@ -14,7 +14,7 @@ namespace tomo
       typedef typename Tracker::Vec Vec;
       typedef typename Tracker::PolarVec PolarVec;
       /// coordinate type from tracker
-      typedef typename Vec::Scalar Scalar;
+      typedef typename Vec::scalar_type Scalar;
 
       Camera() {}
       Camera( const Tracker& _tracker, Scalar _near, Scalar _far, const Vec& _up ) :

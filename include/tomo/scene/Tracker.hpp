@@ -15,10 +15,11 @@ namespace tomo
           > struct Tracker
     {
       typedef COORD Coord;
+      typedef geometry::Model<3,Coord> Model;
       /// point type
-      typedef geometry::base::Point<3,Coord> Point;
+      typedef geometry::base::Point<Model> Point;
       /// vector type
-      typedef geometry::base::Vec<3,Coord> Vec;
+      typedef geometry::base::Vec<Model> Vec;
       typedef geometry::base::PolarVec<Coord> PolarVec;
       static const bool xNeg_ = XNEG;
       static const bool yNeg_ = YNEG;

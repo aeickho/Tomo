@@ -136,8 +136,8 @@ namespace tomo
         _kdTree.traversal(_visitor);
       }
 
-      template <typename PRIMITIVE, int DIMENSIONS , typename SCALAR>
-      void draw(const Compound<PRIMITIVE,DIMENSIONS,SCALAR>& _compound, Magick::Color _color)
+      template <typename PRIMITIVE>
+      void draw(const Compound<PRIMITIVE>& _compound, Magick::Color _color)
       {
         BOOST_FOREACH( const PRIMITIVE& _primitive, _compound.objs() )
           draw(_primitive,_color);

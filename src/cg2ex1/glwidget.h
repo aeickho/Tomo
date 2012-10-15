@@ -39,9 +39,9 @@ class GLWidget : public QGLWidget
 {
   Q_OBJECT
 public:
-  typedef tomo::geometry::base::Color<4,float> Color;
-  typedef tomo::geometry::base::Point<3,float> Point;
-  typedef tomo::geometry::base::Vec<3,float> Vec;
+  typedef tomo::geometry::base::Color4f Color;
+  typedef tomo::geometry::base::Point3f Point;
+  typedef tomo::geometry::base::Vec3f Vec;
   typedef tomo::geometry::base::PolarVec<float,false> PolarVec;
   typedef tomo::scene::Tracker<float,false,true> LightTracker; 
   typedef tomo::scene::Light<LightTracker,Color> Light;

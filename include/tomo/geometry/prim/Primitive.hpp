@@ -40,15 +40,14 @@ namespace tomo
       };
 
       /// A primitive is an object which has an extent and for which an intersection point can be found
-      template<int DIMENSIONS, typename SCALAR = base::DEFAULT_TYPE>
-      struct Primitive
+      template<class MODEL>
+      struct Primitive : MODEL
       {
-        typedef SCALAR scalar_type;
-        typedef base::Point<DIMENSIONS,scalar_type> point_type;
-        typedef base::Vec<DIMENSIONS,scalar_type> vec_type;
-        typedef aux::Ray<DIMENSIONS,scalar_type> ray_type;
-        typedef aux::Bounds<DIMENSIONS,scalar_type> bounds_type;
-
+        TOMO_MODEL_TYPES(MODEL);
+        typedef base::Point<MODEL> point_type;
+        typedef base::Vec<MODEL> vec_type;
+        typedef aux::Ray<MODEL> ray_type;
+        typedef aux::Bounds<MODEL> bounds_type;
         /** @brief Return pointer to object
          */
         void* pointer() const
@@ -57,8 +56,17 @@ namespace tomo
         }
       };
 
-      typedef Primitive<2,float> Primitive2f;
-      typedef Primitive<3,float> Primitive3f;
+      typedef Primitive<Model2f> Primitive2f;
+      typedef Primitive<Model3f> Primitive3f;
     }
   }
 }
+
+#define TOMO_PRIMITIVE_TYPES(PRIMITIVE) \
+        TOMO_MODEL_TYPES(PRIMITIVE) \
+        using typename PRIMITIVE::point_type; \
+        using typename PRIMITIVE::vec_type; \
+        using typename PRIMITIVE::ray_type; \
+        using typename PRIMITIVE::bounds_type;
+
+

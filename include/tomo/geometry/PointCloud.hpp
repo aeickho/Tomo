@@ -9,7 +9,7 @@ namespace tomo
 {
   namespace geometry
   {
-    class PointCloud : public aux::Compound<prim::Vertex3f,3,float>
+    class PointCloud : public aux::Compound<prim::Vertex3f>
     {
     public:
       PointCloud();

@@ -11,21 +11,16 @@ namespace tomo
   {
     namespace prim
     {
-      template<int DIMENSIONS, typename SCALAR = base::DEFAULT_TYPE>
-      struct Vertex : public Primitive<DIMENSIONS,SCALAR>
+      template<class MODEL>
+      struct Vertex : public Primitive<MODEL>
       {
-        typedef SCALAR scalar_type;
-        typedef Primitive<DIMENSIONS,scalar_type> primitive_type;
-        typedef typename primitive_type::vec_type vec_type;
-        typedef typename primitive_type::point_type point_type;
-        typedef typename primitive_type::ray_type ray_type;
-        typedef typename primitive_type::bounds_type bounds_type;
+        TOMO_PRIMITIVE_TYPES(Primitive<MODEL>);
 
-        Vertex(point_type _v = point_type(), vec_type _n = vec_type()) 
+        Vertex(const point_type& _v = point_type(), const vec_type& _n = vec_type()) 
           : v_(_v), n_(_n)
         {}
 
-        void set(point_type _v, vec_type _n = vec_type())
+        void set(const point_type& _v, const vec_type& _n = vec_type())
         {
           v_ = _v;
           n_ = _n;
@@ -60,9 +55,9 @@ namespace tomo
         TBD_PROPERTY_REF(vec_type,n);
       };
 
-      typedef Vertex<2,float> Vertex2f;
-      typedef Vertex<3,float> Vertex3f;
-      typedef Vertex<2,unsigned short> Vertex2us;
+      typedef Vertex<Model2f> Vertex2f;
+      typedef Vertex<Model3f> Vertex3f;
+      typedef Vertex<Model2us> Vertex2us;
     }
   }
 }

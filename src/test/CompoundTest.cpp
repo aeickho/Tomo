@@ -30,7 +30,7 @@ void vertexCompoundTest()
   using tg::aux::Compound;
   using tomo::magick::Wrapper;
 
-  Compound<Vertex2f,2,float> _compound;
+  Compound<Vertex2f> _compound;
 
   // Generate point randomly
   for (int i = 0; i < nPoints; i++)
@@ -50,7 +50,7 @@ void vertexCompoundTest()
 
   // Draw all points
   _wrapper.vertexWidth(4.0);
-  _wrapper.draw<Vertex2f,2,float>(_compound,"red");
+  _wrapper.draw(_compound,"red");
 
   // Draw chosen point
   _wrapper.draw(_compound.objs()[nPoints/2],"yellow");
@@ -144,7 +144,7 @@ void lineSegmentTest()
   _wrapper.draw<LineSegment>(_plane.kdTree(),"gray");
 
   _wrapper.drawEndings(true);
-  _wrapper.draw<LineSegment,2,float>(_plane,"red");
+  _wrapper.draw(_plane,"red");
 
   _wrapper.drawEndings(false);
   LineSegment* _chosenSegment = &_plane.objs()[_plane.objs().size()/3];

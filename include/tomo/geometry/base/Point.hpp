@@ -13,25 +13,24 @@ namespace tomo
       typedef boost::geometry::model::d2::point_xy<DEFAULT_TYPE> BoostPoint2;
 
       /** @brief Template class to represent a point
-       * @tparam DIMENSIONS Number of dimensions
+       * @tparam dimensions_ Number of dimensions
        * @tparam Scalar_TYPE Coordinate type
        */
-      template<int DIMENSIONS, typename SCALAR = DEFAULT_TYPE>
-      struct Point : public Coords<DIMENSIONS,SCALAR>
+      template<class MODEL>
+      struct Point : public Coords<MODEL>
       {
-        typedef SCALAR Scalar;
-        typedef Scalar value_type;
-        typedef Vec<DIMENSIONS,SCALAR> vector_type;
-        typedef Coords<DIMENSIONS,SCALAR> coord_type;
+        TOMO_MODEL_TYPES(MODEL);
+        typedef Coords<MODEL> coords_type;
+        typedef Vec<MODEL> vector_type;
 
-        Point() : coord_type() {}
-        Point( coord_type& p ) : coord_type( p ) {}
-        Point( const coord_type& p ) : coord_type( p ) {}
-        Point( value_type _x, value_type _y ) : coord_type(_x,_y) { }
-        Point( value_type _x, value_type _y, value_type _z ) : coord_type(_x,_y,_z) { }
-        Point( value_type _x, value_type _y, value_type _z, value_type _w ) : coord_type(_x,_y,_z,_w) { }
+        Point() : coords_type() {}
+        Point( coords_type& p ) : coords_type( p ) {}
+        Point( const coords_type& p ) : coords_type( p ) {}
+        Point( scalar_type _x, scalar_type _y ) : coords_type(_x,_y) { }
+        Point( scalar_type _x, scalar_type _y, scalar_type _z ) : coords_type(_x,_y,_z) { }
+        Point( scalar_type _x, scalar_type _y, scalar_type _z, scalar_type _w ) : coords_type(_x,_y,_z,_w) { }
         Point ( BoostPoint2 _boostPoint ) : 
-          coord_type(boost::geometry::get<0>(_boostPoint),
+          coords_type(boost::geometry::get<0>(_boostPoint),
                      boost::geometry::get<1>(_boostPoint))
         {}
 
@@ -57,11 +56,11 @@ namespace tomo
 
         BoostPoint2 as() const 
         {
-          BOOST_STATIC_ASSERT(DIMENSIONS == 2);
+          BOOST_STATIC_ASSERT(dimensions_ == 2);
           return BoostPoint2(this->x(),this->y());
         }
 
-        operator const Scalar*() const
+        operator const scalar_type*() const
         {
           return this->a_;
         }
@@ -78,9 +77,9 @@ namespace tomo
           return v;
         }
 
-        Point<DIMENSIONS-1,SCALAR> project(Axis _axis)
+        Point<Model<dimensions_-1,scalar_type>> project(Axis _axis)
         {
-          Point<DIMENSIONS-1,SCALAR> _projPoint;
+          Point<Model<dimensions_-1,scalar_type>> _projPoint;
           int _dim = 0;
           TOMO_FOREACH_DIM(i)
           {
@@ -92,11 +91,11 @@ namespace tomo
         }
       };
 
-      typedef Point<2,int> Point2i;
-      typedef Point<2,double> Point2d;
-      typedef Point<2,float> Point2f;
-      typedef Point<2,unsigned short> Point2us;
-      typedef Point<3,float> Point3f;
+      typedef Point<Model2i> Point2i;
+      typedef Point<Model2d> Point2d;
+      typedef Point<Model2f> Point2f;
+      typedef Point<Model2us> Point2us;
+      typedef Point<Model3f> Point3f;
     }
   }
 }

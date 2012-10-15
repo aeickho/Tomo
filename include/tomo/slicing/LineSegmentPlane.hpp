@@ -8,25 +8,21 @@ namespace tomo
   namespace slicing
   {
     /// The class LineSegmentContainer is used to store line segments to make polygons out of them
-    struct LineSegmentPlane : geometry::aux::Compound<geometry::prim::LineSegment,2,float>
+    struct LineSegmentPlane : geometry::aux::Compound<geometry::prim::LineSegment>
     {
       TOMO_COMPOUND_PRIMITIVE_NAME(lineSegments);
-
-      typedef float Scalar;
-      typedef geometry::prim::LineSegment LineSegment;
-      typedef geometry::prim::Ring Ring;
-      typedef geometry::aux::Ray<2,Scalar> Ray;
-      typedef geometry::base::Vec<2,Scalar> Vec;
+      typedef geometry::prim::LineSegment linesegment_type;
+      typedef geometry::prim::Ring ring_type;
       
       LineSegmentPlane(Slice* _slice = NULL);
 
-      void makeRings(std::vector<Ring>& _rings);
+      void makeRings(std::vector<ring_type>& _rings);
 
       float pos() const;
       void addSegment(const point_type& _p0, const point_type& _p1);
       void aggregate(const LineSegmentPlane& _lineSegmentPlane);
 
-      bool intersect(Ray& _ray, Scalar& _tNear, Scalar& _tFar, Vec* _normal = NULL) const
+      bool intersect(ray_type& _ray, scalar_type& _tNear, scalar_type& _tFar, vec_type* _normal = NULL) const
       {
         return false;
       }
@@ -37,14 +33,14 @@ namespace tomo
       typedef enum { PT_NONE, PT_CLOSURE, PT_HOLE } PolygonType;
 
       /// Calculates the cross product of front and back and is used to determine orientation of the segment (CW or CCW)
-      float orientation(const LineSegment* _a, const LineSegment* _b) const;
+      float orientation(const linesegment_type* _a, const linesegment_type* _b) const;
 
-      PolygonType asPolygon(const LineSegment* _lineSegment,
-                            std::set<const LineSegment*>& _usedSegments,
+      PolygonType asPolygon(const linesegment_type* _lineSegment,
+                            std::set<const linesegment_type*>& _usedSegments,
                             Polygon& _polygon);
 
 
-      LineSegment* nearestSegment(LineSegment* _lineSegment);
+      linesegment_type* nearestSegment(linesegment_type* _lineSegment);
     };
 
     struct LineSegmentContainer : PlaneStack<float,LineSegmentPlane>

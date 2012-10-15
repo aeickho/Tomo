@@ -16,22 +16,22 @@ namespace tomo
        * @tparam DIMENSIONS number of dimensions of the underlying space
        * @tparam SCALAR scalar type for each dimension
        */
-      template<int DIMENSIONS, class SCALAR = base::DEFAULT_TYPE>
-      struct Bounds
+      template<class MODEL>
+      struct Bounds : MODEL
       {
-        typedef SCALAR scalar_type;
-        typedef base::Point<DIMENSIONS,scalar_type> point_type;
-        typedef base::Vec<DIMENSIONS,scalar_type> vector_type;
+        TOMO_MODEL_TYPES(MODEL);
+        typedef base::Point<MODEL> point_type;
+        typedef base::Vec<MODEL> vector_type;
 
         /// Maximum corner
         static const scalar_type maxmax()
         {
-          return std::numeric_limits<scalar_type>::max();
+          return MODEL::scalarMax();
         }
         /// Minimum corner
         static const scalar_type minmin()
         {
-          return std::numeric_limits<scalar_type>::min();
+          return MODEL::scalarMin();
         }
 
         /// Default constructor
@@ -212,33 +212,33 @@ namespace tomo
       // Bounds operators
       namespace 
       {
-        template<class T,int DIMENSIONS, class SCALAR> 
-          inline const Bounds<DIMENSIONS,SCALAR>& operator|=(Bounds<DIMENSIONS,SCALAR>& _lvalue, const T& _rvalue) 
+        template<class T, class MODEL> 
+          inline const Bounds<MODEL>& operator|=(Bounds<MODEL>& _lvalue, const T& _rvalue) 
         { 
           _lvalue.extend(_rvalue); 
           return _lvalue; 
         }
-        template<class T,int DIMENSIONS, class SCALAR> 
-          inline Bounds<DIMENSIONS,SCALAR>&& operator|(const Bounds<DIMENSIONS,SCALAR>& _first, const T& _second) 
+        template<class T, class MODEL> 
+          inline Bounds<MODEL>&& operator|(const Bounds<MODEL>& _first, const T& _second) 
         {
-          Bounds<DIMENSIONS,SCALAR> _result = _first;
+          Bounds<MODEL> _result = _first;
           _result.extend(_second); 
           return _result; 
         }
-        template<class T,int DIMENSIONS, class SCALAR> 
-          inline bool operator&&(const Bounds<DIMENSIONS,SCALAR>& _first,  const T& _second)  
+        template<class T,class MODEL> 
+          inline bool operator&&(const Bounds<MODEL>& _first,  const T& _second)  
         { 
           return _first.inside(_second); 
         }
-        template<int DIMENSIONS, class SCALAR> 
-          inline bool operator&&(const Bounds<DIMENSIONS,SCALAR>& _first,  const Bounds<DIMENSIONS,SCALAR>& _second)
+        template<class MODEL> 
+          inline bool operator&&(const Bounds<MODEL>& _first,  const Bounds<MODEL>& _second)
         { 
           return _first.overlap(_second); 
         }
       }
 
-      typedef Bounds<2,float> Bounds2f;
-      typedef Bounds<3,float> Bounds3f;
+      typedef Bounds<Model2f> Bounds2f;
+      typedef Bounds<Model3f> Bounds3f;
     }
   }
 }

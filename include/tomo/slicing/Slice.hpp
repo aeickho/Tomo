@@ -13,7 +13,6 @@ namespace tomo
 
     struct Slice
     {
-
       Slice(float _pos);
 
       void add(Polygon& _polygon);

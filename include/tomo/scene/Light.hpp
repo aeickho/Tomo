@@ -13,9 +13,9 @@ namespace tomo
       typedef COLOR Color;
       /// coordinate type from tracker
       typedef typename Tracker::Point Point;
-      typedef typename Tracker::Point::Scalar Scalar;
+      typedef typename Tracker::Point::scalar_type Scalar;
       /// point type from tracker
-      typedef tomo::geometry::base::Point<4,Scalar> Point4;
+      typedef geometry::base::Point<geometry::Model<4,Scalar>> Point4;
 
       Light() {}
       Light( const Tracker& _tracker,

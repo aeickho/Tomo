@@ -10,6 +10,11 @@
 
 #include <boost/foreach.hpp>
 
+/// inline implement compound primitive container accessor for tomo::geometry::aux::Compound
+#define TOMO_COMPOUND_PRIMITIVE_NAME(name) \
+        ctnr_type& name() { return objs_; } \
+        const ctnr_type& name() const { return objs_; }
+
 namespace tomo
 {
   namespace geometry
@@ -19,30 +24,23 @@ namespace tomo
       /** @brief A Compound is object is an object which consists of several primtives
        * @detail Moreover, a compound holds a KDTree structure for fast search
        * @tparam PRIMITIVE  Primitive type
+       * @todo Large code blocks of inRadius and kNearest are similar, refactor it
        */
-      template <class PRIMITIVE, unsigned DIMENSIONS, class SCALAR = base::DEFAULT_TYPE>
-      class Compound : public prim::Primitive<DIMENSIONS,SCALAR>
+      template <class PRIMITIVE>
+      struct Compound : public prim::Primitive<typename PRIMITIVE::model_type>
       {
-        /// TODO: Large code blocks of inRadius and kNearest are similar, refactor it
-      public:
-#define TOMO_COMPOUND_PRIMITIVE_NAME(name) \
-        ctnr_type& name() { return objs_; } \
-        const ctnr_type& name() const { return objs_; } 
-
-        typedef SCALAR scalar_type;
-        typedef prim::Primitive<DIMENSIONS,scalar_type> primitive_type;
-        typedef typename primitive_type::vec_type vec_type;
-        typedef typename primitive_type::point_type point_type;
-        typedef typename primitive_type::ray_type ray_type;
-        typedef typename primitive_type::bounds_type bounds_type;
-
-        typedef KDTree<PRIMITIVE> kdtree_type;
-        typedef std::vector<PRIMITIVE> ctnr_type;
-        typedef std::vector<PRIMITIVE*> ptr_ctnr_type;
+        TOMO_PRIMITIVE_TYPES(prim::Primitive<typename PRIMITIVE::model_type>);
+        typedef PRIMITIVE value_type;
+        typedef KDTree<value_type> kdtree_type;
+        typedef std::vector<value_type> ctnr_type;
+        typedef std::vector<value_type*> ptr_ctnr_type;
 
         TOMO_COMPOUND_PRIMITIVE_NAME(objs)
 
-        void add(const PRIMITIVE& _primitive)
+        /** @brief add primitve to this Compound
+         * @param _primitive Primitive to append
+         */
+        void add(const value_type& _primitive)
         {
           objs_.push_back(_primitive);
         }
@@ -60,7 +58,10 @@ namespace tomo
           kdTree_.build(objs_,3);
         }
 
-        bounds_type bounds() const { return kdTree_.bounds_; }
+        bounds_type bounds() const
+        {
+          return kdTree_.bounds_;
+        }
 
         TBD_PROPERTY_REF(kdtree_type,kdTree);
 
@@ -68,7 +69,7 @@ namespace tomo
         ctnr_type objs_;
 
         /// Calculates the distance of a primitive to a kdtree node
-        scalar_type nodeDistance(const PRIMITIVE* _p, const bounds_type _bounds) const
+        scalar_type nodeDistance(const value_type* _p, const bounds_type _bounds) const
         {
           if (overlap(_bounds,_p->bounds())) return 0.0;
           float _minDist = INF;
@@ -76,14 +77,12 @@ namespace tomo
           TOMO_FOREACH_DIM(i)
           {
             _minDist = std::min(std::min(std::abs(_p->center()[i] - _bounds.min()[i]),
-            std::abs(_bounds.max()[i]- _p->center()[i])),
-            _minDist);
+                                         std::abs(_bounds.max()[i]- _p->center()[i])),
+                                _minDist);
           }
           return _minDist;
         }
-
       };
     }
-
   }
 }

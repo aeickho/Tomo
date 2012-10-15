@@ -12,9 +12,10 @@ namespace tomo
        */
       struct BoundingBox : public Primitive3f, public aux::Bounds3f
       {
-        typedef float scalar_type;
-        typedef base::Point<3,scalar_type> point_type;
-        typedef base::Vec<3,scalar_type> vector_type;
+        TOMO_PRIMITIVE_TYPES(Primitive3f);
+
+        using aux::Bounds3f::min;
+        using aux::Bounds3f::max;
 
         BoundingBox() : bounds_type() {}
         BoundingBox(point_type _min, point_type _max) : bounds_type(_min,_max) {}

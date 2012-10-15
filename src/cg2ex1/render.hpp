@@ -21,7 +21,7 @@ template<class COORD> void glRotate(COORD _phi, COORD _theta)
 template<class VEC> void glRotate(const VEC& _direction)
 {
   // get coordinate type from vector type
-  typedef typename VEC::Scalar Scalar;
+  typedef typename VEC::scalar_type Scalar;
   // pre-calculate vector length
   Scalar length = _direction.length();
   // calculate phi and theta (@link http://de.wikipedia.org/wiki/Kugelkoordinaten#.C3.9Cbliche_Konvention)

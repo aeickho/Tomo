@@ -2,6 +2,8 @@
 #define _COORD_HPP
 
 #include "tomo/misc.hpp"
+#include "tomo/geometry/Model.hpp"
+
 #include <boost/static_assert.hpp>
 #include <sstream>
 #include <tbd/log.h>
@@ -37,22 +39,18 @@ namespace tomo
         float c[4*4];
       };
 
-      /// DEFAULT_TYPE of coordinates is float
-      typedef float DEFAULT_TYPE;
-
-/// Compiler macro to traverse through each dimension
-#define TOMO_FOREACH_DIM(i) for (int i = 0; i < DIMENSIONS; i++)
+/// Compiler macro to e through each dimension
+#define TOMO_FOREACH_DIM(i) for (int i = 0; i < dimensions_; i++)
 
       /** @brief Base class of Point and Vec which basically hold a number of coordinates
-       * @tparam DIMENSIONS Number of dimensions
+       * @tparam dimensions_ Number of dimensions
        * @tparam COORD_TYPE Coordinate type
        */
-      template<int DIMENSIONS, typename SCALAR = DEFAULT_TYPE>
-      struct Coords
+      template<class MODEL>
+      struct Coords : public MODEL
       {
-        /// Coordinate value type
-        typedef SCALAR value_type;
-
+        TOMO_MODEL_TYPES(MODEL);
+        typedef scalar_type value_type;
         /// Base constructor, all values are initially set to zero
         Coords()
         {
@@ -66,15 +64,15 @@ namespace tomo
         {
           TOMO_FOREACH_DIM(i) a_[i] = _coords[i];
         }
-        Coords( value_type _x, value_type _y)
+        Coords( scalar_type _x, scalar_type _y)
         {
           this->operator()(_x,_y);
         }
-        Coords( value_type _x, value_type _y, value_type _z)
+        Coords( scalar_type _x, scalar_type _y, scalar_type _z)
         {
           this->operator()(_x,_y,_z);
         }
-        Coords( value_type _x, value_type _y, value_type _z, value_type _w)
+        Coords( scalar_type _x, scalar_type _y, scalar_type _z, scalar_type _w)
         {
           this->operator()(_x,_y,_z,_w);
         }
@@ -83,18 +81,18 @@ namespace tomo
         {
           TOMO_FOREACH_DIM(i) a_[i] = _coords[i];
         }
-        inline void operator()(value_type _x, value_type _y)
+        inline void operator()(scalar_type _x, scalar_type _y)
         {
           x(_x);
           y(_y);
         }
-        inline void operator()(value_type _x, value_type _y, value_type _z)
+        inline void operator()(scalar_type _x, scalar_type _y, scalar_type _z)
         {
           x(_x);
           y(_y);
           z(_z);
         }
-        inline void operator()(value_type _x, value_type _y, value_type _z, value_type _w)
+        inline void operator()(scalar_type _x, scalar_type _y, scalar_type _z, scalar_type _w)
         {
           x(_x);
           y(_y);
@@ -103,66 +101,66 @@ namespace tomo
         }
 
         /* @brief Return pointer */
-        value_type* p()
+        scalar_type* p()
         {
           return a_;
         }
         /* @brief Return const pointer */
-        const value_type* p() const
+        const scalar_type* p() const
         {
           return a_;
         }
 
         /// Methods to return coordinate values
-        inline value_type x() const
+        inline scalar_type x() const
         {
-          BOOST_STATIC_ASSERT(DIMENSIONS >= 1);
+          BOOST_STATIC_ASSERT(dimensions_ >= 1);
           return a_[0];
         }
-        inline value_type y() const
+        inline scalar_type y() const
         {
-          BOOST_STATIC_ASSERT(DIMENSIONS >= 2);
+          BOOST_STATIC_ASSERT(dimensions_ >= 2);
           return a_[1];
         }
-        inline value_type z() const
+        inline scalar_type z() const
         {
-          BOOST_STATIC_ASSERT(DIMENSIONS >= 3);
+          BOOST_STATIC_ASSERT(dimensions_ >= 3);
           return a_[2];
         }
-        inline value_type w() const
+        inline scalar_type w() const
         {
-          BOOST_STATIC_ASSERT(DIMENSIONS >= 4);
+          BOOST_STATIC_ASSERT(dimensions_ >= 4);
           return a_[3];
         }
 
         /// Methods to set coordinate values
-        inline void x(const value_type _x)
+        inline void x(const scalar_type _x)
         {
-          BOOST_STATIC_ASSERT(DIMENSIONS >= 1);
+          BOOST_STATIC_ASSERT(dimensions_ >= 1);
           a_[0] = _x;
         }
-        inline void y(const value_type _y)
+        inline void y(const scalar_type _y)
         {
-          BOOST_STATIC_ASSERT(DIMENSIONS >= 2);
+          BOOST_STATIC_ASSERT(dimensions_ >= 2);
           a_[1] = _y;
         }
-        inline void z(const value_type _z)
+        inline void z(const scalar_type _z)
         {
-          BOOST_STATIC_ASSERT(DIMENSIONS >= 3);
+          BOOST_STATIC_ASSERT(dimensions_ >= 3);
           a_[2] = _z;
         }
-        inline void w(const value_type _w)
+        inline void w(const scalar_type _w)
         {
-          BOOST_STATIC_ASSERT(DIMENSIONS >= 4);
+          BOOST_STATIC_ASSERT(dimensions_ >= 4);
           a_[3] = _w;
         }
 
         /// Methods to access coordinate value in a certain dimension
-        value_type& operator[] (int i)
+        scalar_type& operator[] (int i)
         {
           return a_[i];
         }
-        const value_type& operator[] (int i) const
+        const scalar_type& operator[] (int i) const
         {
           return a_[i];
         }
@@ -177,15 +175,15 @@ namespace tomo
         }
 
         /// size/dimension of the vector
-        static const size_t size_ = DIMENSIONS;
+        static const size_t size_ = dimensions_;
 
         /// size/dimension of the vector
         static size_t size()
         {
-          return DIMENSIONS;
+          return dimensions_;
         }
 
-        Coords vectorize(const SCALAR& _s)
+        Coords vectorize(const scalar_type& _s)
         {
           TOMO_FOREACH_DIM(i) a_[i] = _s;
           return *this;
@@ -196,13 +194,13 @@ namespace tomo
           std::stringstream ss;
           ss << "(";
           TOMO_FOREACH_DIM(i)
-          ss << a_[i] << ((i < DIMENSIONS) ? "," : ")");
+          ss << a_[i] << ((i < dimensions_) ? "," : ")");
           return ss.str();
         }
 
       protected:
         /// Array to store coordinate values
-        SCALAR a_[DIMENSIONS];
+        scalar_type a_[dimensions_];
       };
 
       typedef enum { X,Y,Z,W } Axis;
@@ -212,8 +210,8 @@ namespace tomo
 #define COORDS(C) C.x(),C.y(),C.z()
     }
 
-    template<int DIMENSIONS, class COORD>
-    inline fmt operator%( fmt _fmt, const tomo::geometry::base::Coords<DIMENSIONS,COORD>& _coords)
+    template<class MODEL>
+    inline fmt operator%( fmt _fmt, const tomo::geometry::base::Coords<MODEL>& _coords)
     {
       return _fmt % (std::string)_coords;
     }

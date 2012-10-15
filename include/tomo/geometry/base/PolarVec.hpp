@@ -24,9 +24,9 @@ namespace tomo
         /// coordinate type
         typedef COORD Coord;
         /// substitute cartesian vector type
-        typedef base::Vec<3,Coord> Vec;
+        typedef base::Vec<Model<3,Coord>> Vec;
         /// generate cartesian vector type with for dimensions
-        typedef base::Vec<4,Coord> Vec4;
+        typedef base::Vec<Model<4,Coord>> Vec4;
         /// number of dimensions
         static const int dimensions_ = 3;
         /// default constructor
