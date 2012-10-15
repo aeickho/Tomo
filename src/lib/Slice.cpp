@@ -38,7 +38,7 @@ namespace tomo
       while (_slicePos <= _bounds.max().z())
        {
         Slice _slice(_slicePos);
-        planes_.insert(make_pair<float,Slice>(_slicePos,_slice));
+        planes_.insert(make_pair<>(_slicePos,_slice));
         _slicePos += _thickness;
       }
       LOG_MSG << fmt("Made % slices.") % planes_.size();

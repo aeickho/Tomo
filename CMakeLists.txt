@@ -29,8 +29,9 @@ ADD_LIBRARY(tomo STATIC ${tomo_src})
 
 # OpenMeshCore library
 ADD_LIBRARY(OpenMeshCore SHARED ${OpenMesh_src})
-SET_TARGET_PROPERTIES( OpenMeshCore PROPERTIES COMPILE_FLAGS " -pipe -O3 -DINCLUDE_TEMPLATES -W -Wall -Wno-unused -DNDEBUG -D_REENTRANT -Wall -W -fPIC " )
+SET_TARGET_PROPERTIES( OpenMeshCore PROPERTIES COMPILE_FLAGS " -pipe -O3 -DINCLUDE_TEMPLATES -W -Wall -Wno-unused -DNDEBUG -D_REENTRANT -fPIC " )
 
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 ")
 
 # link with...
 TARGET_LINK_LIBRARIES(tomo glut GLU GL OpenMeshCore )

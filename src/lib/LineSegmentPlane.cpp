@@ -164,7 +164,7 @@ namespace tomo
       BOOST_FOREACH( Slice* _slice, _allSlices )
       {
         LineSegmentPlane _lineSegmentPlane(_slice);
-        planes_.insert(make_pair<float,LineSegmentPlane>(_slice->pos(),_lineSegmentPlane));
+        planes_.insert(make_pair<>(_slice->pos(),_lineSegmentPlane));
       }
     }
 
