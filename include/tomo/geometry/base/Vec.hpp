@@ -46,7 +46,7 @@ namespace tomo
         vector_type& normalize()
         {
           Scalar l = length();
-          TOMO_FOREACH_DIM this->a_[i] /= l;
+          TOMO_FOREACH_DIM(i) this->a_[i] /= l;
           return *this;
         }
         vector_type 	     normalized() const
@@ -76,7 +76,7 @@ namespace tomo
         friend value_type dot( const Vec& _left, const Vec& _right)
         {
           value_type sum = 0;
-          TOMO_FOREACH_DIM
+          TOMO_FOREACH_DIM(i)
           sum += _left[i] * _right[i];
           return sum;
         }
@@ -87,7 +87,7 @@ namespace tomo
         {
           Axis _domAxis = X;
           float _max = 0.0;
-          TOMO_FOREACH_DIM
+          TOMO_FOREACH_DIM(i)
           {
             float _abs = abs(this->a_[i]);
             if (_abs > _max)
@@ -103,18 +103,18 @@ namespace tomo
         Vec operator- () const
         {
           Vec v(*this);
-          TOMO_FOREACH_DIM v[i] = -v[i];
+          TOMO_FOREACH_DIM(i) v[i] = -v[i];
           return v;
         }
         void operator *= ( value_type f )
         {
-          TOMO_FOREACH_DIM this->a_[i] *= f;
+          TOMO_FOREACH_DIM(i) this->a_[i] *= f;
         }
 
         friend Vec      operator*( const Vec& a, const value_type f )
         {
           Vec v(a);
-          TOMO_FOREACH_DIM v[i] *= f;
+          TOMO_FOREACH_DIM(i) v[i] *= f;
           return v;
         }
         friend Vec      operator*( const value_type f, const Vec& a )
@@ -124,19 +124,19 @@ namespace tomo
         friend Vec      operator*( const Vec& a, const Vec& b)
         {
           Vec v;
-          TOMO_FOREACH_DIM v[i] = a[i]*b[i];
+          TOMO_FOREACH_DIM(i) v[i] = a[i]*b[i];
           return v;
         }
         friend Vec      operator-( const Vec& a, const Vec& b)
         {
           Vec v;
-          TOMO_FOREACH_DIM v[i] = a[i]-b[i];
+          TOMO_FOREACH_DIM(i) v[i] = a[i]-b[i];
           return v;
         }
         friend Vec      operator+( const Vec& a, const Vec& b)
         {
           Vec v;
-          TOMO_FOREACH_DIM v[i] = a[i]+b[i];
+          TOMO_FOREACH_DIM(i) v[i] = a[i]+b[i];
           return v;
         }
         /*

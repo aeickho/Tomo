@@ -41,7 +41,7 @@ namespace tomo
       typedef float DEFAULT_TYPE;
 
 /// Compiler macro to traverse through each dimension
-#define TOMO_FOREACH_DIM for (int i = 0; i < DIMENSIONS; i++)
+#define TOMO_FOREACH_DIM(i) for (int i = 0; i < DIMENSIONS; i++)
 
       /** @brief Base class of Point and Vec which basically hold a number of coordinates
        * @tparam DIMENSIONS Number of dimensions
@@ -56,15 +56,15 @@ namespace tomo
         /// Base constructor, all values are initially set to zero
         Coords()
         {
-          TOMO_FOREACH_DIM a_[i] = 0;
+          TOMO_FOREACH_DIM(i) a_[i] = 0;
         }
         Coords( Coords& _coords )
         {
-          TOMO_FOREACH_DIM a_[i] = _coords[i];
+          TOMO_FOREACH_DIM(i) a_[i] = _coords[i];
         }
         Coords( const Coords& _coords )
         {
-          TOMO_FOREACH_DIM a_[i] = _coords[i];
+          TOMO_FOREACH_DIM(i) a_[i] = _coords[i];
         }
         Coords( value_type _x, value_type _y)
         {
@@ -81,7 +81,7 @@ namespace tomo
 
         inline void operator()(const Coords _coords)
         {
-          TOMO_FOREACH_DIM a_[i] = _coords[i];
+          TOMO_FOREACH_DIM(i) a_[i] = _coords[i];
         }
         inline void operator()(value_type _x, value_type _y)
         {
@@ -169,11 +169,11 @@ namespace tomo
 
         void operator += ( const Coords _c )
         {
-          TOMO_FOREACH_DIM a_[i] += _c[i];
+          TOMO_FOREACH_DIM(i) a_[i] += _c[i];
         }
         void operator -= ( const Coords _c )
         {
-          TOMO_FOREACH_DIM a_[i] -= _c[i];
+          TOMO_FOREACH_DIM(i) a_[i] -= _c[i];
         }
 
         /// size/dimension of the vector
@@ -187,7 +187,7 @@ namespace tomo
 
         Coords vectorize(const SCALAR& _s)
         {
-          TOMO_FOREACH_DIM a_[i] = _s;
+          TOMO_FOREACH_DIM(i) a_[i] = _s;
           return *this;
         }
 
@@ -195,7 +195,7 @@ namespace tomo
         {
           std::stringstream ss;
           ss << "(";
-          TOMO_FOREACH_DIM
+          TOMO_FOREACH_DIM(i)
           ss << a_[i] << ((i < DIMENSIONS) ? "," : ")");
           return ss.str();
         }

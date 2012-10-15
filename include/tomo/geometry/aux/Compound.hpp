@@ -73,7 +73,7 @@ namespace tomo
           if (overlap(_bounds,_p->bounds())) return 0.0;
           float _minDist = INF;
 
-          TOMO_FOREACH_DIM
+          TOMO_FOREACH_DIM(i)
           {
             _minDist = std::min(std::min(std::abs(_p->center()[i] - _bounds.min()[i]),
             std::abs(_bounds.max()[i]- _p->center()[i])),

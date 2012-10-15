@@ -39,19 +39,19 @@ namespace tomo
         friend vector_type operator-( const Point& a, const Point& b)
         {
           vector_type v;
-          TOMO_FOREACH_DIM v[i] = a[i]-b[i];
+          TOMO_FOREACH_DIM(i) v[i] = a[i]-b[i];
           return v;
         }
         friend Point operator+( const Point& a, const Point& b)
         {
           Point p;
-          TOMO_FOREACH_DIM p[i] = a[i] + b[i];
+          TOMO_FOREACH_DIM(i) p[i] = a[i] + b[i];
           return p;
         }
         friend Point operator+( const Point& a, const vector_type& b)
         {
           Point p;
-          TOMO_FOREACH_DIM p[i] = a[i] + b[i];
+          TOMO_FOREACH_DIM(i) p[i] = a[i] + b[i];
           return p;
         }
 
@@ -74,7 +74,7 @@ namespace tomo
         vector_type vec() const
         {
           vector_type v;
-          TOMO_FOREACH_DIM v[i] = this->a_[i];
+          TOMO_FOREACH_DIM(i) v[i] = this->a_[i];
           return v;
         }
 
@@ -82,7 +82,7 @@ namespace tomo
         {
           Point<DIMENSIONS-1,SCALAR> _projPoint;
           int _dim = 0;
-          TOMO_FOREACH_DIM
+          TOMO_FOREACH_DIM(i)
           {
             if (i == _axis) continue;
             _projPoint[_dim] = this->a_[i];

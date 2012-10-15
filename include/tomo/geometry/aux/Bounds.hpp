@@ -35,14 +35,14 @@ namespace tomo
           int _nCorners = 1 << DIMENSIONS;
           std::vector<point_type> _corners(_nCorners);
           for (int _corner = 0; _corner < _nCorners; _corner++)
-            TOMO_FOREACH_DIM
+            TOMO_FOREACH_DIM(i)
             _corners[_corner][i] = (_corner & (1 << i)) ? max_[i] : min_[i];
           return _corners;
         }
 
         void extend(const Bounds& _bounds)
         {
-          TOMO_FOREACH_DIM
+          TOMO_FOREACH_DIM(i)
           {
             min_[i] = std::min(_bounds.min_[i],min_[i]);
             max_[i] = std::max(_bounds.max_[i],max_[i]);
@@ -51,7 +51,7 @@ namespace tomo
 
         void extend(const point_type& _point)
         {
-          TOMO_FOREACH_DIM
+          TOMO_FOREACH_DIM(i)
           {
             if (min_[i] > _point[i]) min_[i] = _point[i];
             if (max_[i] < _point[i]) max_[i] = _point[i];
@@ -61,7 +61,7 @@ namespace tomo
         /// Test if point is inside bounds
         bool inside(point_type _p) const
         {
-          TOMO_FOREACH_DIM
+          TOMO_FOREACH_DIM(i)
           {
             if (_p[i] < min_[i] || _p[i] > max_[i]) return false;
           }
@@ -72,7 +72,7 @@ namespace tomo
         /// Test if two bounds overlap
         friend bool overlap(const Bounds& _a, const Bounds& _b)
         {
-          TOMO_FOREACH_DIM
+          TOMO_FOREACH_DIM(i)
           {
             if (_a.min()[i] > _b.max()[i] || _a.max()[i] < _b.min()[i]) return false;
           }
@@ -123,7 +123,7 @@ namespace tomo
 
         void validate()
         {
-          TOMO_FOREACH_DIM
+          TOMO_FOREACH_DIM(i)
           {
             if (min_[i] != std::numeric_limits<scalar_type>::max() &&
             max_[i] != std::numeric_limits<scalar_type>::min())
