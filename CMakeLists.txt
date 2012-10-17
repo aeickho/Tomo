@@ -60,7 +60,7 @@ TARGET_LINK_LIBRARIES(tomo-debugslicer boost_program_options tomo Magick++ rt)
 # Tests
 FUNCTION(ADD_TEST _testname)
   ADD_EXECUTABLE(${_testname} ./src/test/${_testname}.cpp)
-  TARGET_LINK_LIBRARIES(${_testname} boost_program_options tomo rt Magick++ boost_timer boost_system)
+  TARGET_LINK_LIBRARIES(${_testname} boost_program_options boost_serialization tomo rt Magick++ boost_timer boost_system)
 ENDFUNCTION()
 
 ADD_TEST(VectorTest)

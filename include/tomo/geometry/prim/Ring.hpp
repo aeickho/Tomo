@@ -1,6 +1,8 @@
 #pragma once
 
 #include <boost/geometry/geometries/ring.hpp>
+#include <boost/serialization/vector.hpp>
+
 #include "LineSegment.hpp"
 #include "Vertex.hpp"
 
@@ -22,7 +24,7 @@ namespace tomo
 
         /// Default constructor
         Ring(Location _location = OUTER);
-        
+
         /// Boost wrapper constructor
         Ring(const BoostRing& _boostRing);
 
@@ -30,21 +32,27 @@ namespace tomo
 
         void fetchLineSegments(std::vector<LineSegment>& _lineSegments) const;
         void fetchLineSegments(
-            const LineSegment& _lineSegment, 
-            std::vector<LineSegment>& _lineSegments) const;
-        void fetchLineSegments(BoostRing::const_iterator it1, 
+          const LineSegment& _lineSegment,
+          std::vector<LineSegment>& _lineSegments) const;
+        void fetchLineSegments(BoostRing::const_iterator it1,
                                BoostRing::const_iterator it2,
                                std::vector<LineSegment>& _lineSegments) const;
 
         void fetchVertices(std::vector<Vertex2f>& _vertices) const;
         void resize(scalar_type _distance, std::vector<Ring>& _rings);
-        
+
         friend IntersectResult intersect(const Ring& _a, const Ring& _b, std::vector<Ring>& _out);
 
         Orientation orientation() const;
 
-        const BoostRing& operator()() const { return ring_; }
-        BoostRing& operator()() { return ring_; }
+        const BoostRing& operator()() const
+        {
+          return ring_;
+        }
+        BoostRing& operator()()
+        {
+          return ring_;
+        }
 
         TBD_PROPERTY(Location,location);
         TBD_PROPERTY_REF(BoostRing,ring);
@@ -57,8 +65,31 @@ namespace tomo
                       BoostRing::const_iterator& _prev,
                       BoostRing::const_iterator& _next) const;
       };
-
     }
   }
 }
 
+namespace boost
+{
+  namespace serialization
+  {  
+    template<class ARCHIVE>
+    void serialize(
+        ARCHIVE& _ar, 
+        tomo::geometry::base::BoostPoint2& _boostPoint2, 
+        const unsigned int _fileVersion)
+    {
+      _ar & tomo::geometry::base::Point2f(_boostPoint2);
+    }
+
+
+    template<class ARCHIVE>
+    void serialize(
+        ARCHIVE& _ar, 
+        tomo::geometry::prim::BoostRing& _boostRing, 
+        const unsigned int _fileVersion)
+    {
+      _ar & _boostRing;
+    }
+  }
+}

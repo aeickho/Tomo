@@ -199,25 +199,20 @@ namespace tomo
           return ss.str();
         }
 
+        template<class ARCHIVE>
+        void serialize( ARCHIVE& _ar, const unsigned int _fileVersion )
+        {
+          TOMO_FOREACH_DIM(i)
+          {
+            _ar & a_[i];
+          }
+        }
       protected:
         /// Array to store coordinate values
         scalar_type a_[dimensions_];
       };
 
       typedef enum { X,Y,Z,W } Axis;
-
-
-      namespace
-      {
-        template<class ARCHIVE, class MODEL>
-        void serialize( ARCHIVE& _ar, Coords<MODEL>& _coords, const unsigned int _fileVersion )
-        {
-          TOMO_FOREACH_DIM_(_coords,i)
-          {
-            _ar & _coords[i];
-          }
-        }
-      }
 
 #define COORDS(C) C.x(),C.y(),C.z()
     }

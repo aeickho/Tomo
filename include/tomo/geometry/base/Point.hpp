@@ -89,16 +89,13 @@ namespace tomo
           }
           return _projPoint;
         }
-      };
-
-      namespace
-      {
-        template<class ARCHIVE, class MODEL>
-        void serialize( ARCHIVE& _ar, Point<MODEL>& _point, const unsigned int _fileVersion )
+        
+/*        template<class ARCHIVE>
+        void serialize( ARCHIVE& _ar, const unsigned int _fileVersion )
         {
-          _ar & _point;
-        }
-      }
+          Coords::serialize(_ar,_fileVersion);
+        }*/
+      };
 
       typedef Point<Model2i> Point2i;
       typedef Point<Model2d> Point2d;

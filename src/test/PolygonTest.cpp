@@ -1,12 +1,13 @@
 #include <tbd/log.h>
-LOG_INIT;
 #include <boost/program_options.hpp>
+#include <boost/archive/text_oarchive.hpp>
 #include "MagickWrapper.hpp"
 #include "tomo/slicing/LineFilling.hpp"
 #include "tomo/slicing/Perimeter.hpp"
 #include <iostream>
 #include <list>
 
+LOG_INIT;
 
 using namespace std;
 using namespace boost::program_options;
@@ -128,6 +129,10 @@ int main(int ac, char* av[])
   _polygon.add(_ring1);
   _polygon.add(_ring2);
   _polygon.add(_ring3);
+
+  boost::archive::text_oarchive oa(std::cout);
+  oa << _polygon;
+
 
   if (vm.count("filling")) fillingTest(_polygon);
   if (vm.count("perimeter")) perimeterTest(_polygon);

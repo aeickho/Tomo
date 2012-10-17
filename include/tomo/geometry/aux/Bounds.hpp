@@ -204,6 +204,13 @@ namespace tomo
               return false;
           return true;
         }
+        
+        template<class ARCHIVE>
+        void serialize( ARCHIVE& _ar, const unsigned int _fileVersion ) 
+        {
+          _ar & min_;
+          _ar & max_;
+        }
 
         TBD_PROPERTY_MON(point_type,min,validate);
         TBD_PROPERTY_MON(point_type,max,validate);
@@ -234,16 +241,6 @@ namespace tomo
           inline bool operator&&(const Bounds<MODEL>& _first,  const Bounds<MODEL>& _second)
         { 
           return _first.overlap(_second); 
-        }
-      }
-
-      namespace 
-      {
-        template<class ARCHIVE, class MODEL>
-        void serialize( ARCHIVE& _ar, Bounds<MODEL>& _bounds, const unsigned int _fileVersion ) 
-        {
-          _ar & _bounds.min();
-          _ar & _bounds.max();
         }
       }
 
