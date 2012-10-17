@@ -41,13 +41,14 @@ namespace tomo
 
 /// Compiler macro to e through each dimension
 #define TOMO_FOREACH_DIM(i) for (int i = 0; i < dimensions_; i++)
+#define TOMO_FOREACH_DIM_(t,i) for (int i = 0; i < t.dimensions_; i++)
 
       /** @brief Base class of Point and Vec which basically hold a number of coordinates
        * @tparam dimensions_ Number of dimensions
        * @tparam COORD_TYPE Coordinate type
        */
       template<class MODEL>
-      struct Coords : public MODEL
+      struct Coords : MODEL
       {
         TOMO_MODEL_TYPES(MODEL);
         typedef scalar_type value_type;
@@ -205,7 +206,18 @@ namespace tomo
 
       typedef enum { X,Y,Z,W } Axis;
 
-      //typedef Matrix<float> Matrix4f;
+
+      namespace
+      {
+        template<class ARCHIVE, class MODEL>
+        void serialize( ARCHIVE& _ar, Coords<MODEL>& _coords, const unsigned int _fileVersion )
+        {
+          TOMO_FOREACH_DIM_(_coords,i)
+          {
+            _ar & _coords[i];
+          }
+        }
+      }
 
 #define COORDS(C) C.x(),C.y(),C.z()
     }

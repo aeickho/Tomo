@@ -57,32 +57,19 @@ ADD_EXECUTABLE(tomo-debugslicer ./src/app/debugslicer/DebugSlicer.hpp ./src/app/
 TARGET_LINK_LIBRARIES(tomo-debugslicer boost_program_options tomo Magick++ rt)
 
 
+# Tests
+FUNCTION(ADD_TEST _testname)
+  ADD_EXECUTABLE(${_testname} ./src/test/${_testname}.cpp)
+  TARGET_LINK_LIBRARIES(${_testname} boost_program_options tomo rt Magick++ boost_timer boost_system)
+ENDFUNCTION()
 
+ADD_TEST(VectorTest)
+ADD_TEST(MeshTest)
+ADD_TEST(CompoundTest)
+ADD_TEST(PolygonTest)
+ADD_TEST(RingTest)
+ADD_TEST(ProcedureTest)
 
-#Tests
-ADD_EXECUTABLE(mediantest ./src/test/mediantest.cpp)
-TARGET_LINK_LIBRARIES(mediantest boost_program_options tomo)
-
-ADD_EXECUTABLE(pointCloudTest ./src/test/pointCloudTest.cpp)
-TARGET_LINK_LIBRARIES(pointCloudTest boost_program_options tomo rt)
-
-ADD_EXECUTABLE(VectorTest ./src/test/VectorTest.cpp)
-TARGET_LINK_LIBRARIES(VectorTest boost_program_options rt)
-
-ADD_EXECUTABLE(MeshTest ./src/test/MeshTest.cpp)
-TARGET_LINK_LIBRARIES(MeshTest tomo boost_program_options rt)
-
-ADD_EXECUTABLE(PolygonTest ./src/test/PolygonTest.cpp)
-TARGET_LINK_LIBRARIES(PolygonTest tomo boost_program_options rt Magick++)
-
-ADD_EXECUTABLE(CompoundTest ./src/test/CompoundTest.cpp)
-TARGET_LINK_LIBRARIES(CompoundTest tomo boost_program_options boost_timer boost_system rt Magick++)
-
-ADD_EXECUTABLE(ProcedureTest ./src/test/ProcedureTest.cpp)
-TARGET_LINK_LIBRARIES(ProcedureTest tomo boost_program_options rt Magick++)
-
-ADD_EXECUTABLE(RingTest ./src/test/RingTest.cpp)
-TARGET_LINK_LIBRARIES(RingTest tomo boost_program_options rt Magick++)
 
 #ADD_DEFINITIONS(-g -O2 -fsigned-char -freg-struct-return -Wall -W -Wshadow -Wpointer-arith -Wcast-qual -Winline)
 #ADD_DEFINITIONS(-g -O3 -fsigned-char -fopenmp -freg-struct-return -Wall -fPIC)

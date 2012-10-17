@@ -130,8 +130,7 @@ namespace tomo
           /// Fill initial primitive list with pointers of input objects
           /// and calculate bounds on the fly
           _state.primList().reserve(_objs.size());
-          typename std::vector<PRIMITIVE>::iterator it;
-          for (it = _objs.begin() ; it != _objs.end() ; ++it )
+          for (auto it = _objs.begin() ; it != _objs.end() ; ++it )
           {
             _state.bounds().extend(it->bounds());
             _state.primList().push_back(&(*it));
@@ -164,7 +163,7 @@ namespace tomo
               _state.bounds().split(_splitPos,_axis,_state.bounds(),_right.bounds());
              
               /// Insert objects of current state into left and right subnode
-              typename PrimCont::iterator it = _state.primList().begin(), _leftIt = it;
+              auto it = _state.primList().begin(), _leftIt = it;
               for (; it != _state.primList().end() ; ++it)
               {
                 prim::SplitPlaneIntersect _result = (*it)->intersect(_axis,_splitPos,_state.bounds(),_right.bounds());

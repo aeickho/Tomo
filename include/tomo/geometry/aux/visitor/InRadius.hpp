@@ -14,10 +14,11 @@ namespace tomo
       namespace visitor
       {
         /// Collects all objects inside a radius r
-        template<
-        typename KDTREE,
-        typename SQR_PRIM_DISTANCE,
-        typename SQR_NODE_DISTANCE
+        template
+          <
+            typename KDTREE,
+            typename SQR_PRIM_DISTANCE,
+            typename SQR_NODE_DISTANCE
           >
         struct InRadius
         {
@@ -74,15 +75,16 @@ namespace tomo
             bool _leftFirst = _leftDist <= _rightDist;
             bool _traverseLeft = _leftDist <= radius_;
             bool _traverseRight = _rightDist <= radius_;
-            
+
             if (_leftFirst)
             {
-              traverseLeft(state_,_left);
-              if (_traverseRight) traverseRight(_pushedState,_right);
-            } else
+              traverseLeft(state_);
+              if (_traverseRight) traverseRight(_pushedState);
+            }
+            else
             {
-              traverseRight(state_,_right);
-              if (_traverseLeft) traverseLeft(_pushedState,_left);
+              traverseRight(state_);
+              if (_traverseLeft) traverseLeft(_pushedState);
             }
             return _traverseLeft && _traverseRight;
           }
@@ -90,8 +92,7 @@ namespace tomo
           /// Leaf node intersection
           bool leaf()
           {
-            for (typename ptr_vector_type::iterator it = state_.node()->leaf_.begin(); 
-                 it != state_.node()->leaf_.end(); ++it)
+            for (auto it = state_.node()->leaf_.begin(); it != state_.node()->leaf_.end(); ++it)
             {
               primitive_type* _nodePrim = (*it);
               if (_nodePrim == primitive_) continue;
@@ -102,7 +103,7 @@ namespace tomo
             return false;
           }
 
-          void updateRadius() 
+          void updateRadius()
           {
             sqrRadius_ = radius_ * radius_;
           }

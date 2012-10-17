@@ -237,6 +237,16 @@ namespace tomo
         }
       }
 
+      namespace 
+      {
+        template<class ARCHIVE, class MODEL>
+        void serialize( ARCHIVE& _ar, Bounds<MODEL>& _bounds, const unsigned int _fileVersion ) 
+        {
+          _ar & _bounds.min();
+          _ar & _bounds.max();
+        }
+      }
+
       typedef Bounds<Model2f> Bounds2f;
       typedef Bounds<Model3f> Bounds3f;
     }

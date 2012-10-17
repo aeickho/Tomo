@@ -82,12 +82,12 @@ namespace tomo
             
             if (_leftFirst)
             {
-              traverseLeft(state_,_left);
-              if (_traverseRight) traverseRight(_pushedState,_right);
+              traverseLeft(state_);
+              if (_traverseRight) traverseRight(_pushedState);
             } else
             {
-              traverseRight(state_,_right);
-              if (_traverseLeft) traverseLeft(_pushedState,_left);
+              traverseRight(state_);
+              if (_traverseLeft) traverseLeft(_pushedState);
             }
             return _traverseLeft && _traverseRight;
           }

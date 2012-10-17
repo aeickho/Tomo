@@ -9,7 +9,7 @@ namespace tomo
   namespace geometry
   {
     namespace base
-    { 
+    {
       typedef boost::geometry::model::d2::point_xy<DEFAULT_TYPE> BoostPoint2;
 
       /** @brief Template class to represent a point
@@ -29,9 +29,9 @@ namespace tomo
         Point( scalar_type _x, scalar_type _y ) : coords_type(_x,_y) { }
         Point( scalar_type _x, scalar_type _y, scalar_type _z ) : coords_type(_x,_y,_z) { }
         Point( scalar_type _x, scalar_type _y, scalar_type _z, scalar_type _w ) : coords_type(_x,_y,_z,_w) { }
-        Point ( BoostPoint2 _boostPoint ) : 
+        Point ( BoostPoint2 _boostPoint ) :
           coords_type(boost::geometry::get<0>(_boostPoint),
-                     boost::geometry::get<1>(_boostPoint))
+                      boost::geometry::get<1>(_boostPoint))
         {}
 
 
@@ -54,7 +54,7 @@ namespace tomo
           return p;
         }
 
-        BoostPoint2 as() const 
+        BoostPoint2 as() const
         {
           BOOST_STATIC_ASSERT(dimensions_ == 2);
           return BoostPoint2(this->x(),this->y());
@@ -90,6 +90,15 @@ namespace tomo
           return _projPoint;
         }
       };
+
+      namespace
+      {
+        template<class ARCHIVE, class MODEL>
+        void serialize( ARCHIVE& _ar, Point<MODEL>& _point, const unsigned int _fileVersion )
+        {
+          _ar & _point;
+        }
+      }
 
       typedef Point<Model2i> Point2i;
       typedef Point<Model2d> Point2d;

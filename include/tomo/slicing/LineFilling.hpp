@@ -21,7 +21,12 @@ namespace tomo
       typedef geometry::base::Point2f Point2f;
       typedef geometry::aux::Ray2f Ray2f;
       typedef geometry::prim::LineSegment LineSegment;
-
+/*
+      ActionGroup operator()( const Slice& _slice, 
+                              const MultiPolygon* _selection = NULL, 
+                              Slice& _out)
+      {}
+*/                  
       ActionGroup operator()( const Polygon& _in, 
                               std::list<Polygon>& _out, 
                               typename LineAction::State& _state )

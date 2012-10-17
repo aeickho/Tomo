@@ -31,6 +31,7 @@ namespace tomo
         const BoostPolygon& operator()() const { return polygon_; }
         BoostPolygon& operator()() { return polygon_; }
 
+
         TBD_PROPERTY(BoostPolygon,polygon);
         TBD_PROPERTY_REF(bounds_type,bounds);
 
@@ -40,6 +41,16 @@ namespace tomo
             const std::set<float>& _segMarkers,
             std::vector<LineSegment>& _lineSegments) const;
       };
+    
+      namespace
+      {
+        template<class ARCHIVE>
+          void serialize( ARCHIVE& _ar, Polygon& _polygon, const unsigned int _fileVersion ) 
+          {
+            _ar & _polygon.polygon();
+            _ar & _polygon.bounds();
+          }
+      }
     }
   }
 }
