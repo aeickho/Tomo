@@ -9,14 +9,14 @@ namespace tomo
   {
     namespace aux
     {
+      // get bit operations from TBD
       namespace bit=tbd::bit;
 
       template <typename PRIMITIVE>
       union KDNode
       {
         typedef typename PRIMITIVE::scalar_type scalar_type;
-        typedef typename PRIMITIVE::vec_type vec_type;
-        typedef std::vector<PRIMITIVE*> PrimCont;
+        typedef std::vector<PRIMITIVE*> cntr_type;
         bool isLeaf() const
         {
           return !inner_.is();
@@ -35,7 +35,6 @@ namespace tomo
           {
             return bit::get<base::Axis>(data_,0,2);
           }
-
           /// Insert children
           inline void setup(NodeCont& _nodes, base::Axis _axis, scalar_type _splitPos)
           {
@@ -45,49 +44,39 @@ namespace tomo
             bit::set(data_,_axis,0,2);
             splitPos_ = _splitPos;
           }
-
-          inline unsigned left() const
+          inline uint32_t left() const
           {
             return bit::get<uint32_t>(data_,2,29);
           }
-          inline unsigned right() const
+          inline uint32_t right() const
           {
             return left() + 1;
           }
-
-          inline scalar_type splitPos() const
-          {
-            return splitPos_;
-          }
-
+          TBD_PROPERTY_RO(scalar_type,splitPos);
         private:
           uint32_t      data_;
-          scalar_type   splitPos_;
         };
 
         /// Leaf node
         struct Leaf
         {
-          typedef std::vector<PRIMITIVE*> PrimCont;
-          typedef typename PrimCont::iterator iterator;
-          typedef typename PrimCont::const_iterator const_iterator;
+          typedef std::vector<PRIMITIVE*> cntr_type;
+          typedef typename cntr_type::iterator iterator;
+          typedef typename cntr_type::const_iterator const_iterator;
 
-          const_iterator begin(const PrimCont& _src) const
+          const_iterator begin(const cntr_type& _src) const
           {
             return _src.begin() + offset_;
           }
-          
-          const_iterator end(const PrimCont& _src) const
+          const_iterator end(const cntr_type& _src) const
           {
             return _begin(_src) + size_;
           }
-
-          iterator begin(PrimCont& _src) const
+          iterator begin(cntr_type& _src) const
           {
             return _src.begin() + offset_;
           }
-          
-          iterator end(PrimCont& _src) const
+          iterator end(cntr_type& _src) const
           {
             return _begin(_src) + size_;
           }
