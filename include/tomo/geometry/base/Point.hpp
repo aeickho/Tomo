@@ -90,11 +90,11 @@ namespace tomo
           return _projPoint;
         }
         
-/*        template<class ARCHIVE>
+        template<class ARCHIVE>
         void serialize( ARCHIVE& _ar, const unsigned int _fileVersion )
         {
-          Coords::serialize(_ar,_fileVersion);
-        }*/
+          this->template serialize(_ar,_fileVersion);
+        }
       };
 
       typedef Point<Model2i> Point2i;

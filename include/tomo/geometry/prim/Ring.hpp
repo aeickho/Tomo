@@ -2,6 +2,7 @@
 
 #include <boost/geometry/geometries/ring.hpp>
 #include <boost/serialization/vector.hpp>
+#include <boost/serialization/nvp.hpp>
 
 #include "LineSegment.hpp"
 #include "Vertex.hpp"
@@ -72,16 +73,34 @@ namespace tomo
 namespace boost
 {
   namespace serialization
-  {  
-    template<class ARCHIVE>
-    void serialize(
+  { 
+    template<class ARCHIVE, class TYPE>
+    void load(
         ARCHIVE& _ar, 
-        tomo::geometry::base::BoostPoint2& _boostPoint2, 
+        boost::geometry::model::d2::point_xy<TYPE>& _p, 
         const unsigned int _fileVersion)
     {
-      _ar & tomo::geometry::base::Point2f(_boostPoint2);
+      TYPE x,y;
+      _ar >> x >> y;
+      _p.set<0>(x);
+      _p.set<1>(y);
     }
-
+    template<class ARCHIVE, class TYPE>
+    void save(
+        ARCHIVE& _ar, 
+        const boost::geometry::model::d2::point_xy<TYPE>& _p, 
+        const unsigned int _fileVersion)
+    {
+      _ar << _p.template get<0>() << _p.template get<1>();
+    }
+    template<class ARCHIVE, class TYPE>
+    void serialize(
+        ARCHIVE& _ar, 
+        boost::geometry::model::d2::point_xy<TYPE>& _p, 
+        const unsigned int _fileVersion)
+    {
+      split_free(_ar,_p,_fileVersion);
+    }
 
     template<class ARCHIVE>
     void serialize(
@@ -89,7 +108,7 @@ namespace boost
         tomo::geometry::prim::BoostRing& _boostRing, 
         const unsigned int _fileVersion)
     {
-      _ar & _boostRing;
+      _ar & (std::vector<tomo::geometry::base::BoostPoint2> &)_boostRing;
     }
   }
 }
