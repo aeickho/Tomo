@@ -38,28 +38,29 @@ namespace tomo
 
       void Polygon::lineSegments(ray_type& _ray, std::vector<LineSegment>& _lineSegments ) const
       {
-        std::set<float> _segMarkers;
+        /// @todo Use kdtree for polygon ray intersection 
+        std::set<scalar_type> _segMarkers;
         vector<LineSegment> _polygonSegments; 
         fetchLineSegments(_polygonSegments);
-
+/*
         BOOST_FOREACH( const LineSegment& _lineSegment, _polygonSegments )
         {
-          float _tNear = 0.0, _tFar = 1.0;
+          scalar_type _tNear = 0.0, _tFar = 1.0;
           if (_lineSegment.intersect(_ray,_tNear,_tFar))
           {
             _segMarkers.insert(_ray.tFar());
             _ray.tFar(1.0);
           }
-        }
+        }*/
 
         lineSegmentsFromSegMarkers(_ray,_segMarkers,_lineSegments);
       }
 
-      void Polygon::boundingRays(float _angle, ray_type& _rayBegin, ray_type& _rayEnd) const
+      void Polygon::boundingRays(scalar_type _angle, ray_type& _rayBegin, ray_type& _rayEnd) const
       {
-        float _radius = bounds().radius();
-        float _cos = _radius * cos(_angle*M_PI/180);
-        float _sin = _radius * sin(_angle*M_PI/180);
+        scalar_type _radius = bounds().radius();
+        scalar_type _cos = _radius * cos(_angle*M_PI/180);
+        scalar_type _sin = _radius * sin(_angle*M_PI/180);
 
         vec_type _cross(-_sin,_cos);
         _rayBegin.dir(vec_type(2*_cos,2*_sin));

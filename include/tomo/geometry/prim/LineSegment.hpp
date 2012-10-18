@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Primitive.hpp"
-
 namespace tomo
 {
   namespace geometry
@@ -10,22 +9,68 @@ namespace tomo
     {
       struct LineSegment : public Primitive2f
       {
-        LineSegment(point_type _front, point_type _back);
+        LineSegment() {}
+        LineSegment(const point_type& _p0, const point_type& _p1)
+        {
+          p_[0] = _p0;
+          p_[1] = _p1;
+        }
 
-        bool intersect(ray_type& _ray, scalar_type& _tNear, scalar_type& _tFar, vec_type* _normal = NULL) const;
+        vec_type normal() const
+        {
+          vec_type _d = p_[1] - p_[0];
+          return vec_type(-_d.y(),_d.x());
+        }
 
-        vec_type normal() const;
-        
-        bounds_type bounds() const;
-        SplitPlaneIntersect intersect(base::Axis _axis, scalar_type _splitPos,
-                                      const bounds_type& _boundsLeft, const bounds_type& _boundsRight) const;
+        bounds_type bounds() const
+        {
+          bounds_type _bounds;
+          _bounds.extend(p_[0]);
+          _bounds.extend(p_[1]);
+          return _bounds;
+        }
 
-        TBD_PROPERTY_REF(point_type,front);
-        TBD_PROPERTY_REF(point_type,back);
-        TBD_PROPERTY(LineSegment*,next);
-        TBD_PROPERTY(LineSegment*,prev);
+        /// Methods to access coordinate value in a certain dimension
+        point_type& operator[] (int i)
+        {
+          TOMO_ASSERT(i < 2);
+          return p_[i];
+        }
+
+        const point_type& operator[] (int i) const
+        {
+          TOMO_ASSERT(i < 2);
+          return p_[i];
+        }
+
+        point_type& p0()
+        {
+          return p_[0];
+        }
+        const point_type& p0() const
+        {
+          return p_[0];
+        }
+        point_type& p1()
+        {
+          return p_[1];
+        }
+        const point_type& p1() const
+        {
+          return p_[1];
+        }
+
+        template<class ARCHIVE>
+        void serialize( ARCHIVE& _ar, const unsigned int _fileVersion )
+        {
+          _ar & p_[0];
+          _ar & p_[1];
+        }
+
+      private:
+        point_type p_[2];
       };
-
     }
   }
 }
+

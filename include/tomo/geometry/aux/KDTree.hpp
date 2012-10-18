@@ -23,7 +23,6 @@ namespace tomo
         typedef typename PRIMITIVE::scalar_type scalar_type;
         typedef typename PRIMITIVE::bounds_type vec_type;
         typedef typename PRIMITIVE::bounds_type bounds_type;
-        typedef typename PRIMITIVE::ray_type ray_type;
 
         /// Node container
         typedef std::vector<Node> NodeCont;
@@ -34,19 +33,6 @@ namespace tomo
         NodeCont nodes_;
         PrimCont primLists_;
         bounds_type bounds_;
-
-        struct NodeStackElement
-        {
-          bounds_type bounds_;
-          PrimCont primList_;
-          unsigned node_;
-          int depth_;
-
-          Node* node(NodeCont& _nodes)
-          {
-            return &_nodes[node_];
-          }
-        };
 
         const Node* root() const
         {
@@ -100,17 +86,18 @@ namespace tomo
           return _found;
         }
 
+        template< typename KDNODE_INTERSECTOR >
         void build(std::vector<PRIMITIVE>& _objs, unsigned _primitivesPerNode = 10)
         {
-          /// Clear data containers and reserve memory 
+          // Clear data containers and reserve memory 
           primLists_.clear();
           primLists_.reserve(_objs.size()*2);
           nodes_.clear();
           nodes_.reserve(2*_objs.size()/_primitivesPerNode);
           nodes_.resize(1);
 
-          /// State holder struct 
-          /// needed for stack for iterative build and initial state
+          // State holder struct 
+          // needed for stack for iterative build and initial state
           struct State
           {
             State() : depth_(0), nodeIndex_(0) {}
@@ -122,13 +109,13 @@ namespace tomo
           
           int _stackPt = -1;
 
-          /// Declare state and reserve memory for each stack item
+          // Declare state and reserve memory for each stack item
           State _stack[MAX_DEPTH];
           for (int i = 0; i < MAX_DEPTH; i++) 
             _stack[i].primList().reserve(_objs.size() >> i);
 
-          /// Fill initial primitive list with pointers of input objects
-          /// and calculate bounds on the fly
+          // Fill initial primitive list with pointers of input objects
+          // and calculate bounds on the fly
           _state.primList().reserve(_objs.size());
           for (auto it = _objs.begin() ; it != _objs.end() ; ++it )
           {
@@ -145,28 +132,31 @@ namespace tomo
               nodes_.resize(nodes_.size()+2);
               Node* _node = &nodes_[_state.nodeIndex_];
               base::Axis _axis = _state.bounds().dominantAxis();
-              scalar_type _splitPos = (_state.bounds().min()[_axis] + _state.bounds().max()[_axis])/2; ///@todo Insert functor here
+              scalar_type _splitPos = (_state.bounds().min()[_axis] + _state.bounds().max()[_axis])/2; ///@todo Insert for split plane intersection functor here
               _node->inner_.setup(nodes_,_axis,_splitPos);
 
-              /// Change state
+              // Change state
               _state.depth_++;
               _state.nodeIndex_ = _node->inner_.left();
              
-              /// Initialize state to be pushed
+              // Initialize state to be pushed
               _stackPt++;
               State& _right = _stack[_stackPt];
               _right.primList().clear();
               _right.depth_ = _state.depth_;
               _right.nodeIndex_ = _state.nodeIndex_+1; /// Equal to _node->inner_.right(), but faster ;)
+             
+              // Make node geometry
+              KDNodeGeometry<PRIMITIVE> _nodeGeometry(_state.bounds(),_splitPos,_axis);
               
-              /// Split node
+              // Split node
               _state.bounds().split(_splitPos,_axis,_state.bounds(),_right.bounds());
              
-              /// Insert objects of current state into left and right subnode
+              // Insert objects of current state into left and right subnode
               auto it = _state.primList().begin(), _leftIt = it;
               for (; it != _state.primList().end() ; ++it)
-              {
-                prim::SplitPlaneIntersect _result = (*it)->intersect(_axis,_splitPos,_state.bounds(),_right.bounds());
+              { 
+                prim::SplitPlaneIntersect _result = _nodeIntersector(*it,_nodeGeometry);
                 if (_result.right()) _right.primList().push_back(*it);
                 if (_result.left()) 
                 {
@@ -174,7 +164,7 @@ namespace tomo
                   ++_leftIt; 
                 } 
               }
-              /// Erase remaining objects at back of container 
+              // Erase remaining objects at back of container 
               _state.primList().erase(_leftIt,_state.primList().end());
             }
            
@@ -187,11 +177,6 @@ namespace tomo
             _state = _stack[_stackPt];
             _stackPt--;
           }
-        }
-
-        scalar_type splitPos(const PrimCont& _primList, NodeInner* _inner, const bounds_type& _bounds) const
-        {
-          return (_bounds.min()[_inner->axis()] + _bounds.max()[_inner->axis()])/2;
         }
       };
 

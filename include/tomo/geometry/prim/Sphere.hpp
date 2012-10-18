@@ -12,9 +12,12 @@ namespace tomo
           : center_(_center), radius_(_radius)
         {}
 
-        bool intersect(ray_type& _ray, scalar_type& _tNear, scalar_type& _tFar, vec_type* _normal = NULL) const;
-
-        bounds_type bounds() const;
+        bounds_type bounds() const
+        {      
+          point_type _rP(radius_,radius_,radius_),
+                     _rM(-radius_,-radius_,-radius_);
+          return bounds_type(center_ + _rM, center_ + _rP);
+        }
 
         TBD_PROPERTY(point_type,center);
         TBD_PROPERTY(scalar_type,radius);

@@ -11,73 +11,6 @@ namespace tomo
 {
   namespace slicing
   {
-    float LineSegmentPlane::orientation(const LineSegment* _a, const LineSegment* _b) const
-    {
-      return (_a->front().x() - _a->back().x()) * (_b->front().y() - _a->front().y()) -
-             (_a->front().y() - _a->back().y()) * (_b->front().x() - _a->front().x());
-    }
-
-    LineSegmentPlane::PolygonType LineSegmentPlane::asPolygon(
-      const LineSegment* _lineSegment,
-      std::set<const LineSegment*>& _usedSegments,
-      Polygon& _polygon)
-    {
-      const LineSegment* _curSegment = _lineSegment;
-
-      /// This algorithm has an integrated orientation check for polygons
-      /// Inspired by:
-      /// http://paulbourke.net/geometry/clockwise/source1.c
-
-      int _flag = 0;
-      float _orientationCoeff = 0.0;
-      PolygonType _polygonType = PT_NONE;
-      bool _polygonTypeDetermined = false;
-
-      Ring _ring;
-      while (_usedSegments.find(_curSegment) == _usedSegments.end())
-      {
-        _ring.add(_curSegment->front());
-
-        LineSegment* _next = _curSegment->next();
-        if (!_next) return PT_NONE;
-
-        if (_curSegment != _lineSegment)
-          _usedSegments.insert(_curSegment);
-
-        _orientationCoeff += orientation(_curSegment,_next);
-        if (_orientationCoeff < 0)
-          _flag |= 1;
-        else if (_orientationCoeff > 0)
-          _flag |= 2;
-        if (_flag == 3 && !_polygonTypeDetermined)
-        {
-          _polygonType = PT_CLOSURE;
-          _polygonTypeDetermined = true;
-        }
-
-        _curSegment = _next;
-      }
-
-      if (_flag != 0 && !_polygonTypeDetermined)
-        _polygonType = PT_HOLE;
-
-      return _polygonType;
-    }
-
-    LineSegment* LineSegmentPlane::nearestSegment(LineSegment* _lineSegment)
-    {
-      /// @todo Improve this for handling of non-manifolds
-    /*
-      vector<LineSegment*> _kNearest = collectKNearest(_lineSegment,1);
-      BOOST_FOREACH( LineSegment* _nearest , _kNearest )
-      if (!_nearest->prev())
-        return _nearest;
-
-      LOG_MSG;
-      return nearest(_lineSegment);*/
-      return NULL;
-    }
-
     LineSegmentPlane::LineSegmentPlane(Slice* _slice) : slice_(_slice)
     {
     }
@@ -94,12 +27,13 @@ namespace tomo
     {
       /// 1st step:
       /// Find nearest neighbor for each LineSegment
+      /*
       BOOST_FOREACH( LineSegment& _lineSegment, lineSegments() )
       {
         LineSegment* _nearest = nearestSegment(&_lineSegment);
         _lineSegment.next(_nearest);
         if (_nearest) _nearest->prev(&_lineSegment);
-      }
+      }*/
 
       /// 2nd step:
       /// Iterate over line
@@ -139,7 +73,7 @@ namespace tomo
     void LineSegmentPlane::addSegment(const point_type& _p0, const point_type& _p1)
     {
       if (lineSegments().size() % 1024 == 0) lineSegments().reserve(lineSegments().size()+1024);
-      lineSegments().push_back(LineSegment(_p0,_p1));
+      lineSegments().push_back(ConnectableSegment(_p0,_p1));
     }
 
     void LineSegmentPlane::aggregate(const LineSegmentPlane& _lineSegmentPlane)

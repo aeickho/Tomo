@@ -4,6 +4,7 @@
 #include <limits>
 #include <string>
 #include <cmath>
+#include <boost/assert.hpp>
 
 namespace tomo
 {
@@ -30,4 +31,7 @@ namespace tomo
   {
     return _value * (COORD)(180.0 / M_PI);
   }
+
+  #define TOMO_ASSERT(x) BOOST_ASSERT(x)
+
 }

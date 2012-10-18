@@ -39,7 +39,7 @@ namespace tomo
         float c[4*4];
       };
 
-/// Compiler macro to e through each dimension
+/// Compiler macro for iterating over each dimension
 #define TOMO_FOREACH_DIM(i) for (int i = 0; i < dimensions_; i++)
 #define TOMO_FOREACH_DIM_(t,i) for (int i = 0; i < t.dimensions_; i++)
 

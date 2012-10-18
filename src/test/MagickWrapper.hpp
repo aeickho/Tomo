@@ -198,8 +198,8 @@ namespace tomo
 
       void draw(const LineSegment& _segment, Magick::Color _color)
       {
-        Point2f _b = _segment.back();
-        Point2f _f = _segment.front();
+        Point2f _b = _segment[0];
+        Point2f _f = _segment[1];
         image_.strokeColor(_color);
         image_.draw( Magick::DrawableLine(_f.x(),_f.y(),_b.x(),_b.y()) );
 

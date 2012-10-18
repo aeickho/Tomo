@@ -12,6 +12,8 @@ namespace tomo
     /// Contains auxiliary structures like compounds object and kdtree for fast search
     namespace aux
     {
+      /// Contains visitor patters for kdtree traversal 
+      namespace visitor
     }
 
     /// Contains all geometric primitive types

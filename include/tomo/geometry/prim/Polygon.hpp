@@ -19,6 +19,8 @@ namespace tomo
 
       struct Polygon : Primitive2f
       {
+        typedef aux::Ray< model_type > ray_type;
+
         Polygon();
         Polygon(const BoostPolygon& _boostPolygon);
         Polygon(const Ring& _outer, const std::vector<Ring>& _inners);

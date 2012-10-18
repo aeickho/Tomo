@@ -46,7 +46,6 @@ namespace tomo
         TOMO_MODEL_TYPES(MODEL);
         typedef base::Point<MODEL> point_type;
         typedef base::Vec<MODEL> vec_type;
-        typedef aux::Ray<MODEL> ray_type;
         typedef aux::Bounds<MODEL> bounds_type;
         /** @brief Return pointer to object
          */
@@ -66,7 +65,6 @@ namespace tomo
         TOMO_MODEL_TYPES(PRIMITIVE) \
         using typename PRIMITIVE::point_type; \
         using typename PRIMITIVE::vec_type; \
-        using typename PRIMITIVE::ray_type; \
         using typename PRIMITIVE::bounds_type;
 
 

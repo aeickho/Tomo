@@ -14,12 +14,10 @@ namespace tomo
           : center_(_center), normal_(_normal)
         {}
 
-        bool intersect(ray_type& _ray,
-                       scalar_type& _tNear,
-                       scalar_type& _tFar,
-                       vec_type* _normal = NULL) const;
-
-        bounds_type bounds() const;
+        bounds_type bounds() const
+        {
+          return Plane::bounds_type(point_type(-INF,-INF,-INF),point_type(INF,INF,INF));          
+        }
 
         point_type center_;
         vec_type normal_;

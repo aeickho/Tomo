@@ -26,21 +26,11 @@ namespace tomo
           n_ = _n;
         }
 
-        bool intersect(ray_type& _ray, scalar_type& _tNear, scalar_type& _tFar, vec_type* _normal = NULL) const
-        {
-          return false;
-        }
-
-        SplitPlaneIntersect intersect(base::Axis _axis, scalar_type _splitPos,
-                                      const bounds_type& _boundsLeft, const bounds_type& _boundsRight) const
-        {
-          return SplitPlaneIntersect(v_[_axis] <= _splitPos,v_[_axis] >= _splitPos); 
-        }
-
         bounds_type bounds() const
         {
           return bounds_type(v_,v_);
         }
+
         point_type center() const
         {
           return v_;

@@ -57,20 +57,6 @@ ADD_EXECUTABLE(tomo-debugslicer ./src/app/debugslicer/DebugSlicer.hpp ./src/app/
 TARGET_LINK_LIBRARIES(tomo-debugslicer boost_program_options tomo Magick++ rt)
 
 
-# Tests
-FUNCTION(ADD_TEST _testname)
-  ADD_EXECUTABLE(${_testname} ./src/test/${_testname}.cpp)
-  TARGET_LINK_LIBRARIES(${_testname} boost_program_options boost_serialization tomo rt Magick++ boost_timer boost_system)
-ENDFUNCTION()
-
-ADD_TEST(VectorTest)
-ADD_TEST(MeshTest)
-ADD_TEST(CompoundTest)
-ADD_TEST(PolygonTest)
-ADD_TEST(RingTest)
-ADD_TEST(ProcedureTest)
-
-
 #ADD_DEFINITIONS(-g -O2 -fsigned-char -freg-struct-return -Wall -W -Wshadow -Wpointer-arith -Wcast-qual -Winline)
 #ADD_DEFINITIONS(-g -O3 -fsigned-char -fopenmp -freg-struct-return -Wall -fPIC)
 ADD_DEFINITIONS(-g -O3 -fsigned-char -Wall -fPIC)

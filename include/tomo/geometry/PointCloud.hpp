@@ -14,6 +14,8 @@ namespace tomo
     public:
       PointCloud();
 
+      typedef typename aux::Ray< model_type > ray_type;
+
       void read(const string& _filename);
       bool intersect(ray_type& _ray, scalar_type& _tNear, scalar_type&_tFar, vec_type* _normal = NULL) const
       {

@@ -6,8 +6,8 @@ namespace tomo
   {
     namespace base
     {
-      /// Compiler macro to traverse through each channel
-#define FOREACH_CHANNEL for (int i = 0; i < CHANNELS; i++)
+      /// Compiler macro for iterating over each channel
+#define TOMO_FOREACH_CHANNEL(i) for (int i = 0; i < CHANNELS; i++)
 
       template<int CHANNELS, class VALUE>
       struct Color
@@ -21,7 +21,7 @@ namespace tomo
         Color()
         {
           BOOST_STATIC_ASSERT(channels_ >= 3 && channels_ <= 4);
-          FOREACH_CHANNEL v_[i] = 0;
+          TOMO_FOREACH_CHANNEL(i) v_[i] = 0;
         }
         Color(Value _r, Value _g, Value _b )
         {
@@ -89,21 +89,21 @@ namespace tomo
 
         void operator += ( const Color _c )
         {
-          FOREACH_CHANNEL v_[i] += _c[i];
+          TOMO_FOREACH_CHANNEL(i) v_[i] += _c[i];
         }
         void operator -= ( const Color _c )
         {
-          FOREACH_CHANNEL v_[i] -= _c[i];
+          TOMO_FOREACH_CHANNEL(i) v_[i] -= _c[i];
         }
         void operator *= ( Value f )
         {
-          FOREACH_CHANNEL v_[i] *= f;
+          TOMO_FOREACH_CHANNEL(i) v_[i] *= f;
         }
 
         friend Color      operator*( const Color& _a, const Value _f )
         {
           Color v(_a);
-          FOREACH_CHANNEL v[i] *= _f;
+          TOMO_FOREACH_CHANNEL(i) v[i] *= _f;
           return v;
         }
         friend Color      operator*( const Value _f, const Color& _a )
@@ -113,25 +113,25 @@ namespace tomo
         friend Color      operator*( const Color& _a, const Color& _b)
         {
           Color v;
-          FOREACH_CHANNEL v[i] = _a[i]*_b[i];
+          TOMO_FOREACH_CHANNEL(i) v[i] = _a[i]*_b[i];
           return v;
         }
         friend Color      operator-( const Color& _a, const Color& _b)
         {
           Color v;
-          FOREACH_CHANNEL v[i] = _a[i]-_b[i];
+          TOMO_FOREACH_CHANNEL(i) v[i] = _a[i]-_b[i];
           return v;
         }
         friend Color      operator+( const Color& _a, const Color& _b)
         {
           Color v;
-          FOREACH_CHANNEL v[i] = _a[i]+_b[i];
+          TOMO_FOREACH_CHANNEL(i) v[i] = _a[i]+_b[i];
           return v;
         }
 
         inline void operator()(const Color _color)
         {
-          FOREACH_CHANNEL v_[i] = _color[i];
+          TOMO_FOREACH_CHANNEL(i) v_[i] = _color[i];
         }
         inline void operator()(Value _r, Value _g, Value _b)
         {
@@ -146,6 +146,16 @@ namespace tomo
           b(_b);
           a(_a);
         }
+
+        template<class ARCHIVE>
+        void serialize( ARCHIVE& _ar, const unsigned int _fileVersion )
+        {
+          TOMO_FOREACH_CHANNEL(i)
+          {
+            _ar & v_[i];
+          }
+        }
+
 
       protected:
         static const float valueMax( float )
@@ -173,8 +183,6 @@ namespace tomo
 
         Value v_[channels_];
       };
-
-#undef FOREACH_CHANNEL
 
       typedef Color<3,float> Color3f;
       typedef Color<4,float> Color4f;

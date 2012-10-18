@@ -49,13 +49,7 @@ namespace tomo
         void aggregate(const Compound& _compound, bool _update = true)
         {
           objs_.insert(objs_.end(),_compound.objs_.begin(),_compound.objs_.end());
-          if (_update) update();
-        }
-
-        /// Calculates bounds and constructs kdtree
-        void update()
-        {
-          kdTree_.build(objs_,3);
+//          if (_update) update();
         }
 
         bounds_type bounds() const

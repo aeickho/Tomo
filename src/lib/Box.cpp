@@ -16,7 +16,8 @@ namespace tomo
 
       void Box::slice() 
       {
-        vector<Slice*> _slicesInRange = slices().fetch(min().z(),max().z());
+        vector<Slice*> _slicesInRange = 
+          slices().fetch(bounds().min().z(),bounds().max().z());
 
         BOOST_FOREACH(Slice* _slice, _slicesInRange)
           generateSlice(_slice);
@@ -26,11 +27,18 @@ namespace tomo
       {
         Polygon _polygon;
         Ring _outer(Ring::OUTER);
+
+
+        const point_type& _min = bounds().min();
+        const point_type& _max = bounds().max();
+
+        typedef Ring::point_type ring_point_type;
+        
         _outer().reserve(4);
-        _outer.add(Point2f(min().x(),min().y()));
-        _outer.add(Point2f(max().x(),min().y()));
-        _outer.add(Point2f(max().x(),max().y()));
-        _outer.add(Point2f(min().x(),max().y()));
+        _outer.add(ring_point_type(_min.x(),_min.y()));
+        _outer.add(ring_point_type(_max.x(),_min.y()));
+        _outer.add(ring_point_type(_max.x(),_max.y()));
+        _outer.add(ring_point_type(_min.x(),_max.y()));
         _polygon.add(_outer);
         _slice->add(_polygon);
       }
