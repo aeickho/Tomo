@@ -1,7 +1,7 @@
 #pragma once
 
-#include "tomo/geometry/aux/KDNode.hpp"
-#include "tomo/geometry/prim/BoundingBox.hpp"
+#include "KDNode.hpp"
+#include "KDNodeGeometry.hpp"
 
 namespace tomo
 {
@@ -38,6 +38,7 @@ namespace tomo
         {
           return &nodes_[0];
         }
+
         Node* root()
         {
           return &nodes_[0];

@@ -2,6 +2,7 @@
 
 #include "tomo/geometry/base/Vector.hpp"
 #include "tomo/misc.hpp"
+#include "Ray.hpp"
 
 #include <vector>
 #include <limits>
@@ -21,7 +22,8 @@ namespace tomo
       {
         TOMO_MODEL_TYPES(MODEL);
         typedef base::Point<MODEL> point_type;
-        typedef base::Vec<MODEL> vector_type;
+        typedef base::Vec<MODEL> vec_type;
+        typedef aux::Ray<MODEL> ray_type;
 
         /// Maximum corner
         static const scalar_type maxmax()
@@ -129,7 +131,7 @@ namespace tomo
         /** @brief Return the size of this bounds
          * @return size of this bounds as vector
          */
-        vector_type size() const
+        vec_type size() const
         {
           BOOST_ASSERT(valid());
           return max_ - min_;
@@ -204,7 +206,34 @@ namespace tomo
               return false;
           return true;
         }
-        
+
+        bool intersect(const ray_type& _ray, scalar_type* _clampTMin = nullptr, scalar_type* _clampTMax = nullptr)
+        {
+          scalar_type _tMin = _ray.tNear();
+          scalar_type _tMax = _ray.tFar();
+      
+          TOMO_FOREACH_DIM(i)
+          {
+            scalar_type _tMinDim = (min_[i] - _ray.org()[i]) / _ray.dir()[i];
+            scalar_type _tMaxDim = (max_[i] - _ray.org()[i]) / _ray.dir()[i];
+            if (_ray.dir()[i] < 0) std::swap(_tMinDim,_tMaxDim);
+
+            if ((_tMin > _tMaxDim) || (_tMax > _tMinDim)) return false;
+
+            std::max(_tMin,_tMinDim);
+            std::min(_tMax,_tMaxDim); 
+          }
+
+          if ((_tMin <= _ray.tNear()) && (_tMax >= _ray.tFar()))
+          {
+            if (_clampTMin) (*_clampTMin) = (_tMin > _ray.tNear()) ? _tMin : _ray.tNear();
+            if (_clampTMax) (*_clampTMax) = (_tMax < _ray.tFar()) ? _tMax : _ray.tFar();
+            return true;
+          }
+
+          return false;
+        }
+
         template<class ARCHIVE>
         void serialize( ARCHIVE& _ar, const unsigned int _fileVersion ) 
         {

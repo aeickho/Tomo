@@ -19,8 +19,8 @@ namespace tomo
           return Plane::bounds_type(point_type(-INF,-INF,-INF),point_type(INF,INF,INF));          
         }
 
-        point_type center_;
-        vec_type normal_;
+        TBD_PROPERTY_REF(point_type,center);
+        TBD_PROPERTY_REF(vec_type,normal);
       };
     }
   }

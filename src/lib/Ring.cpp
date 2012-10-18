@@ -141,8 +141,8 @@ namespace tomo
             _output.push_back(Ring(_ring));
           return Ring::DISJOINT;
         }
-        BoostRing& _unionRing = _output.front()();
 /*
+        BoostRing& _unionRing = _output.front()();
         if (_a().size() != _unionRing.size() && 
             _b().size() != _unionRing.size()) goto overlap;
 

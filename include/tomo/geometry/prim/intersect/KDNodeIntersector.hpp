@@ -1,3 +1,6 @@
+#pragma once
+#include "Intersector.hpp"
+#include <tomo/geometry/aux/KDNodeGeometry.hpp> 
 
 namespace tomo
 {
@@ -9,9 +12,8 @@ namespace tomo
       {
         template <class PRIMITIVE>
         struct KDNodeIntersector :
-            Intersector<PRIMITIVE, typename aux::KDNodePrimitive< PRIMITIVE::model_type > >
+            Intersector<PRIMITIVE, aux::KDNodeGeometry<typename PRIMITIVE::model_type> >
         {
-          typedef KDNode<PRIMITIVE> node_type;
         };
       }
     }
