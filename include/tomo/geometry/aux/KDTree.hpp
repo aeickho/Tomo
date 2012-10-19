@@ -2,6 +2,7 @@
 
 #include "KDNode.hpp"
 #include "KDNodeGeometry.hpp"
+#include "tomo/geometry/algorithms/KDNodeIntersect.hpp"
 
 namespace tomo
 {
@@ -87,7 +88,6 @@ namespace tomo
           return _found;
         }
 
-        template< typename KDNODE_INTERSECTOR >
         void build(std::vector<PRIMITIVE>& _objs, unsigned _primitivesPerNode = 10)
         {
           // Clear data containers and reserve memory 
@@ -153,13 +153,11 @@ namespace tomo
               // Split node
               _state.bounds().split(_splitPos,_axis,_state.bounds(),_right.bounds());
              
-              KDNODE_INTERSECTOR _nodeIntersector;
-
               // Insert objects of current state into left and right subnode
               auto it = _state.primList().begin(), _leftIt = it;
               for (; it != _state.primList().end() ; ++it)
               { 
-                aux::KDNodeIntersectResult _result = _nodeIntersector(*(*it),_nodeGeometry);
+                aux::KDNodeIntersectResult _result = algorithms::intersect(*(*it),_nodeGeometry);
                 if (_result.right()) _right.primList().push_back(*it);
                 if (_result.left()) 
                 {
