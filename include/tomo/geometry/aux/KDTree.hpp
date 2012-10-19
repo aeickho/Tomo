@@ -148,16 +148,18 @@ namespace tomo
               _right.nodeIndex_ = _state.nodeIndex_+1; /// Equal to _node->inner_.right(), but faster ;)
              
               // Make node geometry
-              KDNodeGeometry<PRIMITIVE> _nodeGeometry(_state.bounds(),_splitPos,_axis);
+              KDNodeGeometry<PRIMITIVE> _nodeGeometry(_state.bounds(),_axis,_splitPos);
               
               // Split node
               _state.bounds().split(_splitPos,_axis,_state.bounds(),_right.bounds());
              
+              KDNODE_INTERSECTOR _nodeIntersector;
+
               // Insert objects of current state into left and right subnode
               auto it = _state.primList().begin(), _leftIt = it;
               for (; it != _state.primList().end() ; ++it)
               { 
-                prim::SplitPlaneIntersect _result = _nodeIntersector(*it,_nodeGeometry);
+                aux::KDNodeIntersectResult _result = _nodeIntersector(*(*it),_nodeGeometry);
                 if (_result.right()) _right.primList().push_back(*it);
                 if (_result.left()) 
                 {

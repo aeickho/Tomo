@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Slice.hpp"
 
 #include <tomo/geometry/aux/Compound.hpp>
@@ -7,14 +9,14 @@ namespace tomo
 {
   namespace slicing
   {
-    /// The class LineSegmentContainer is used to store line segments to make polygons out of them
     struct LineSegmentPlane : geometry::aux::Compound<geometry::prim::ConnectableSegment >
     {
       TOMO_COMPOUND_PRIMITIVE_NAME(lineSegments);
       typedef geometry::prim::ConnectableSegment linesegment_type;
       typedef geometry::prim::Ring ring_type;
 
-      LineSegmentPlane(Slice* _slice = NULL);
+      LineSegmentPlane(std::vector<linesegment_type>& _lineSegments);
+      LineSegmentPlane(Slice* _slice = nullptr);
 
       void makeRings(std::vector<ring_type>& _rings);
 

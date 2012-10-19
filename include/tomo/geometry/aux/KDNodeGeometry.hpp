@@ -1,5 +1,8 @@
 #pragma once
 
+#include "KDNodeIntersectResult.hpp"
+#include "tomo/geometry/base/Coord.hpp"
+
 namespace tomo
 {
   namespace geometry

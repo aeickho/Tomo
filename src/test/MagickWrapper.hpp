@@ -15,6 +15,7 @@ namespace tomo
   {
     namespace tg = tomo::geometry;
     using tg::prim::LineSegment;
+    using tg::prim::ConnectableSegment;
     using tg::prim::Ring;
     using tg::prim::Polygon;
     using tg::base::Point2f;
@@ -220,11 +221,26 @@ namespace tomo
         }
       }
 
+      template<class PRIMITIVE>
+      void draw(const std::vector<PRIMITIVE> _primitives, Magick::Color _color)
+      {
+        BOOST_FOREACH( const PRIMITIVE& _primitive, _primitives )
+          draw(_primitive,_color);
+      }
 
       void draw(const std::vector<LineSegment>& _lineSegments, Magick::Color _color)
       {
-        BOOST_FOREACH( const LineSegment& _lineSegment, _lineSegments )
-          draw(_lineSegment,_color);
+        draw<LineSegment>(_lineSegments,_color);
+      }
+
+      void draw(const ConnectableSegment& _segment, Magick::Color _color)
+      {
+        draw(LineSegment(_segment[0],_segment[1]),_color);
+      }
+
+      void draw(const std::vector<ConnectableSegment>& _segments, Magick::Color _color)
+      {
+        draw<ConnectableSegment>(_segments,_color);
       }
 
       void draw(const Ring& _ring, Magick::Color _color)
@@ -239,6 +255,11 @@ namespace tomo
         std::vector<LineSegment> _lineSegments;
         _polygon.fetchLineSegments(_lineSegments);
         draw(_lineSegments,_color);
+      }
+
+      void clear()
+      {
+        image_ = Magick::Image( Magick::Geometry(image_.columns(),image_.rows()), Magick::Color("black") );
       }
 
       Magick::Image& image_;

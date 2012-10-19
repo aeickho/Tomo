@@ -3,7 +3,9 @@
 #define BOOST_TEST_MODULE Tomo
 
 #include <boost/test/included/unit_test.hpp>
+#include "MagickWrapper.hpp"
 
+LOG_INIT;
 
 #include "LineSegmentConnectingTest.hpp"
 #include "PolygonSortingTest.hpp"

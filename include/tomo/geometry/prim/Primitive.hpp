@@ -9,36 +9,6 @@ namespace tomo
   {
     namespace prim
     {
-      /// Struct which holds the result of an intersection test between split plane and primitive
-      struct SplitPlaneIntersect
-      {
-      public:
-        SplitPlaneIntersect(bool _left = false, bool _right = false) : result_(0)
-        {
-          set(_left,_right);
-        }
-
-        void set(bool _left, bool _right)
-        {
-          result_ = _left | (_right << 1);
-        }
-
-        bool left()
-        {
-          return result_ & 1;
-        }
-        bool right()
-        {
-          return result_ & 2;
-        }
-        bool both()
-        {
-          return result_ != 0;
-        }
-      private:
-        unsigned char result_;
-      };
-
       /// A primitive is an object which has an extent and for which an intersection point can be found
       template<class MODEL>
       struct Primitive : MODEL

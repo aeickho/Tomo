@@ -1,3 +1,4 @@
+#pragma once
 #include "LineSegment.hpp"
 
 namespace tomo

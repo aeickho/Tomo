@@ -1,5 +1,4 @@
 #include "tomo/slicing/LineSegmentPlane.hpp"
-
 #include <boost/assign.hpp>
 #include <boost/foreach.hpp>
 #include <tbd/log.h>
@@ -15,13 +14,16 @@ namespace tomo
     {
     }
 
+    LineSegmentPlane::LineSegmentPlane(vector<linesegment_type>& _lineSegments)
+    {
+      objs().insert(objs().end(),_lineSegments.begin(),_lineSegments.end());
+    }
+
     float LineSegmentPlane::pos() const
     {
       BOOST_ASSERT(slice_);
       return slice_->pos();
     }
-
-
 
     void LineSegmentPlane::makeRings(std::vector<Ring>& _rings)
     {
