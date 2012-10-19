@@ -4,7 +4,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 # project id
 PROJECT(Tomo)
 
-# force outut into several folders
+# force output into several folders
 SET (CMAKE_LIBRARY_OUTPUT_DIRECTORY
   ${PROJECT_BINARY_DIR}/bin )
 SET (CMAKE_RUNTIME_OUTPUT_DIRECTORY
@@ -55,6 +55,14 @@ ADD_DEFINITIONS(${QT_DEFINITIONS})
 # DebugSlicer
 ADD_EXECUTABLE(tomo-debugslicer ./src/app/debugslicer/DebugSlicer.hpp ./src/app/debugslicer/debugslicer.cpp)
 TARGET_LINK_LIBRARIES(tomo-debugslicer boost_program_options tomo Magick++ rt)
+
+# Tests and Benchmarking
+ADD_EXECUTABLE(TomoUnitTests ./src/test/UnitTests.cpp)
+TARGET_LINK_LIBRARIES(TomoUnitTests boost_unit_test_framework  tomo Magick++ rt)
+
+ADD_EXECUTABLE(TomoBenchmark ./src/test/Benchmark.cpp)
+TARGET_LINK_LIBRARIES(TomoBenchmark tomo rt boost_system boost_timer)
+
 
 
 #ADD_DEFINITIONS(-g -O2 -fsigned-char -freg-struct-return -Wall -W -Wshadow -Wpointer-arith -Wcast-qual -Winline)
