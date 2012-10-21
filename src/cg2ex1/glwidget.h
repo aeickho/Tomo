@@ -1,8 +1,8 @@
 #ifndef GLWIDGET_H
 #define GLWIDGET_H
 
-#include "tomo/geometry/Mesh.hpp"
-#include "tomo/geometry/PointCloud.hpp"
+#include "tomo/geometry/comp/Mesh.hpp"
+#include "tomo/geometry/comp/PointCloud.hpp"
 #include "tomo/scene/Camera.hpp"
 #include "tomo/scene/Tracker.hpp"
 #include "tomo/scene/Light.hpp"
@@ -77,7 +77,7 @@ protected:
   void paintSelection();
 public:
   /// @todo replace with an vector<tomo::SceneObjects>
-  DisplayListed<tomo::geometry::Mesh> mesh_;
+  DisplayListed<tomo::geometry::comp::Mesh> mesh_;
 
   /// @todo Obsolete since tomo::Slices does not have a default constructor anymore
   /// DisplayListed<tomo::Slices> slices_;

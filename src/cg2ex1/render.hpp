@@ -1,5 +1,5 @@
 #include <tomo/misc.hpp>
-#include <tomo/geometry/Mesh.hpp>
+#include <tomo/geometry/comp/Mesh.hpp>
 #include <tomo/scene/PrintBounds.hpp>
 #include <cmath>
 
@@ -369,9 +369,9 @@ template<class TRACKER, class COLOR> void drawTracker( const std::string& _name,
   glEnable(GL_DEPTH_TEST);
 }
 
-inline void draw( tomo::geometry::Mesh& _mesh )
+inline void draw( tomo::geometry::comp::Mesh& _mesh )
 {
-  using tomo::geometry::Mesh;
+  using tomo::geometry::comp::Mesh;
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
