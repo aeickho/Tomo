@@ -1,6 +1,6 @@
 #include "tomo/slicing/SegmentConnector.hpp"
 
-#include "tomo/geometry/algorithms/KDNodeVsConnectableSegment.hpp"
+#include "tomo/geometry/kd/NodeVsConnectableSegment.hpp"
 
 using namespace std;
 

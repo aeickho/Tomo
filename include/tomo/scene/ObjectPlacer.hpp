@@ -14,6 +14,7 @@ namespace tomo
       ObjectPlacer(const PrintBounds& _printBounds);
         
       typedef std::map<slicing::SlicableObject*,slicing::Slices*> map_type;
+      typedef geometry::base::Bounds2f rect_type;
 
       void place(map_type& _objects);
 
@@ -25,7 +26,7 @@ namespace tomo
 
       void place(slicing::SlicableObject* _object, 
                  slicing::Slices* _slices,
-                 std::vector<geometry::aux::Bounds2f>& _rectList);
+                 std::vector<rect_type>& _rectList);
     };
   }
 }

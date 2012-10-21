@@ -7,13 +7,13 @@ namespace tomo
 {
   namespace geometry
   {
-    namespace aux
+    namespace kd
     {
       // get bit operations from TBD
       namespace bit=tbd::bit;
 
       template <typename PRIMITIVE>
-      union KDNode
+      union Node
       {
         typedef typename PRIMITIVE::scalar_type scalar_type;
         typedef std::vector<PRIMITIVE*> cntr_type;
@@ -25,7 +25,7 @@ namespace tomo
         /// Inner node
         struct Inner
         {
-          typedef std::vector<KDNode> NodeCont;
+          typedef std::vector<Node> NodeCont;
 
           inline bool is() const
           {

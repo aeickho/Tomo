@@ -2,7 +2,6 @@
 #define GLWIDGET_H
 
 #include "tomo/geometry/comp/Mesh.hpp"
-#include "tomo/geometry/comp/PointCloud.hpp"
 #include "tomo/scene/Camera.hpp"
 #include "tomo/scene/Tracker.hpp"
 #include "tomo/scene/Light.hpp"

@@ -1,8 +1,10 @@
 #pragma once
 
+#include "tomo/geometry/prim/Primitive.hpp"
 #include "tomo/slicing/LineSegmentPlane.hpp"
 #include <OpenMesh/Core/IO/MeshIO.hh>
 #include <OpenMesh/Core/Mesh/TriMesh_ArrayKernelT.hh>
+
 
 namespace tomo
 {
@@ -35,7 +37,8 @@ namespace tomo
         FaceAttributes(OpenMesh::Attributes::Normal);
       };
 
-      class Mesh : public OpenMesh::TriMesh_ArrayKernelT<MeshTraits>
+      class Mesh : public OpenMesh::TriMesh_ArrayKernelT<MeshTraits>,
+                   public prim::Primitive3f
       {
       public:
         typedef enum { SM_FLAT, SM_GOURAUD } ShadeMode;
@@ -50,7 +53,7 @@ namespace tomo
         void calcBounds();
 
         TBD_PROPERTY(ShadeMode,shadeMode);
-        TBD_PROPERTY_RO(aux::Bounds3f,bounds);
+        TBD_PROPERTY(bounds_type,bounds);
       private:
 
         void sliceTriangle(ConstFaceIter _faceIter,

@@ -8,8 +8,7 @@ namespace tomo
 {
   namespace scene
   {
-    using geometry::aux::Bounds2f;
-    using geometry::aux::Bounds3f;
+    using geometry::base::Bounds3f;
     using geometry::base::Vec3f;
     using geometry::base::Vec2f;
     using slicing::Slices;
@@ -41,7 +40,7 @@ namespace tomo
         _objectsByArea.insert(make_pair<float,SlicableObject*>(_area,it->first));
   */    }
 
-      std::vector<Bounds2f> _rectList;
+      std::vector<rect_type> _rectList;
 
       // Place all objects
       AreaMap::iterator it;
@@ -51,7 +50,7 @@ namespace tomo
 
     void ObjectPlacer::place(SlicableObject* _object, 
                              Slices* _slices,
-                             vector<Bounds2f>& _rectList)
+                             vector<rect_type>& _rectList)
     {
       /*
       Bounds3f _objBounds = _object->bounds(); 

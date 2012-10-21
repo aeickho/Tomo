@@ -1,7 +1,7 @@
 #pragma once
 
-#include "tomo/geometry/aux/Ray.hpp"
-#include "tomo/geometry/aux/Bounds.hpp"
+#include "tomo/geometry/base/Ray.hpp"
+#include "tomo/geometry/base/Bounds.hpp"
 
 namespace tomo
 {
@@ -16,7 +16,8 @@ namespace tomo
         TOMO_MODEL_TYPES(MODEL);
         typedef base::Point<MODEL> point_type;
         typedef base::Vec<MODEL> vec_type;
-        typedef aux::Bounds<MODEL> bounds_type;
+        typedef base::Bounds<MODEL> bounds_type;
+        typedef base::Ray<MODEL> ray_type;
         /** @brief Return pointer to object
          */
         void* pointer() const

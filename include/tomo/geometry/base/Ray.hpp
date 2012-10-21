@@ -1,13 +1,13 @@
 #pragma once
-#include "tomo/geometry/base/Vector.hpp"
 
+#include "Vector.hpp"
 #include <vector>
 
 namespace tomo
 {
   namespace geometry
   {
-    namespace aux
+    namespace base
     {
       template<class MODEL>
       struct Ray : MODEL

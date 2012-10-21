@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_SUITE( LineSegmentConnectingTestSuite )
 
 BOOST_AUTO_TEST_CASE( RingTest )
 {
-  using tomo::magick::Wrapper;
+  using tomo::draw::magick::Wrapper;
   using tomo::geometry::prim::ConnectableSegment;
   using tomo::geometry::prim::Ring;
   using tomo::slicing::SegmentConnector;

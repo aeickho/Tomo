@@ -1,8 +1,7 @@
 #pragma once
 
-#include "tomo/slicing/PlaneStack.hpp"
 #include "tomo/geometry/prim/MultiPolygon.hpp"
-
+#include "tomo/geometry/comp/PlaneStack.hpp"
 
 namespace tomo
 {
@@ -23,13 +22,13 @@ namespace tomo
       TBD_PROPERTY_REF(MultiPolygon,polygons)
     };
 
-    struct Slices : PlaneStack<float,Slice>
+    struct Slices : geometry::comp::PlaneStack<float,Slice>
     {
     public:
       Slices() {}
-      Slices(float _thickness, geometry::aux::Bounds3f _bounds);
+      Slices(float _thickness, const bounds_type& _bounds);
 
-      void build(float _thickness, geometry::aux::Bounds3f _bounds);
+      void build(float _thickness, const bounds_type& _bounds);
     };
   }
 }

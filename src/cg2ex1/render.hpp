@@ -59,7 +59,7 @@ inline void drawBackground()
   glPopMatrix();
 }
 
-void drawBounds(tomo::geometry::aux::Bounds3f _bounds, 
+void drawBounds(tomo::geometry::base::Bounds3f _bounds, 
                 const tomo::geometry::base::Color4f& _color)
 {
   float x = _bounds.min().x(), y = _bounds.min().y(), z = _bounds.min().z();

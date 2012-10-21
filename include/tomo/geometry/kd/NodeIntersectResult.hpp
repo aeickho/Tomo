@@ -4,13 +4,13 @@ namespace tomo
 {
   namespace geometry
   {
-    namespace aux
+    namespace kd
     {
       /// Struct which holds the result of an intersection test between split plane and primitive
-      struct KDNodeIntersectResult
+      struct NodeIntersectResult
       {
       public:
-        KDNodeIntersectResult(bool _left = false, bool _right = false) : result_(0)
+        NodeIntersectResult(bool _left = false, bool _right = false) : result_(0)
         {
           set(_left,_right);
         }
@@ -30,7 +30,7 @@ namespace tomo
         }
         bool both()
         {
-          return result_ != 0;
+          return left() && right();
         }
       private:
         unsigned char result_;

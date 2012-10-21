@@ -2,14 +2,14 @@
 
 #include "Slice.hpp"
 
-#include <tomo/geometry/aux/Compound.hpp>
+#include <tomo/geometry/comp/Compound.hpp>
 #include <tomo/geometry/prim/ConnectableSegment.hpp>
 
 namespace tomo
 {
   namespace slicing
   {
-    struct LineSegmentPlane : geometry::aux::Compound<geometry::prim::ConnectableSegment >
+    struct LineSegmentPlane : geometry::comp::Compound<geometry::prim::ConnectableSegment >
     {
       TOMO_COMPOUND_PRIMITIVE_NAME(lineSegments);
       typedef geometry::prim::ConnectableSegment linesegment_type;
@@ -27,7 +27,7 @@ namespace tomo
       TBD_PROPERTY_RO(Slice*,slice);
     };
 
-    struct LineSegmentContainer : PlaneStack<float,LineSegmentPlane>
+    struct LineSegmentContainer : geometry::comp::PlaneStack<float,LineSegmentPlane>
     {
       LineSegmentContainer(Slices& _slices);
       void produceSlices();

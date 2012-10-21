@@ -1,12 +1,9 @@
 #pragma once
 
 #include "tomo/geometry/prim/BoundingBox.hpp"
-#include "KDTree.hpp"
 #include "tomo/misc.hpp"
-#include "visitor/InRadius.hpp"
-#include "visitor/Nearest.hpp"
-#include "visitor/KNearest.hpp"
-#include "visitor/RayTraversal.hpp"
+#include "tomo/geometry/kd/Tree.hpp"
+
 
 #include <boost/foreach.hpp>
 
@@ -19,7 +16,7 @@ namespace tomo
 {
   namespace geometry
   {
-    namespace aux
+    namespace comp
     {
       /** @brief A Compound is object is an object which consists of several primtives
        * @detail Moreover, a compound holds a KDTree structure for fast search
@@ -31,7 +28,7 @@ namespace tomo
       {
         TOMO_PRIMITIVE_TYPES(prim::Primitive<typename PRIMITIVE::model_type>);
         typedef PRIMITIVE value_type;
-        typedef KDTree<value_type> kdtree_type;
+        typedef kd::Tree<value_type> kdtree_type;
         typedef std::vector<value_type> ctnr_type;
         typedef std::vector<value_type*> ptr_ctnr_type;
 

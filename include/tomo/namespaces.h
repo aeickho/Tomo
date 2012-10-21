@@ -9,8 +9,8 @@ namespace tomo
     {
     }
 
-    /// Contains auxiliary structures like compounds object and kdtree for fast search
-    namespace aux
+    /// Namespace for KDTree and associated objects
+    namespace kd
     {
       /// Contains visitor patters for kdtree traversal 
       namespace visitor
@@ -39,6 +39,11 @@ namespace tomo
 
   /// All classes for g-code representation 
   namespace gcode
+  {
+  }
+
+  /// All classes for drawing geometry and specific wrappers
+  namespace draw
   {
   }
 }

@@ -1,11 +1,11 @@
 #pragma once
-#include "tomo/geometry/aux/Bounds.hpp"
+#include "tomo/geometry/base/Bounds.hpp"
 
 namespace tomo
 {
   namespace scene
   {
-    struct PrintBounds : geometry::aux::Bounds3f
+    struct PrintBounds : geometry::base::Bounds3f
     {
       typedef tomo::geometry::base::Vec3f Vec;
       typedef tomo::geometry::base::Point3f Point;

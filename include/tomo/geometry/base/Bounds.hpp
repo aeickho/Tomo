@@ -1,7 +1,7 @@
 #pragma once
 
-#include "tomo/geometry/base/Vector.hpp"
 #include "tomo/misc.hpp"
+#pragma once
 #include "Ray.hpp"
 
 #include <vector>
@@ -11,7 +11,7 @@ namespace tomo
 {
   namespace geometry
   {
-    namespace aux
+    namespace base
     {
       /** @brief Rectangular bounding area
        * @tparam DIMENSIONS number of dimensions of the underlying space
@@ -23,7 +23,7 @@ namespace tomo
         TOMO_MODEL_TYPES(MODEL);
         typedef base::Point<MODEL> point_type;
         typedef base::Vec<MODEL> vec_type;
-        typedef aux::Ray<MODEL> ray_type;
+        typedef base::Ray<MODEL> ray_type;
 
         /// Maximum corner
         static const scalar_type maxmax()

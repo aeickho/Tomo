@@ -25,12 +25,12 @@ namespace tomo
       polygons_.polygons().clear();
     }
 
-    Slices::Slices(float _thickness, geometry::aux::Bounds3f _bounds)
+    Slices::Slices(float _thickness, const bounds_type& _bounds)
     {
       build(_thickness,_bounds);
     }
 
-    void Slices::build(float _thickness, geometry::aux::Bounds3f _bounds)
+    void Slices::build(float _thickness, const bounds_type& _bounds)
     {
       planes_.clear();
       float _slicePos = _bounds.min().z() + _thickness / 2.0 ;

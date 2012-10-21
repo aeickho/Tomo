@@ -3,7 +3,8 @@
 #define BOOST_TEST_MODULE Tomo
 
 #include <boost/test/included/unit_test.hpp>
-#include "MagickWrapper.hpp"
+#include <tbd/log.h>
+#include "tomo/draw/magick/Wrapper.hpp"
 
 LOG_INIT;
 

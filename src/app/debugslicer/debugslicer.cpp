@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include <tbd/log.h>
-#include "../../test/MagickWrapper.hpp"
+#include "tomo/draw/magick/Wrapper.hpp"
 #include <boost/program_options.hpp>
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string/classification.hpp>

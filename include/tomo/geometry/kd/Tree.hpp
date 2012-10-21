@@ -1,28 +1,28 @@
 #pragma once
 
-#include "KDNode.hpp"
-#include "KDNodeGeometry.hpp"
-#include "tomo/geometry/algorithms/KDNodeIntersect.hpp"
+#include "Node.hpp"
+#include "NodeGeometry.hpp"
+#include "NodeIntersect.hpp"
 
 namespace tomo
 {
   namespace geometry
   {
-    namespace aux
+    namespace kd
     {
       template 
         <
           typename PRIMITIVE,
           unsigned MAX_DEPTH = 16
         >
-      struct KDTree
+      struct Tree
       {   
         /// Node type
-        typedef KDNode<PRIMITIVE> Node;
+        typedef Node<PRIMITIVE> Node;
 
-        typedef typename KDNode<PRIMITIVE>::Inner NodeInner;
+        typedef typename Node::Inner NodeInner;
         typedef typename PRIMITIVE::scalar_type scalar_type;
-        typedef typename PRIMITIVE::bounds_type vec_type;
+        typedef typename PRIMITIVE::vec_type vec_type;
         typedef typename PRIMITIVE::bounds_type bounds_type;
 
         /// Node container
@@ -148,7 +148,7 @@ namespace tomo
               _right.nodeIndex_ = _state.nodeIndex_+1; /// Equal to _node->inner_.right(), but faster ;)
              
               // Make node geometry
-              KDNodeGeometry<PRIMITIVE> _nodeGeometry(_state.bounds(),_axis,_splitPos);
+              NodeGeometry<PRIMITIVE> _nodeGeometry(_state.bounds(),_axis,_splitPos);
               
               // Split node
               _state.bounds().split(_splitPos,_axis,_state.bounds(),_right.bounds());
@@ -157,7 +157,7 @@ namespace tomo
               auto it = _state.primList().begin(), _leftIt = it;
               for (; it != _state.primList().end() ; ++it)
               { 
-                aux::KDNodeIntersectResult _result = algorithms::intersect(*(*it),_nodeGeometry);
+                NodeIntersectResult _result = intersect(*(*it),_nodeGeometry);
                 if (_result.right()) _right.primList().push_back(*it);
                 if (_result.left()) 
                 {

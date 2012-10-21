@@ -2,7 +2,7 @@
 
 #include "tomo/geometry/prim/ConnectableSegment.hpp"
 #include "tomo/geometry/prim/Ring.hpp"
-#include "tomo/geometry/aux/KDTree.hpp"
+#include "tomo/geometry/kd/Tree.hpp"
 
 namespace tomo
 {
@@ -13,7 +13,7 @@ namespace tomo
     {
       typedef geometry::prim::ConnectableSegment linesegment_type;
       typedef geometry::prim::Ring ring_type;
-      typedef geometry::aux::KDTree<linesegment_type> kdtree_type;
+      typedef geometry::kd::Tree<linesegment_type> kdtree_type;
 
       bool operator()(
           std::vector<linesegment_type>& _inSegments, 

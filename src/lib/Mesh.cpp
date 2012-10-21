@@ -10,7 +10,6 @@ namespace tomo
   {
     namespace comp
     {
-      using namespace aux;
       using namespace base;
 
       void Mesh::read(const string& _filename)
