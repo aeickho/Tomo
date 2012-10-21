@@ -20,6 +20,11 @@ namespace tomo
     namespace prim
     {
     }
+
+    ///Containes all geometrix complex types
+    namespace comp
+    {
+    }
   }
 
   /// All classes to slice a Mesh

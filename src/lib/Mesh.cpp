@@ -1,9 +1,6 @@
-#include "tomo/geometry/Mesh.hpp"
-
+#include "tomo/geometry/comp/Mesh.hpp"
 #include <boost/foreach.hpp>
-
 #include <tbd/log.h>
-
 
 using namespace std;
 
