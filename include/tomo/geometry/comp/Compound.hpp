@@ -19,7 +19,7 @@ namespace tomo
     namespace comp
     {
       /** @brief A Compound is object is an object which consists of several primtives
-       * @detail Moreover, a compound holds a KDTree structure for fast search
+       * @details Moreover, a compound holds a KDTree structure for fast search
        * @tparam PRIMITIVE  Primitive type
        * @todo Large code blocks of inRadius and kNearest are similar, refactor it
        */
