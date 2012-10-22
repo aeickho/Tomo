@@ -28,11 +28,11 @@ namespace tomo
         void boundingRays(float _angle, ray_type& _rayBegin, ray_type& _rayEnd) const;
         void add(const Ring& _ring);
 
-        const BoostPolygon& operator()() const
+        operator const BoostPolygon& () const
         {
           return polygon_;
         }
-        BoostPolygon& operator()()
+        operator BoostPolygon& ()
         {
           return polygon_;
         }
