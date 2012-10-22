@@ -1,26 +1,30 @@
 #pragma once
 
-#include "tomo/geometry/prim/ConnectableSegment.hpp"
+#include "tomo/geometry/prim/LineSegment.hpp"
 #include "tomo/geometry/prim/Ring.hpp"
-#include "tomo/geometry/kd/Tree.hpp"
 
 namespace tomo
 {
   namespace slicing
   {
-    /// A SegmentConnector connects a vector of ConnectableSegments to Rings
+    /// Connects line segments from a compound into several rings
+    template<template<class,class> class RESULT_CONTAINER=std::vector>
     struct SegmentConnector
     {
-      typedef geometry::prim::ConnectableSegment linesegment_type;
-      typedef geometry::prim::Ring ring_type;
-      typedef geometry::kd::Tree<linesegment_type> kdtree_type;
+      typedef geometry::prim::Ring Ring;
+      typedef RESULT_CONTAINER<Ring,std::allocator<Ring>> Rings;
+      typedef geometry::prim::LineSegment LineSegment;
+      typedef geometry::comp::Compound<LineSegment> LineCompound;
 
-      bool operator()(
-          std::vector<linesegment_type>& _inSegments, 
-          std::vector<ring_type>& _outRings);
-    
-    private:
-      kdtree_type kdTree_;
+      Rings operator()(LineCompound& _compound)
+      {
+        // ensure that the compound has a valid index
+        _compound.validate();
+        // multiple rings as result
+        Rings _result;
+        ///@todo Implement connecting algorithm
+        return _result;
+      }
     };
   }
 }

@@ -35,6 +35,15 @@ namespace tomo
         PrimCont primLists_;
         bounds_type bounds_;
 
+        bool empty() const 
+        {
+          return nodes_.empty();
+        }
+        void clear()
+        {
+          nodes_.clear();
+          primLists_.clear();
+        }
         const Node* root() const
         {
           return &nodes_[0];

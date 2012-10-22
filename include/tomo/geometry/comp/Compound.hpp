@@ -39,6 +39,7 @@ namespace tomo
          */
         void add(const value_type& _primitive)
         {
+          kdTree_.clear();
           objs_.push_back(_primitive);
         }
 
@@ -52,6 +53,16 @@ namespace tomo
         bounds_type bounds() const
         {
           return kdTree_.bounds_;
+        }
+
+        void validate()
+        {
+          if( !valid() )
+            kdTree_.build(objs_);
+        }
+        bool valid() const 
+        {
+          return kdTree_.empty();
         }
 
         TBD_PROPERTY_REF(kdtree_type,kdTree);
