@@ -52,8 +52,8 @@ namespace tomo
           return *this;
         }
         /** constructor which takes angles and radius
-          * @param _phi Phi angle (90°-longitude)
-          * @param _theta theta angle (latitude)
+          * @param _longtude longitude angle
+          * @param _latitude latitude angle
           * @param _radius length of the vector
           */
         PolarVec( Coord _longitude, Coord _latitude, Coord _radius ) :
