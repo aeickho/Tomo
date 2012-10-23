@@ -7,10 +7,10 @@ namespace tomo
   {
     namespace prim
     {
-      struct LineSegment : public Primitive2f
+      struct Segment : public Primitive2f
       {
-        LineSegment() {}
-        LineSegment(const point_type& _p0, const point_type& _p1)
+        Segment() {}
+        Segment(const point_type& _p0, const point_type& _p1)
         {
           p_[0] = _p0;
           p_[1] = _p1;

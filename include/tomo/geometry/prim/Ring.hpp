@@ -4,7 +4,7 @@
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/nvp.hpp>
 
-#include "LineSegment.hpp"
+#include "Segment.hpp"
 #include "Vertex.hpp"
 
 namespace tomo
@@ -31,13 +31,13 @@ namespace tomo
 
         void add(point_type _point);
 
-        void fetchLineSegments(std::vector<LineSegment>& _lineSegments) const;
-        void fetchLineSegments(
-          const LineSegment& _lineSegment,
-          std::vector<LineSegment>& _lineSegments) const;
-        void fetchLineSegments(BoostRing::const_iterator it1,
+        void fetchSegments(std::vector<Segment>& _segments) const;
+        void fetchSegments(
+          const Segment& _segment,
+          std::vector<Segment>& _segments) const;
+        void fetchSegments(BoostRing::const_iterator it1,
                                BoostRing::const_iterator it2,
-                               std::vector<LineSegment>& _lineSegments) const;
+                               std::vector<Segment>& _segments) const;
 
         void fetchVertices(std::vector<Vertex2f>& _vertices) const;
         void resize(scalar_type _distance, std::vector<Ring>& _rings);

@@ -13,8 +13,7 @@ namespace tomo
       struct Wrapper : DrawInterface<geometry::Model2f>
       {
         typedef geometry::prim::Ring Ring;
-        typedef geometry::prim::LineSegment LineSegment;
-        typedef geometry::prim::ConnectableSegment ConnectableSegment;
+        typedef geometry::prim::Segment Segment;
         typedef geometry::prim::Polygon Polygon;
         typedef geometry::base::Point3f Point3f;
 
@@ -188,7 +187,7 @@ namespace tomo
           draw( _pFar, Magick::Color("blue") );
         }
 
-        void draw(const LineSegment& _segment, Magick::Color _color)
+        void draw(const Segment& _segment, Magick::Color _color)
         {
           point_type _b = _segment[0];
           point_type _f = _segment[1];
@@ -219,32 +218,22 @@ namespace tomo
           draw(_primitive,_color);
         }
 
-        void draw(const std::vector<LineSegment>& _lineSegments, Magick::Color _color)
+        void draw(const std::vector<Segment>& _lineSegments, Magick::Color _color)
         {
-          draw<LineSegment>(_lineSegments,_color);
-        }
-
-        void draw(const ConnectableSegment& _segment, Magick::Color _color)
-        {
-          draw(LineSegment(_segment[0],_segment[1]),_color);
-        }
-
-        void draw(const std::vector<ConnectableSegment>& _segments, Magick::Color _color)
-        {
-          draw<ConnectableSegment>(_segments,_color);
+          draw<Segment>(_lineSegments,_color);
         }
 
         void draw(const Ring& _ring, Magick::Color _color)
         {
-          std::vector<LineSegment> _lineSegments;
-          _ring.fetchLineSegments(_lineSegments);
+          std::vector<Segment> _lineSegments;
+          _ring.fetchSegments(_lineSegments);
           draw(_lineSegments,_color);
         }
 
         void draw(const Polygon& _polygon, Magick::Color _color)
         {
-          std::vector<LineSegment> _lineSegments;
-          _polygon.fetchLineSegments(_lineSegments);
+          std::vector<Segment> _lineSegments;
+          _polygon.fetchSegments(_lineSegments);
           draw(_lineSegments,_color);
         }
 

@@ -23,8 +23,8 @@ namespace tomo
         Polygon(const BoostPolygon& _boostPolygon);
         Polygon(const Ring& _outer, const std::vector<Ring>& _inners);
 
-        void lineSegments(ray_type& _ray, std::vector<LineSegment>& _lineSegments ) const;
-        void fetchLineSegments(std::vector<LineSegment>& _lineSegments) const;
+        void segments(ray_type& _ray, std::vector<Segment>& _segments ) const;
+        void fetchSegments(std::vector<Segment>& _segments) const;
         void boundingRays(float _angle, ray_type& _rayBegin, ray_type& _rayEnd) const;
         void add(const Ring& _ring);
 
@@ -48,10 +48,10 @@ namespace tomo
         TBD_PROPERTY_REF(bounds_type,bounds);
 
       private:
-        void lineSegmentsFromSegMarkers(
+        void segmentsFromSegMarkers(
           const ray_type& _ray,
           const std::set<float>& _segMarkers,
-          std::vector<LineSegment>& _lineSegments) const;
+          std::vector<Segment>& _segments) const;
       };
     }
   }

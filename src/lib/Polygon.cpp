@@ -36,24 +36,24 @@ namespace tomo
         }
       }
 
-      void Polygon::lineSegments(ray_type& _ray, std::vector<LineSegment>& _lineSegments ) const
+      void Polygon::segments(ray_type& _ray, std::vector<Segment>& _segments ) const
       {
         /// @todo Use kdtree for polygon ray intersection 
         std::set<scalar_type> _segMarkers;
-        vector<LineSegment> _polygonSegments; 
-        fetchLineSegments(_polygonSegments);
+        vector<Segment> _polygonSegments; 
+        fetchSegments(_polygonSegments);
 /*
-        BOOST_FOREACH( const LineSegment& _lineSegment, _polygonSegments )
+        BOOST_FOREACH( const Segment& _segment, _polygonSegments )
         {
           scalar_type _tNear = 0.0, _tFar = 1.0;
-          if (_lineSegment.intersect(_ray,_tNear,_tFar))
+          if (_segment.intersect(_ray,_tNear,_tFar))
           {
             _segMarkers.insert(_ray.tFar());
             _ray.tFar(1.0);
           }
         }*/
 
-        lineSegmentsFromSegMarkers(_ray,_segMarkers,_lineSegments);
+        segmentsFromSegMarkers(_ray,_segMarkers,_segments);
       }
 
       void Polygon::boundingRays(scalar_type _angle, ray_type& _rayBegin, ray_type& _rayEnd) const
@@ -75,32 +75,32 @@ namespace tomo
         _rayEnd.org(_center + _cross - vec_type(_cos,_sin));
       }
 
-      void Polygon::fetchLineSegments(vector<LineSegment>& _lineSegments) const
+      void Polygon::fetchSegments(vector<Segment>& _segments) const
       {
         Ring _outer(polygon_.outer());
-        _outer.fetchLineSegments(_lineSegments);
+        _outer.fetchSegments(_segments);
        
         BOOST_FOREACH( const BoostRing& _ring, polygon_.inners() )
         {
           Ring _inner(_ring);
-          _inner.fetchLineSegments(_lineSegments);
+          _inner.fetchSegments(_segments);
         }
       }
 
-      void Polygon::lineSegmentsFromSegMarkers(
+      void Polygon::segmentsFromSegMarkers(
         const ray_type& _ray,
         const std::set<float>& _segMarkers,
-        std::vector<LineSegment>& _lineSegments) const
+        std::vector<Segment>& _segments) const
       {
         int i = 0;
-        _lineSegments.reserve(_lineSegments.size() + _segMarkers.size()/2);
+        _segments.reserve(_segments.size() + _segMarkers.size()/2);
         point_type _points[2];
         BOOST_FOREACH( const float& _segMarker, _segMarkers )
         {
           _points[i % 2] = _ray.org() + _segMarker * _ray.dir();
           if (i % 2 == 1)
           {
-            _lineSegments.push_back(LineSegment(_points[0],_points[1]));
+            _segments.push_back(Segment(_points[0],_points[1]));
           }
           i++;
         }

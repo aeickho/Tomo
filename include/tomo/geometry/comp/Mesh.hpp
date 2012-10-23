@@ -1,7 +1,7 @@
 #pragma once
 
 #include "tomo/geometry/prim/Primitive.hpp"
-#include "tomo/slicing/LineSegmentPlane.hpp"
+#include "tomo/slicing/SegmentStack.hpp"
 #include <OpenMesh/Core/IO/MeshIO.hh>
 #include <OpenMesh/Core/Mesh/TriMesh_ArrayKernelT.hh>
 
@@ -48,7 +48,7 @@ namespace tomo
         void read(const string& _filename);
 
         void slice(slicing::Slices& _slices) const;
-        void slice(slicing::LineSegmentContainer& _lineSegmentContainer) const;
+        void slice(slicing::SegmentStack& _segmentStack) const;
 
         void calcBounds();
 
@@ -57,7 +57,7 @@ namespace tomo
       private:
 
         void sliceTriangle(ConstFaceIter _faceIter,
-                           slicing::LineSegmentContainer& _lineSegmentContainer) const;
+                           slicing::SegmentStack& _segmentStack) const;
       };
     }
   }

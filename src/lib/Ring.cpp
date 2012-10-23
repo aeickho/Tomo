@@ -42,10 +42,10 @@ namespace tomo
       {
         /*
             Ring _ring(OUTER);
-            _ring.lineSegments() = this->lineSegments();
-            std::vector<LineSegment>& _segments = _ring.lineSegments();
+            _ring.segments() = this->segments();
+            std::vector<Segment>& _segments = _ring.segments();
 
-            BOOST_FOREACH( LineSegment& _segment, _segments )
+            BOOST_FOREACH( Segment& _segment, _segments )
             {
               vec_type _normal(_distance * (_segment.normal()).normalized());
               _segment.front() += _normal;
@@ -57,14 +57,14 @@ namespace tomo
         */
       }
 
-      void Ring::fetchLineSegments(std::vector<LineSegment>& _lineSegments) const
+      void Ring::fetchSegments(std::vector<Segment>& _segments) const
       {
         if (ring_.size() < 2) return;
 
         BoostRing::const_iterator it = ring_.begin();
         BoostPoint2 p0 = ring_.back(), p1 = ring_.front();
-        _lineSegments.reserve(_lineSegments.size() + ring_.size());
-        _lineSegments.push_back(LineSegment(p0,p1));
+        _segments.reserve(_segments.size() + ring_.size());
+        _segments.push_back(Segment(p0,p1));
 
         while (1)
         {
@@ -72,7 +72,7 @@ namespace tomo
           ++it;
           if (it == ring_.end()) break;
           p1 = (*it);
-          _lineSegments.push_back(LineSegment(p0,p1));
+          _segments.push_back(Segment(p0,p1));
         }
       }
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "tomo/geometry/prim/LineSegment.hpp"
+#include "tomo/geometry/prim/Segment.hpp"
 #include "tomo/geometry/prim/Ring.hpp"
 
 namespace tomo
@@ -12,9 +12,9 @@ namespace tomo
     struct SegmentConnector
     {
       typedef geometry::prim::Ring Ring;
+      typedef geometry::prim::Segment Segment;
       typedef RESULT_CONTAINER<Ring,std::allocator<Ring>> Rings;
-      typedef geometry::prim::LineSegment LineSegment;
-      typedef geometry::comp::Compound<LineSegment> LineCompound;
+      typedef geometry::comp::Compound<Segment> LineCompound;
 
       Rings operator()(LineCompound& _compound)
       {

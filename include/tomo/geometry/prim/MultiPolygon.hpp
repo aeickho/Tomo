@@ -39,11 +39,11 @@ namespace tomo
           polygons_.assign(_from,_to);
         }
         /// fetch line segments out of all polygons
-        void fetchLineSegments(std::vector<LineSegment>& _lineSegments) const
+        void fetchSegments(std::vector<Segment>& _segments) const
         {
           BOOST_FOREACH( const Polygon& _polygon, polygons_ )
           {
-            _polygon.fetchLineSegments(_lineSegments);
+            _polygon.fetchSegments(_segments);
           }
         }
 

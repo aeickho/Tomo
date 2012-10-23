@@ -45,44 +45,46 @@ namespace tomo
 #define NUM_THREADS 1
 // TODO: Parallelize this!
 //    omp_set_num_threads(NUM_THREADS);
-        slicing::LineSegmentContainer* _lineSegmentContainer[NUM_THREADS];
+        slicing::SegmentStack* _segmentStack[NUM_THREADS];
 //   #pragma omp parallel for
         for (int i = 0; i < NUM_THREADS; i++)
-          _lineSegmentContainer[i] = new slicing::LineSegmentContainer(_slices);
+          _segmentStack[i] = new slicing::SegmentStack(_slices);
         Mesh::ConstFaceIter    fIt(faces_begin()),fEnd(faces_end());
 //    #pragma omp parallel for
         for (; fIt!=fEnd; ++fIt)
-          sliceTriangle(fIt,*_lineSegmentContainer[0]);
+          sliceTriangle(fIt,*_segmentStack[0]);
         for (int i = 1; i < NUM_THREADS; i++)
         {
-          _lineSegmentContainer[0]->aggregate(*_lineSegmentContainer[i]);
+          _segmentStack[0]->aggregate(*_segmentStack[i]);
         }
-        _lineSegmentContainer[0]->produceSlices();
+        _segmentStack[0]->produceSlices();
         for (int i = 0; i < NUM_THREADS; i++)
-          delete _lineSegmentContainer[i];
+          delete _segmentStack[i];
       }
 
-      void Mesh::slice(slicing::LineSegmentContainer& _lineSegmentContainer) const
+      void Mesh::slice(slicing::SegmentStack& _segmentStack) const
       {
         Mesh::ConstFaceIter    fIt(faces_begin()),fEnd(faces_end());
 //    #pragma omp parallel for
         for (; fIt!=fEnd; ++fIt)
-          sliceTriangle(fIt,_lineSegmentContainer);
+          sliceTriangle(fIt,_segmentStack);
       }
       void Mesh::sliceTriangle(ConstFaceIter _faceIter,
-                               slicing::LineSegmentContainer& _lineSegmentContainer) const
+                               slicing::SegmentStack& _segmentStack) const
       {
+        using prim::Segment;
+
         Mesh::ConstFaceVertexIter fvIt = cfv_iter(_faceIter.handle());
         Point3f A = point(fvIt), B = point(++fvIt), C = point(++fvIt);
-        slicing::LineSegmentContainer::const_iterator
-        _Ait = _lineSegmentContainer.get(A.z()),
-        _Bit = _lineSegmentContainer.get(B.z()),
-        _Cit = _lineSegmentContainer.get(C.z()),
-        it;
-        using slicing::LineSegmentPlane;
-        LineSegmentPlane* _lineSegmentPlaneA = const_cast<LineSegmentPlane*>(&(_Ait->second));
-        LineSegmentPlane* _lineSegmentPlaneB = const_cast<LineSegmentPlane*>(&(_Bit->second));
-        LineSegmentPlane* _lineSegmentPlaneC = const_cast<LineSegmentPlane*>(&(_Cit->second));
+        slicing::SegmentStack::iterator _Ait = _segmentStack.get(A.z()),
+                                        _Bit = _segmentStack.get(B.z()),
+                                        _Cit = _segmentStack.get(C.z()),
+                                        it;
+
+        typedef Compound<Segment> SegmentPlane;
+        SegmentPlane* _segmentPlaneA = &(_Ait->second);
+        SegmentPlane* _segmentPlaneB = &(_Bit->second);
+        SegmentPlane* _segmentPlaneC = &(_Cit->second);
         // If all vertices lay in the same lineSegmentPlane, add a triangle
         // XXX: Skip this for now...
         /*if ((_Ait == _Bit) && (_Bit == _Cit))
@@ -101,37 +103,37 @@ namespace tomo
         ///       \A
         if (_Ait->first > _Bit->first)
         {
-          std::swap(_lineSegmentPlaneA,_lineSegmentPlaneB);
+          std::swap(_segmentPlaneA,_segmentPlaneB);
           std::swap(_Ait,_Bit);
           std::swap(A,B);
         }
         if (_Bit->first > _Cit->first)
         {
-          std::swap(_lineSegmentPlaneB,_lineSegmentPlaneC);
+          std::swap(_segmentPlaneB,_segmentPlaneC);
           std::swap(_Bit,_Cit);
           std::swap(B,C);
         }
         if (_Ait->first > _Bit->first)
         {
-          std::swap(_lineSegmentPlaneA,_lineSegmentPlaneB);
+          std::swap(_segmentPlaneA,_segmentPlaneB);
           std::swap(_Ait,_Bit);
           std::swap(A,B);
         }
         Point2f _Aproj = A.project(Z);
         Vec3f b = B - A;
-        float _invBz = 1.0 / b.z();
+        scalar_type _invBz = 1.0 / b.z();
         Vec3f c = C - A;
-        float _invCz = 1.0 / c.z();
+        scalar_type _invCz = 1.0 / c.z();
         Vec3f d = C - B;
-        float _invDz = 1.0 / d.z();
+        scalar_type _invDz = 1.0 / d.z();
         Vec3f N = normal(_faceIter);
         // TODO Extend this to be flexible with slicing axis (only Z axis is supported for now)
-        float _ratioR, _ratioS;
+        scalar_type _ratioR, _ratioS;
         Vec2f r,s;
-        for (it = _Ait ; it != _Bit && it != _lineSegmentContainer.end(); ++it)
+        for (it = _Ait ; it != _Bit && it != _segmentStack.end(); ++it)
         {
-          float _pos = it->first - A.z();
-          LineSegmentPlane* _lineSegmentPlane = const_cast<LineSegmentPlane*>(&(it->second));
+          scalar_type _pos = it->first - A.z();
+          SegmentPlane* _segmentPlane = &(it->second);
           _ratioR = _pos * _invCz;
           _ratioS = _pos * _invBz;
           r(c.x()*_ratioR,c.y()*_ratioR);
@@ -142,12 +144,12 @@ namespace tomo
           _normal(-_normal[1],_normal[0]);
           /// Swap point to assure that points are in proper order to be able to make lineSegments
           if (dot(Vec2f(N.x(),N.y()),_normal) > 0.0) std::swap(_p0,_p1);
-          _lineSegmentPlane->addSegment(_p0,_p1);
+          _segmentPlane->add(Segment(_p0,_p1));
         }
-        for (it = _Bit ; it != _Cit && it != _lineSegmentContainer.end(); ++it)
+        for (it = _Bit ; it != _Cit && it != _segmentStack.end(); ++it)
         {
-          float _pos = it->first;
-          LineSegmentPlane* _lineSegmentPlane = const_cast<LineSegmentPlane*>(&(it->second));
+          scalar_type _pos = it->first;
+          SegmentPlane* _segmentPlane = &(it->second);
           _ratioR = (_pos - A.z()) * _invCz;
           _ratioS = (_pos - B.z()) * _invDz;
           r(c.x()*_ratioR,c.y()*_ratioR);
@@ -158,7 +160,7 @@ namespace tomo
           _normal(-_normal[1],_normal[0]);
           /// Swap point to assure that points are in proper order to be able to make lineSegments
           if (dot(Vec2f(N.x(),N.y()),_normal) > 0.0) std::swap(_p0,_p1);
-          _lineSegmentPlane->addSegment(_p0,_p1);
+          _segmentPlane->add(Segment(_p0,_p1));
         }
       }
     }
