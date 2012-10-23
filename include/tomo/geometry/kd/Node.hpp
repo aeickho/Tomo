@@ -16,7 +16,8 @@ namespace tomo
       union Node
       {
         typedef typename PRIMITIVE::scalar_type scalar_type;
-        typedef std::vector<PRIMITIVE*> cntr_type;
+        typedef std::vector<const PRIMITIVE*> cntr_type;
+        
         bool isLeaf() const
         {
           return !inner_.is();
@@ -60,8 +61,6 @@ namespace tomo
         /// Leaf node
         struct Leaf
         {
-          typedef std::vector<PRIMITIVE*> cntr_type;
-          typedef typename cntr_type::iterator iterator;
           typedef typename cntr_type::const_iterator const_iterator;
 
           const_iterator begin(const cntr_type& _src) const
@@ -69,14 +68,6 @@ namespace tomo
             return _src.begin() + offset_;
           }
           const_iterator end(const cntr_type& _src) const
-          {
-            return _begin(_src) + size_;
-          }
-          iterator begin(cntr_type& _src) const
-          {
-            return _src.begin() + offset_;
-          }
-          iterator end(cntr_type& _src) const
           {
             return _begin(_src) + size_;
           }

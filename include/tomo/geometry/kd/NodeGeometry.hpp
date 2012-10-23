@@ -2,6 +2,7 @@
 
 #include "NodeIntersectResult.hpp"
 #include "tomo/geometry/base/Coord.hpp"
+#include "tomo/geometry/base/Bounds.hpp"
 
 namespace tomo
 {
@@ -9,14 +10,16 @@ namespace tomo
   {
     namespace kd
     {
-      template <typename PRIMITIVE>
-      struct NodeGeometry
+      template <typename MODEL>
+      struct NodeGeometry : MODEL
       {
+        TOMO_MODEL_TYPES(MODEL);
         typedef base::Axis axis_type;
-        typedef typename PRIMITIVE::bounds_type bounds_type;
-        typedef typename PRIMITIVE::scalar_type scalar_type;
+        typedef base::Bounds<MODEL> bounds_type;
 
-        NodeGeometry(bounds_type& _bounds, axis_type _axis, scalar_type _splitPos) :
+        NodeGeometry(const bounds_type& _bounds, 
+                     const axis_type _axis, 
+                     const scalar_type _splitPos) :
           bounds_(_bounds),
           axis_(_axis),
           splitPos_(_splitPos)

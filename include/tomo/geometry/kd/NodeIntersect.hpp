@@ -9,7 +9,8 @@ namespace tomo
     namespace kd
     {
       template <class PRIMITIVE>
-      NodeIntersectResult intersect(PRIMITIVE& _primitive, NodeGeometry<PRIMITIVE>& _node)
+      NodeIntersectResult intersect(const PRIMITIVE& _primitive, 
+                                    const NodeGeometry<typename PRIMITIVE::model_type>& _node)
       {
         return NodeIntersectResult();
       }

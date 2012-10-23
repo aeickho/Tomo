@@ -6,19 +6,16 @@ namespace tomo
 {
   namespace geometry
   {
-    namespace prim
+    namespace algorithms
     {
-      namespace intersect
+      template <class PRIMITIVE>
+      bool intersect(
+          const PRIMITIVE& _primitive, 
+          typename PRIMITIVE::ray_type& _ray, 
+          typename PRIMITIVE::scalar_type* _tNear = nullptr,
+          typename PRIMITIVE::scalar_type* _tFar = nullptr)
       {
-        template <class PRIMITIVE>
-        struct RayIntersector : Intersector< PRIMITIVE,typename aux::Ray<PRIMITIVE::model_type> >
-        {
-          typedef typename aux::Ray<PRIMITIVE::model_type> ray_type;
-          typedef typename PRIMITIVE primitive_type;
 
-          TBD_PROPERTY(scalar_type,tNear);
-          TBD_PROPERTY(scalar_type,tFar);
-        };
       }
     }
   }

@@ -7,33 +7,28 @@ namespace tomo
 {
   namespace geometry
   {
-    namespace prim
+    namespace algorithms
     {
-      namespace intersect
+      bool intersect(
+        const Plane& _plane,
+        Plane::ray_type& _ray,
+        Plane::scalar_type* _tNear = nullptr,
+        Plane::scalar_type* _tFar = nullptr)
       {
-        struct RayVsPlane : RayIntersector<Plane>
-        {
-          bool operator()(Plane& _plane, ray_type& _ray) const
-          {
-            scalar_type dn = dot(_ray.dir(),_plane.normal());
-            if (dn == 0.0f) return false;
+        scalar_type dn = dot(_ray.dir(),_plane.normal());
+        if (dn == 0.0f) return false;
 
-            vec_type org = _ray.org() - _plane.center();
+        vec_type org = _ray.org() - _plane.center();
 
-            scalar_type d = -dot(_plane.normal(),org) / dn;
-            if (d < 0) return false;
+        scalar_type d = -dot(_plane.normal(),org) / dn;
+        if (d < 0) return false;
 
-            vec_type iPoint = _ray.org() +_ray.dir() *d - _plane.center();
+        vec_type iPoint = _ray.org() +_ray.dir() *d - _plane.center();
 
-            if (normal_) (*normal_)(_plane.normal());
+        if (normal_) (*normal_)(_plane.normal());
 
-            return _ray.intersection(this->pointer(),d,_tNear,_tFar);
-          }
-
-          TBD_PROPERTY(vec_type*,normal);
-          TBD_PROPERTY(scalar_type,tNear);
-          TBD_PROPERTY(scalar_type,tFar);
-        };
+        return _ray.intersection(this->pointer(),d,*_tNear,*_tFar);
       }
     }
   }
+}

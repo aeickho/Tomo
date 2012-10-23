@@ -1,6 +1,6 @@
 #pragma once
 
-#include "tomo/geometry/prim/ConnectableSegment.hpp"
+#include "tomo/geometry/prim/Segment.hpp"
 
 namespace tomo
 {
@@ -8,13 +8,12 @@ namespace tomo
   {
     namespace kd 
     {
-      NodeIntersectResult intersect(prim::ConnectableSegment& _lineSegment,
-                                    NodeGeometry<prim::ConnectableSegment>& _node)
+      NodeIntersectResult intersect(const prim::Segment& _segment,
+                                    const NodeGeometry<typename PRIMITIVE::model_type>& _node)
       {
         return NodeIntersectResult(_lineSegment[1][_node.axis()] <= _node.splitPos(),
                                    _lineSegment[1][_node.axis()] >= _node.splitPos());
       }
-
     }
   }
 }

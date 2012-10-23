@@ -29,7 +29,7 @@ namespace tomo
         typedef std::vector<Node> NodeCont;
 
         /// Primitive container
-        typedef std::vector<PRIMITIVE*> PrimCont;
+        typedef std::vector<const PRIMITIVE*> PrimCont;
 
         NodeCont nodes_;
         PrimCont primLists_;
@@ -97,7 +97,7 @@ namespace tomo
           return _found;
         }
 
-        void build(std::vector<PRIMITIVE>& _objs, unsigned _primitivesPerNode = 10)
+        void build(const std::vector<PRIMITIVE>& _objs, unsigned _primitivesPerNode = 10)
         {
           // Clear data containers and reserve memory 
           primLists_.clear();
@@ -115,7 +115,7 @@ namespace tomo
             unsigned nodeIndex_;
             TBD_PROPERTY_REF(bounds_type,bounds);
             TBD_PROPERTY_REF(PrimCont,primList);
-          } _state;
+           } _state;
           
           int _stackPt = -1;
 
@@ -157,7 +157,7 @@ namespace tomo
               _right.nodeIndex_ = _state.nodeIndex_+1; /// Equal to _node->inner_.right(), but faster ;)
              
               // Make node geometry
-              NodeGeometry<PRIMITIVE> _nodeGeometry(_state.bounds(),_axis,_splitPos);
+              NodeGeometry<typename PRIMITIVE::model_type> _nodeGeometry(_state.bounds(),_axis,_splitPos);
               
               // Split node
               _state.bounds().split(_splitPos,_axis,_state.bounds(),_right.bounds());

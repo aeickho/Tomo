@@ -30,7 +30,7 @@ namespace tomo
           typedef typename KDTREE::scalar_type scalar_type;
           typedef typename KDTREE::point_type point_type;
           typedef std::pair<scalar_type,primitive_type*> pair_type;
-          typedef std::vector<primitive_type*> ptr_vector_type;
+          typedef std::vector<const primitive_type*> ptr_vector_type;
 
           struct State
           {
@@ -98,7 +98,7 @@ namespace tomo
             /// For each primitive in leaf node, calculate distance
             /// Distance is smaller than current found nearest primitive,
             /// replace it
-            for (typename ptr_vector_type::iterator it = state_.node()->leaf_.begin(); 
+            for (auto it = state_.node()->leaf_.begin(); 
                  it != state_.node()->leaf_.end(); ++it)
             {
               primitive_type* _nodePrim = (*it);

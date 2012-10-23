@@ -14,6 +14,8 @@ namespace tomo
   {
     namespace base
     {
+      typedef enum { X,Y,Z,W } Axis;
+      
       class Matrix4f
       {
       public:
@@ -211,8 +213,6 @@ namespace tomo
         /// Array to store coordinate values
         scalar_type a_[dimensions_];
       };
-
-      typedef enum { X,Y,Z,W } Axis;
 
 #define COORDS(C) C.x(),C.y(),C.z()
     }
