@@ -2,6 +2,7 @@
 #define _POINT_HPP
 
 #include "Coord.hpp"
+#include "Matrix.hpp"
 #include <boost/geometry/geometries/point_xy.hpp>
 
 namespace tomo
@@ -22,6 +23,7 @@ namespace tomo
         TOMO_MODEL_TYPES(MODEL);
         typedef Coords<MODEL> coords_type;
         typedef Vec<MODEL> vector_type;
+        typedef Matrix<Model<dimensions_+1,scalar_type>> matrix_type;
 
         Point() : coords_type() {}
         Point( coords_type& p ) : coords_type( p ) {}
@@ -34,6 +36,23 @@ namespace tomo
                       boost::geometry::get<1>(_boostPoint))
         {}
 
+        friend Point operator*( const matrix_type& _m, const Point& _p)
+        {
+          Point _point;
+          TOMO_FOREACH_DIM(i)
+          {
+            for (int j = 0; j < dimensions_+1; j++)
+            {
+              _point[i] += (j == dimensions_) ? _m(i,j) : _m(i,j) * _p[j];
+            }
+          }
+          return _point;
+        }
+
+        friend Point operator*( const Point& _p, const matrix_type& _m)
+        {
+          return _m * _p;
+        }
 
         friend vector_type operator-( const Point& a, const Point& b)
         {
@@ -89,7 +108,7 @@ namespace tomo
           }
           return _projPoint;
         }
-        
+
         template<class ARCHIVE>
         void serialize( ARCHIVE& _ar, const unsigned int _fileVersion )
         {

@@ -15,32 +15,7 @@ namespace tomo
     namespace base
     {
       typedef enum { X,Y,Z,W } Axis;
-      
-      class Matrix4f
-      {
-      public:
-        Matrix4f()
-        {
-          for (int i = 0; i < 4; i++)
-            for (int j = 0; j < 4; j++)
-              set(i,j,(i == j) ? 1.0f : 0.0f);
-        };
-
-        void  set(int _x, int _y, float v)
-        {
-          c[_x*4+_y] = v;
-        }
-        float get(int _x, int _y)
-        {
-          return c[_x*4+_y];
-        }
-
-        void  print();
-
-      private:
-        float c[4*4];
-      };
-
+     
 /// Compiler macro for iterating over each dimension
 #define TOMO_FOREACH_DIM(i) for (int i = 0; i < dimensions_; i++)
 #define TOMO_FOREACH_DIM_(t,i) for (int i = 0; i < t.dimensions_; i++)
@@ -54,6 +29,7 @@ namespace tomo
       {
         TOMO_MODEL_TYPES(MODEL);
         typedef scalar_type value_type;
+
         /// Base constructor, all values are initially set to zero
         Coords()
         {

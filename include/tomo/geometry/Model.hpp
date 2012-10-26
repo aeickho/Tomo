@@ -30,6 +30,7 @@ namespace tomo
     typedef Model<2,unsigned short> Model2us;
     typedef Model<2,short> Model2s;
     typedef Model<3,float> Model3f;
+    typedef Model<4,float> Model4f;
   }
 }
 
