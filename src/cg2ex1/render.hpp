@@ -436,7 +436,7 @@ inline void draw( tomo::Polyline _polyline, float _posZ, tomo::Bounds2f _bounds)
   glEnd();
 }
 */
-inline void draw( tomo::slicing::Slices& _slices )
+inline void draw( tomo::slicing::SliceStack& _slices )
 {
   glPushMatrix();
   //  std::vector<const tomo::Slice*> _allSlices = _slices.get();

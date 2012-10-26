@@ -10,7 +10,7 @@ namespace tomo
 {
   namespace slicing
   {
-    SegmentStack::SegmentStack(Slices& _slices) : slices_(_slices)
+    SegmentStack::SegmentStack(SliceStack& _sliceStack) : slices_(_sliceStack)
     {
       initializePlanes();
     }
@@ -24,24 +24,5 @@ namespace tomo
       }
     }
 
-    void SegmentStack::aggregate(const SegmentStack& _segmentStack)
-    {
-      vector< SegmentPlane* > _thisPlanes = fetch();
-      vector<const SegmentPlane* > _otherPlanes = _segmentStack.fetch();
-
-      if (_thisPlanes.size() != _otherPlanes.size())
-      {
-        LOG_ERR << "Number of planes must be equal!";
-        return;
-      }
-
-      for (size_t i = 0; i < _thisPlanes.size(); i++)
-        _thisPlanes[i]->aggregate(*_otherPlanes[i]);
-    }
-
-    void SegmentStack::produceSlices()
-    {
-
-    }
   }
 }

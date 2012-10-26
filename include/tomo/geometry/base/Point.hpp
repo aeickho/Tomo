@@ -96,14 +96,14 @@ namespace tomo
           return v;
         }
 
-        Point<Model<dimensions_-1,scalar_type>> project(Axis _axis)
+        Point<Model<dimensions_-1,scalar_type>> project(Axis _axis) const
         {
           Point<Model<dimensions_-1,scalar_type>> _projPoint;
           int _dim = 0;
           TOMO_FOREACH_DIM(i)
           {
             if (i == _axis) continue;
-            _projPoint[_dim] = this->a_[i];
+            _projPoint[_dim] = Point::a_[i];
             _dim++;
           }
           return _projPoint;

@@ -11,7 +11,7 @@ namespace tomo
   {
     namespace prim
     {
-      using slicing::Slices;
+      using slicing::SliceStack;
       using slicing::Slice;
       using base::Point2f;
 

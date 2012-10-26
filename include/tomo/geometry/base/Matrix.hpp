@@ -7,7 +7,7 @@ namespace tomo
     namespace base
     {
       template<class MODEL>
-      class Matrix
+      class Matrix : MODEL
       {
       public:
         TOMO_MODEL_TYPES(MODEL);

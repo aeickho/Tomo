@@ -1,3 +1,5 @@
+#pragma once
+
 #include <map>
 #include <vector>
 
@@ -10,15 +12,16 @@ namespace tomo
     namespace comp
     {
       /** @brief Plane Stack is a class template to represent several planes ordered by position
-       *  @details Internally, planes are stored in a map<POSITION,PLANE>
+       *  @details Internally, planes are stored in a map<scalar_type,plane_type>
        */
-      template<class POSITION, class PLANE>
+      template<class PLANE>
       struct PlaneStack : prim::Primitive3f
       {
-        typedef std::pair<POSITION,PLANE> key_value_type;
-        typedef std::map<POSITION,PLANE> map_type;
-        typedef std::vector<PLANE*> ptrctnr_type;
-        typedef std::vector<const PLANE*> const_ptrctnr_type;
+        typedef PLANE plane_type;
+        typedef std::pair<scalar_type,plane_type> key_value_type;
+        typedef std::map<scalar_type,plane_type> map_type;
+        typedef std::vector<plane_type*> ptrctnr_type;
+        typedef std::vector<const plane_type*> const_ptrctnr_type;
 
         typedef typename map_type::iterator iterator;
         typedef typename map_type::const_iterator const_iterator;
@@ -51,12 +54,12 @@ namespace tomo
           return fetch(planes_.begin(),planes_.end());
         }
 
-        ptrctnr_type fetch(POSITION _begin, POSITION _end)
+        ptrctnr_type fetch(scalar_type _begin, scalar_type _end)
         {
           return fetch(get(_begin),get(_end));
         }
 
-        const_ptrctnr_type fetch(POSITION _begin, POSITION _end) const
+        const_ptrctnr_type fetch(scalar_type _begin, scalar_type _end) const
         {
           return fetch(get(_begin),get(_end));
         }
@@ -71,12 +74,12 @@ namespace tomo
         }
 
         /// Get slice by position
-        iterator get(POSITION _pos)
+        iterator get(scalar_type _pos)
         {
           return planes_.lower_bound(_pos);
         }
 
-        const_iterator get(POSITION _pos) const
+        const_iterator get(scalar_type _pos) const
         {
           return planes_.lower_bound(_pos);
         }

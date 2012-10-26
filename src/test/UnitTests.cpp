@@ -8,6 +8,9 @@
 
 LOG_INIT;
 
+using namespace tomo;
+
+#include "TriangleSlicingTest.hpp"
 #include "LineSegmentConnectingTest.hpp"
 #include "PolygonSortingTest.hpp"
 #include "ToolchainTest.hpp"

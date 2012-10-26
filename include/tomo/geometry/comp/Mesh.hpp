@@ -38,26 +38,48 @@ namespace tomo
       };
 
       class Mesh : public OpenMesh::TriMesh_ArrayKernelT<MeshTraits>,
-                   public prim::Primitive3f
+        public prim::Primitive3f
       {
       public:
         typedef enum { SM_FLAT, SM_GOURAUD } ShadeMode;
 
         Mesh() : shadeMode_(SM_FLAT) {}
+        Mesh(const std::string& _filename) :
+          shadeMode_(SM_FLAT)
+        {
+          read(_filename);
+        }
 
-        void read(const string& _filename);
+        void read(const std::string& _filename)
+        {
+          TOMO_ASSERT(OpenMesh::IO::read_mesh(*this, _filename));
+          update();
+        }
 
-        void slice(slicing::Slices& _slices) const;
-        void slice(slicing::SegmentStack& _segmentStack) const;
-
-        void calcBounds();
+        void update()
+        {
+          update_face_normals();
+          update_vertex_normals();
+          calcBounds();
+        }
 
         TBD_PROPERTY(ShadeMode,shadeMode);
         TBD_PROPERTY(bounds_type,bounds);
       private:
-
-        void sliceTriangle(ConstFaceIter _faceIter,
-                           slicing::SegmentStack& _segmentStack) const;
+        void calcBounds()
+        {
+          bounds_type _bounds;
+          Mesh::ConstFaceIter    fIt(faces_begin()),fEnd(faces_end());
+          Mesh::ConstFaceVertexIter fvIt;
+          for (; fIt!=fEnd; ++fIt)
+          {
+            fvIt = cfv_iter(fIt.handle());
+            _bounds.extend(point(fvIt));
+            _bounds.extend(point(++fvIt));
+            _bounds.extend(point(++fvIt));
+          }
+          bounds_=_bounds;
+        }
       };
     }
   }

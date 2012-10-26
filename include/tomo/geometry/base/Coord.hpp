@@ -177,6 +177,21 @@ namespace tomo
           return ss.str();
         }
 
+
+        friend bool operator == ( const Coords& _a, const Coords& _b)
+        {
+          TOMO_FOREACH_DIM(i)
+            if (_a[i] != _b[i]) return false;
+
+          return true;
+        }
+
+        friend bool operator != ( const Coords& _a, const Coords& _b)
+        {
+          return !(_a == _b);
+        }
+
+
         template<class ARCHIVE>
         void serialize( ARCHIVE& _ar, const unsigned int _fileVersion )
         {

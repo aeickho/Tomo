@@ -11,7 +11,7 @@ namespace tomo
     using geometry::base::Bounds3f;
     using geometry::base::Vec3f;
     using geometry::base::Vec2f;
-    using slicing::Slices;
+    using slicing::SliceStack;
     using slicing::SlicableObject;
 
     ObjectPlacer::ObjectPlacer(const PrintBounds& _printBounds) :
@@ -49,7 +49,7 @@ namespace tomo
     }
 
     void ObjectPlacer::place(SlicableObject* _object, 
-                             Slices* _slices,
+                             SliceStack* _slices,
                              vector<rect_type>& _rectList)
     {
       /*
