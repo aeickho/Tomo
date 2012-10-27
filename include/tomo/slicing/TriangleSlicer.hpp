@@ -54,12 +54,12 @@ namespace tomo
       {
         TOMO_NOT_TESTED();
         using geometry::prim::Segment;
+        typedef geometry::comp::Compound<Segment> SegmentPlane;
+        
         SegmentStack::iterator _Ait = _segmentStack.get(A.z()),
                                _Bit = _segmentStack.get(B.z()),
                                _Cit = _segmentStack.get(C.z()),
                                it;
-
-        typedef geometry::comp::Compound<Segment> SegmentPlane;
 
         Point2f _Aproj = A.project(geometry::base::Z);
         vec_type b = B - A;

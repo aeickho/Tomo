@@ -79,8 +79,7 @@ namespace tomo
           bool leaf()
           {
             bool _found = false;
-            for (typename ptr_vector_type::const_iterator it = state_.node()->leaf_.begin(); 
-                 it != state_.node()->leaf_.end(); ++it)
+            for (auto it = state_.node()->leaf_.begin(); it != state_.node()->leaf_.end(); ++it)
             {
               _found |= INTERSECT_FUNCTOR(ray_,state_.tNear(),state_.tFar(),*it);
             }

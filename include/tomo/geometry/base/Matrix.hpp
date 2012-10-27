@@ -6,6 +6,10 @@ namespace tomo
   {
     namespace base
     {
+#define TOMO_FOREACH_COEFF(i,j) \
+      TOMO_FOREACH_DIM(i) \
+        TOMO_FOREACH_DIM(j) \
+
       template<class MODEL>
       class Matrix : MODEL
       {
@@ -20,23 +24,20 @@ namespace tomo
 
         void loadIdentity()
         {
-          TOMO_FOREACH_DIM(i)
+          TOMO_FOREACH_COEFF(i,j)
           {
-            TOMO_FOREACH_DIM(j)
-            {
-              Matrix::operator()(i,j) = (i == j) ? 1 : 0;
-            }
+            Matrix::operator()(i,j) = (i == j) ? 1 : 0;
           }
         }
 
         const scalar_type& operator()(int _x, int _y) const
         {
-          return a_[_x][_y];
+          return a_[_y][_x];
         }
 
         scalar_type& operator()(int _x, int _y)
         {
-          return a_[_x][_y];
+          return a_[_y][_x];
         }
 
       private:

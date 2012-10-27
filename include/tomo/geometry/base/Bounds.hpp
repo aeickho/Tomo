@@ -57,7 +57,7 @@ namespace tomo
          */
         void extend(const Bounds& _that)
         {
-          BOOST_ASSERT(valid() && _that.valid());
+          TOMO_ASSERT(valid() && _that.valid());
           TOMO_FOREACH_DIM(i)
           {
             min_[i] = std::min(_that.min_[i],min_[i]);
@@ -70,7 +70,7 @@ namespace tomo
          */
         void extend(const point_type& _that)
         {
-          BOOST_ASSERT(valid());
+          TOMO_ASSERT(valid());
           TOMO_FOREACH_DIM(i)
           {
             min_[i] = std::min(_that[i],min_[i]);
@@ -84,7 +84,7 @@ namespace tomo
          */
         bool inside(const point_type& _that) const
         {
-          BOOST_ASSERT(valid());
+          TOMO_ASSERT(valid());
           TOMO_FOREACH_DIM(i)
           {
             if (_that[i] < min_[i] || _that[i] > max_[i]) 
@@ -100,7 +100,7 @@ namespace tomo
          */
         friend bool overlap(const Bounds& _first, const Bounds& _second)
         {
-          BOOST_ASSERT(_first.valid() && _second.valid());
+          TOMO_ASSERT(_first.valid() && _second.valid());
           TOMO_FOREACH_DIM(i)
           {
             if (_first.min_[i] > _second.max_[i] || _first.max_[i] < _second.min_[i]) 
@@ -133,7 +133,7 @@ namespace tomo
          */
         vec_type size() const
         {
-          BOOST_ASSERT(valid());
+          TOMO_ASSERT(valid());
           return max_ - min_;
         }
 
@@ -161,9 +161,9 @@ namespace tomo
          */
         bool split(scalar_type _splitPos, base::Axis _axis, Bounds& _first, Bounds& _second) const
         {
-          BOOST_ASSERT(valid());
+          TOMO_ASSERT(valid());
           // split position must be within bounds!
-          BOOST_ASSERT(_splitPos >= min_[_axis] && _splitPos <= max_[_axis]);
+          TOMO_ASSERT(_splitPos >= min_[_axis] && _splitPos <= max_[_axis]);
           // calculate bounds
           point_type _min = min_, _max = max_;
           _min[_axis] = _splitPos;

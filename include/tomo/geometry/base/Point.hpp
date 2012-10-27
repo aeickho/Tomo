@@ -60,12 +60,14 @@ namespace tomo
           TOMO_FOREACH_DIM(i) v[i] = a[i]-b[i];
           return v;
         }
+
         friend Point operator+( const Point& a, const Point& b)
         {
           Point p;
           TOMO_FOREACH_DIM(i) p[i] = a[i] + b[i];
           return p;
         }
+
         friend Point operator+( const Point& a, const vector_type& b)
         {
           Point p;
