@@ -17,13 +17,15 @@ namespace tomo
         typedef geometry::prim::Polygon Polygon;
         typedef geometry::base::Point3f Point3f;
 
-        Wrapper(Magick::Image& _image) :
-          image_(_image),
+        Wrapper(int _width, int _height) :
           drawEndings_(false),
           drawNormals_(false),
-          vertexWidth_(4.0)
+          vertexWidth_(4.0),
+          scale_(1,1),
+          offset_(0,0)
         {
-          image_.fillColor("none");
+          image_ = Magick::Image( Magick::Geometry(_width,_height), Magick::Color("black") );
+          image_.fillColor(Magick::Color("none"));
         }
 
         ///@todo Make TreeDrawVisitor generic
@@ -40,9 +42,9 @@ namespace tomo
             TBD_PROPERTY(const Node*,node);
           };
 
-          TreeDrawVisitor(const KDTREE& _kdTree, Magick::Image& _image, Magick::Color _color) :
+          TreeDrawVisitor(const KDTREE& _kdTree, Wrapper& _wrapper, Magick::Color _color) :
             color_(_color),
-            image_(_image),
+            wrapper_(_wrapper),
             kdTree_(_kdTree)
           {
             state_.node(_kdTree.root());
@@ -52,12 +54,8 @@ namespace tomo
           /// Define what to do in the root node (draw bounding box)
           bool root()
           {
-            image_.strokeColor(color_);
-            image_.draw( Magick::DrawableRectangle(
-                           kdTree_.bounds_.min().x(),
-                           kdTree_.bounds_.min().y(),
-                           kdTree_.bounds_.max().x(),
-                           kdTree_.bounds_.max().y() ));
+            wrapper_.image().strokeColor(color_);
+            wrapper_.drawRect(kdTree_.bounds_.min(),kdTree_.bounds_.max());
             return true;
           }
 
@@ -80,21 +78,15 @@ namespace tomo
             state_.bounds().split(_splitPos,_axis,_left,_right);
 
             unsigned _alphaValue = 10000+55000*state_.bounds().radius()/kdTree_.bounds_.radius();
-            image_.strokeColor(Magick::Color(_alphaValue,_alphaValue,_alphaValue));
+            wrapper_.image().strokeColor(Magick::Color(_alphaValue,_alphaValue,_alphaValue));
 
             switch (_axis)
             {
             case geometry::base::X:
-              image_.draw( Magick::DrawableLine(_splitPos,
-                                                state_.bounds().min().y(),
-                                                _splitPos,
-                                                state_.bounds().max().y()) );
+              wrapper_.drawLine(point_type(_splitPos,state_.bounds().min().y()),point_type(_splitPos,state_.bounds().max().y()));
               break;
             case geometry::base::Y:
-              image_.draw( Magick::DrawableLine(state_.bounds().min().x(),
-                                                _splitPos,
-                                                state_.bounds().max().x(),
-                                                _splitPos) );
+              wrapper_.drawLine(point_type(_splitPos,state_.bounds().min().y()),point_type(_splitPos,state_.bounds().max().y()));
               break;
             default:
               break;
@@ -116,7 +108,7 @@ namespace tomo
           TBD_PROPERTY(Magick::Color,color);
           TBD_PROPERTY_REF(State,state);
         private:
-          Magick::Image& image_;
+          Wrapper& wrapper_;
           const KDTREE& kdTree_;
         };
 
@@ -124,7 +116,7 @@ namespace tomo
         void draw(const geometry::kd::Tree<PRIMITIVE>& _kdTree,
                   Magick::Color _color)
         {
-          TreeDrawVisitor< geometry::kd::Tree<PRIMITIVE> > _visitor(_kdTree,image_,_color);
+          TreeDrawVisitor< geometry::kd::Tree<PRIMITIVE> > _visitor(_kdTree,*this,_color);
           _kdTree.traversal(_visitor);
         }
 
@@ -139,31 +131,24 @@ namespace tomo
         void draw(const std::vector<PRIMITIVE*> _primitives, Magick::Color _color)
         {
           BOOST_FOREACH( PRIMITIVE* _primitive, _primitives )
-          draw(*_primitive,_color);
+            draw(*_primitive,_color);
         }
 
         void draw(const bounds_type& _bounds, Magick::Color _color)
         {
           image_.strokeColor(_color);
-          image_.draw( Magick::DrawableRectangle(
-                         _bounds.min().x(),
-                         _bounds.min().y(),
-                         _bounds.max().x(),
-                         _bounds.max().y() ));
-
+          drawRect(_bounds.min(),_bounds.max());
         }
 
         void draw(const geometry::prim::Vertex2f& _vertex, Magick::Color _color)
         {
           image_.strokeColor(_color);
           point_type _p(_vertex.v().x(),_vertex.v().y());
-          image_.draw( Magick::DrawableCircle( _p.x(),_p.y(),vertexWidth_+_p.x(),_p.y() ));
-
+          
+          drawCircle(_p,vertexWidth_);
           if (drawNormals_)
           {
-            image_.draw( Magick::DrawableLine(_p.x(),_p.y(),
-                                              _p.x() + _vertex.n().x(),
-                                              _p.y() + _vertex.n().y()));
+            drawLine(_p,_p + _vertex.n());
           }
         }
 
@@ -181,8 +166,8 @@ namespace tomo
           point_type _pFar = _ray.org() + _ray.tFar() * _ray.dir();
           point_type _f(_ray.org().x(),_ray.org().y()),
                      _b(_pFar.x(),_pFar.y());
+          drawLine(_f,_b);
 
-          image_.draw( Magick::DrawableLine(_f.x(),_f.y(),_b.x(),_b.y()) );
           draw( _pNear, Magick::Color("yellow") );
           draw( _pFar, Magick::Color("blue") );
         }
@@ -192,14 +177,14 @@ namespace tomo
           point_type _b = _segment[0];
           point_type _f = _segment[1];
           image_.strokeColor(_color);
-          image_.draw( Magick::DrawableLine(_f.x(),_f.y(),_b.x(),_b.y()) );
+          drawLine(_f,_b);
 
           if (drawEndings_)
           {
             image_.strokeColor("yellow");
-            image_.draw( Magick::DrawableCircle(_f.x(),_f.y(),4+_f.x(),_f.y() ));
+            drawCircle(_f,4);
             image_.strokeColor("blue");
-            image_.draw( Magick::DrawableCircle(_b.x(),_b.y(),7+_b.x(),_b.y() ));
+            drawCircle(_b,7);
           }
 
           if (drawNormals_)
@@ -207,7 +192,7 @@ namespace tomo
             image_.strokeColor("green");
             vec_type _c = 0.5*(_b.vec() + _f.vec());
             vec_type _n = _segment.normal();
-            image_.draw( Magick::DrawableLine( _c.x(),_c.y(),_c.x()+_n.x(),_c.y()+_n.y()) );
+            drawLine(_c,_c+_n);
           }
         }
 
@@ -242,11 +227,40 @@ namespace tomo
           image_ = Magick::Image( Magick::Geometry(image_.columns(),image_.rows()), Magick::Color("black") );
         }
 
-        Magick::Image& image_;
-
         TBD_PROPERTY(bool,drawEndings);
         TBD_PROPERTY(bool,drawNormals);
         TBD_PROPERTY(float,vertexWidth);
+        TBD_PROPERTY_REF(vec_type,scale);
+        TBD_PROPERTY_REF(vec_type,offset);
+        TBD_PROPERTY_REF(Magick::Image,image);
+
+      private:
+
+        void transform(point_type& _p) 
+        {
+          _p = offset_ + _p.vec() * scale_;
+        }
+
+        void drawCircle(point_type _p, scalar_type _r)
+        {
+          transform(_p);
+          image_.fillColor(Magick::Color("none"));
+          image_.draw( Magick::DrawableCircle(_p.x(),_p.y(),_r+_p.x(),_p.y()));
+        }
+
+        void drawLine(point_type _a, point_type _b)
+        {
+          transform(_a);
+          transform(_b);
+          image_.draw( Magick::DrawableLine(_a.x(),_a.y(),_b.x(),_b.y()) );
+        }
+
+        void drawRect(point_type _a, point_type _b)
+        {
+          transform(_a);
+          transform(_b);
+          image_.draw(Magick::DrawableRectangle(_a.x(),_a.y(),_b.x(),_b.y()));
+        }
       };
 
     }

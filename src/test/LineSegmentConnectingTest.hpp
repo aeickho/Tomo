@@ -42,9 +42,7 @@ BOOST_AUTO_TEST_SUITE( LineSegmentConnectingTestSuite )
 BOOST_AUTO_TEST_CASE( RingTest )
 {
   // create output image
-  Magick::Image _image( Magick::Geometry(1024,1024), Magick::Color("black") );
-  // create accessor to ouput image
-  Wrapper _w(_image);
+  Wrapper _w(1024,1024);
   // create input compound (three circles)
   Compound<Segment> _segments;
   {
@@ -52,10 +50,11 @@ BOOST_AUTO_TEST_CASE( RingTest )
     makeCircle(_segments,Point2f(768,256),150);
     makeCircle(_segments,Point2f(512,600),400);
   }
+  int i = 0;
   // draw input compound into output image
   _w.draw(_segments,Magick::Color("green"));
   // save output image
-  _image.write("data/LineSegmentConnectingTest_RingTest_001.png");
+  _w.image().write(TOMO_TEST_OUTPUT_NAME("png",++i));
   // clear output image for reuse
   _w.clear();
   // prepare connector to connect segments
@@ -67,7 +66,7 @@ BOOST_AUTO_TEST_CASE( RingTest )
   // draw ouput image
   _w.draw<Ring>(_rings,Magick::Color("black"));
   // save output image
-  _image.write("data/LineSegmentConnectingTest_RingTest_002.png");
+  _w.image().write(TOMO_TEST_OUTPUT_NAME("png",++i));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

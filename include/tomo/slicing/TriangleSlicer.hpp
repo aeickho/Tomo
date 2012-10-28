@@ -20,8 +20,6 @@ namespace tomo
 
       void operator()(const Mesh& _mesh, const matrix_type& _matrix, SegmentStack& _segmentStack)
       {
-        TOMO_NOT_TESTED();
-
         Mesh::ConstFaceIter    fIt(_mesh.faces_begin()),fEnd(_mesh.faces_end());
         for (; fIt!=fEnd; ++fIt)
         {
@@ -52,7 +50,6 @@ namespace tomo
                          const vec_type& N,
                          SegmentStack& _segmentStack) const
       {
-        TOMO_NOT_TESTED();
         using geometry::prim::Segment;
         typedef geometry::comp::Compound<Segment> SegmentPlane;
         
@@ -71,11 +68,14 @@ namespace tomo
         scalar_type _ratioR, _ratioS, _pos;
         Vec2f r,s;
 
+        bool _passedB = false;
+
         for (it = _Ait ; it != _Cit && it != _segmentStack.end(); ++it)
         {
           SegmentPlane* _segmentPlane = &(it->second);
-          
-          if (it->first < _Bit->first)
+          if (it == _Bit) _passedB = true;
+
+          if (!_passedB)
           {
             _pos = it->first - A.z();
             _ratioR = _pos * _invCz;
