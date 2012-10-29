@@ -1,6 +1,7 @@
 #pragma once
 
 #include "tomo/geometry/prim/Primitive.hpp"
+#include "tomo/geometry/base/Point.hpp"
 #include "tomo/slicing/SegmentStack.hpp"
 #include <OpenMesh/Core/IO/MeshIO.hh>
 #include <OpenMesh/Core/Mesh/TriMesh_ArrayKernelT.hh>
@@ -14,9 +15,9 @@ namespace tomo
     {
       struct MeshTraits
       {
-        typedef base::Point3f Point3f;
-        typedef base::Vec3f Vec3f;
-        typedef base::Vec2f Vec2f;
+        typedef geometry::base::Point3f Point3f;
+        typedef geometry::base::Vec3f Vec3f;
+        typedef geometry::base::Vec2f Vec2f;
 
         typedef Point3f Point;
         typedef Vec3f   Normal;

@@ -4,50 +4,13 @@
 #include "tomo/geometry/kd/visitor/Nearest.hpp"
 #include "tomo/geometry/kd/visitor/KNearest.hpp"
 #include "tomo/geometry/kd/visitor/InRadius.hpp"
-#include "tomo/slicing/SegmentConnector.hpp"
-
-using tomo::draw::magick::Wrapper;
-using tomo::geometry::prim::Ring;
-using tomo::slicing::SegmentConnector;
-using tomo::geometry::base::Point2f;
-using tomo::geometry::comp::Compound;
-using tomo::geometry::prim::Segment;
-
-/// create demo circle
-void makeCircle(Compound<Segment>& _segments,
-                Point2f _center,
-                float _radius,
-                int _numSegments = 24,
-                bool _inverse = false)
-{
-  float _angleNext = 0.0, _anglePrev = 0.0;
-  for (int i = 0; i < _numSegments; i++)
-  {
-    _angleNext = float(i+1)/float(_numSegments)*M_PI*2.0;
-    float _sinPrev = _radius*sin(_anglePrev),
-          _cosPrev = _radius*cos(_anglePrev);
-    float _sinNext = _radius*sin(_angleNext),
-          _cosNext = _radius*cos(_angleNext);
-    if (_inverse)
-    {
-      _sinNext = -_sinNext;
-      _sinPrev = -_sinPrev;
-    }
-    Point2f _point0 = Point2f(_cosPrev,_sinPrev) + _center;
-    Point2f _point1 = Point2f(_cosNext,_sinNext) + _center;
-    _segments.add(Segment(_point0,_point1));
-    _anglePrev = _angleNext;
-  }
-}
-
-
-BOOST_AUTO_TEST_SUITE( LineSegmentConnectingTestSuite )
 
 BOOST_AUTO_TEST_CASE( NearestVisitorsTest )
 {
   using tomo::geometry::base::Vec2f;
   using tomo::geometry::base::Point2f;
   using tomo::geometry::prim::Vertex2f;
+  using tomo::geometry::comp::Compound;
 
   Wrapper _w(1024,1024);
   _w.scale(Vec2f(1024,1024));
@@ -73,12 +36,12 @@ BOOST_AUTO_TEST_CASE( NearestVisitorsTest )
   _w.image().write(TOMO_TEST_OUTPUT_NAME("_test.png",++i));
 
   typedef std::multimap<float,const Vertex2f*> MapType;
-  MapType _groundTruth;
+  MapType _verificationData;
 
   BOOST_FOREACH( const Vertex2f& _v, _vertices.objs() )
   {
     if (&_v == &_vertex) continue;
-    _groundTruth.insert(std::make_pair<>(VVDist()(_v,_vertex),&_v));
+    _verificationData.insert(std::make_pair<>(VVDist()(_v,_vertex),&_v));
   }
   MapType::const_iterator it1, it2;
 
@@ -91,8 +54,8 @@ BOOST_AUTO_TEST_CASE( NearestVisitorsTest )
 
     // Perform check 
     it1 = _kNearest.nearest().begin();
-    it2 = _groundTruth.begin();
-    BOOST_CHECK(_kNearest.nearest().size() <= _groundTruth.size());
+    it2 = _verificationData.begin();
+    BOOST_CHECK(_kNearest.nearest().size() <= _verificationData.size());
     for (; it1 != _kNearest.nearest().end(); ++it1)
     {
       BOOST_CHECK(it1->first == it2->first);
@@ -116,8 +79,8 @@ BOOST_AUTO_TEST_CASE( NearestVisitorsTest )
     
     // Perform check 
     it1 = _inRadius.nearest().begin();
-    it2 = _groundTruth.begin();
-    BOOST_CHECK(_inRadius.nearest().size() <= _groundTruth.size());
+    it2 = _verificationData.begin();
+    BOOST_CHECK(_inRadius.nearest().size() <= _verificationData.size());
     for (; it1 != _inRadius.nearest().end(); ++it1)
     {
       BOOST_CHECK(it1->first == it2->first);
@@ -138,43 +101,12 @@ BOOST_AUTO_TEST_CASE( NearestVisitorsTest )
     _vertices.kdTree().traversal<>(_nearest);
 
     // Perform check 
-    BOOST_CHECK(_nearest.nearest().first == _groundTruth.begin()->first);
-    BOOST_CHECK(_nearest.nearest().second == _groundTruth.begin()->second);
+    BOOST_CHECK(_nearest.nearest().first == _verificationData.begin()->first);
+    BOOST_CHECK(_nearest.nearest().second == _verificationData.begin()->second);
 
     _w.draw(*_nearest.nearest().second,Magick::Color("yellow"));
     _w.image().write(TOMO_TEST_OUTPUT_NAME("_nearest.png",++i));
   }
 }
 
-BOOST_AUTO_TEST_CASE( RingTest )
-{
-  // create output image
-  Wrapper _w(1024,1024);
-  // create input compound (three circles)
-  Compound<Segment> _segments;
-  {
-    makeCircle(_segments,Point2f(256,256),200);
-    makeCircle(_segments,Point2f(768,256),150);
-    makeCircle(_segments,Point2f(512,600),400);
-  }
-  int i = 0;
-  // draw input compound into output image
-  _w.draw(_segments,Magick::Color("green"));
-  // save output image
-  _w.image().write(TOMO_TEST_OUTPUT_NAME(".png",++i));
-  // clear output image for reuse
-  _w.clear();
-  // prepare connector to connect segments
-  SegmentConnector<> _segmentConnector;
-  // connect segments
-  std::vector<Ring>&& _rings =_segmentConnector(_segments);
-  // check that we got the three circles back
-  BOOST_CHECK(_rings.size() == 3);
-  // draw ouput image
-  _w.draw<Ring>(_rings,Magick::Color("red"));
-  // save output image
-  _w.image().write(TOMO_TEST_OUTPUT_NAME(".png",++i));
-}
-
-BOOST_AUTO_TEST_SUITE_END()
 

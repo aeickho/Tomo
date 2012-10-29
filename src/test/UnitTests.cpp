@@ -10,8 +10,7 @@
 LOG_INIT;
 
 using namespace tomo;
-
-
+using draw::magick::Wrapper;
 
 static const std::string testOutputName(std::string _testName, 
                                   std::string _ext,
@@ -33,9 +32,8 @@ static const std::string testOutputName(std::string _testName,
 #define TOMO_TEST_OUTPUT_NAME_(EXT) \
   TOMO_TEST_OUTPUT_NAME(EXT,-1)
 
-#include "LineSegmentConnectingTest.hpp"
-#include "TriangleSlicingTest.hpp"
-#include "PolygonSortingTest.hpp"
-#include "ToolchainTest.hpp"
-#include "SequencingTest.hpp"
-#include "GCodeTest.hpp"
+#include "MatrixTest.hpp"
+#include "TriangleSlicerTest.hpp"
+#include "NearestVisitorsTest.hpp"
+#include "RingTest.hpp"
+
