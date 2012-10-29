@@ -1,6 +1,6 @@
 #pragma once
 
-#include "tomo/geometry/prim/Segment.hpp"
+#include "tomo/geometry/kd/visitor/SegmentFunctors.hpp"
 #include "tomo/geometry/prim/Ring.hpp"
 
 namespace tomo
@@ -18,11 +18,14 @@ namespace tomo
 
       Rings operator()(LineCompound& _compound)
       {
+        using geometry::kd::visitor::SegmentNodeIntersectPointOnly;
         // ensure that the compound has a valid index
-        _compound.validate();
+        _compound.validate<SegmentNodeIntersectPointOnly>();
         // multiple rings as result
         Rings _result;
         ///@todo Implement connecting algorithm
+        
+        
         return _result;
       }
     };

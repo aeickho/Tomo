@@ -9,17 +9,17 @@ namespace tomo
 {
   namespace geometry
   {
-    namespace aux
+    namespace kd
     {
       namespace visitor
       {
         /// Collects all objects inside a radius r
         template
-          <
-            typename KDTREE,
-            typename SQR_PRIM_DISTANCE,
-            typename SQR_NODE_DISTANCE
-          >
+        <
+        typename KDTREE,
+                 typename SQR_PRIM_DISTANCE,
+                 typename SQR_NODE_DISTANCE
+                 >
         struct InRadius
         {
           typedef KDTREE KDTree;
@@ -28,9 +28,8 @@ namespace tomo
           typedef typename KDTREE::primitive_type primitive_type;
           typedef typename KDTREE::scalar_type scalar_type;
           typedef typename KDTREE::point_type point_type;
-          typedef std::multimap<scalar_type,primitive_type*> map_type;
-          typedef std::pair<scalar_type,primitive_type*> pair_type;
-          typedef std::vector<primitive_type*> ptr_vector_type;
+          typedef std::multimap<scalar_type,const primitive_type*> map_type;
+          typedef std::pair<scalar_type,const primitive_type*> pair_type;
 
           struct State
           {
@@ -38,28 +37,31 @@ namespace tomo
             TBD_PROPERTY_REF(bounds_type,bounds);
           };
 
-          InRadius(KDTree* _kdTree, primitive_type* _primitive, scalar_type _radius = 0.0) :
+          InRadius(const KDTree& _kdTree, const primitive_type& _primitive, scalar_type _radius = 0.0) :
             primitive_(_primitive),
-            radius_(_radius)
+            radius_(_radius),
+            kdTree_(_kdTree)
           {
+            state_.node(_kdTree.root());
+            state_.bounds(_kdTree.bounds_);  
             updateRadius();
           }
 
           void traverseLeft(State& _state)
           {
-            _state.node(kdTree_->node(state_.node()->inner_.left()));
+            _state.node(kdTree_.node(state_.node()->inner_.left()));
           }
 
           void traverseRight(State& _state)
           {
-            _state.node(kdTree_->node(state_.node()->inner_.right()));
+            _state.node(kdTree_.node(state_.node()->inner_.right()));
           }
 
           /// Root intersection
           bool root()
           {
-            nearestPrimitives_.clear();
-            return SQR_NODE_DISTANCE(primitive_,kdTree_->bounds()) < sqrRadius_;
+            nearest_.clear();
+            return SQR_NODE_DISTANCE()(primitive_,kdTree_.bounds_) < sqrRadius_;
           }
 
           /// Inner node intersection
@@ -70,35 +72,49 @@ namespace tomo
                                   state_.node()->inner_.axis(),
                                   _left,_right);
 
-            scalar_type _leftDist = BOUNDS_DISTANCE(primitive_,_left),
-                        _rightDist = BOUNDS_DISTANCE(primitive_,_right);
+            SQR_NODE_DISTANCE _sqrNodeDistance;
+            scalar_type _leftDist = _sqrNodeDistance(primitive_,_left),
+                        _rightDist = _sqrNodeDistance(primitive_,_right);
             bool _leftFirst = _leftDist <= _rightDist;
-            bool _traverseLeft = _leftDist <= radius_;
-            bool _traverseRight = _rightDist <= radius_;
+            bool _traverseLeft = _leftDist <= sqrRadius_;
+            bool _traverseRight = _rightDist <= sqrRadius_;
 
             if (_leftFirst)
             {
+              if (_traverseRight)
+              {
+                traverseRight(_pushedState);
+                _pushedState.bounds(_right);
+              }
               traverseLeft(state_);
-              if (_traverseRight) traverseRight(_pushedState);
+              state_.bounds(_left);
+              return _traverseRight;
             }
             else
             {
+              if (_traverseLeft)
+              {
+                traverseLeft(_pushedState);
+                _pushedState.bounds(_left);
+              }
               traverseRight(state_);
-              if (_traverseLeft) traverseLeft(_pushedState);
+              state_.bounds(_right);
+              return _traverseLeft;
             }
-            return _traverseLeft && _traverseRight;
+            return false;
           }
 
           /// Leaf node intersection
           bool leaf()
           {
-            for (auto it = state_.node()->leaf_.begin(); it != state_.node()->leaf_.end(); ++it)
+            for (auto it = state_.node()->leaf_.begin(kdTree_.primLists_);
+                 it != state_.node()->leaf_.end(kdTree_.primLists_); ++it)
             {
-              primitive_type* _nodePrim = (*it);
-              if (_nodePrim == primitive_) continue;
-              scalar_type _distance = SQR_DISTANCE(primitive_,_nodePrim);
+              const primitive_type& _nodePrim = *(*it);
+              if (&_nodePrim == &primitive_) continue;
+              scalar_type _distance = SQR_PRIM_DISTANCE()(primitive_,_nodePrim);
               if (_distance < sqrRadius_ )
-                nearestPrimitives_.insert(pair_type(_distance,_nodePrim));
+                nearest_.insert(pair_type(_distance,&_nodePrim));
             }
             return false;
           }
@@ -109,12 +125,12 @@ namespace tomo
           }
 
           TBD_PROPERTY_REF(State,state);
-          TBD_PROPERTY_REF(map_type,nearestPrimitives);
-          TBD_PROPERTY_RO(KDTree*,kdTree);
-          TBD_PROPERTY(primitive_type*,primitive);
+          TBD_PROPERTY_REF(map_type,nearest);
+          TBD_PROPERTY_RO(const primitive_type&,primitive);
           TBD_PROPERTY_MON(scalar_type,radius,updateRadius);
 
         private:
+          const KDTree& kdTree_;
           scalar_type sqrRadius_;
         };
       }

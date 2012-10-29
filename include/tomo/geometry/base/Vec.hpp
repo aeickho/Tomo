@@ -77,15 +77,18 @@ namespace tomo
           return sum;
         }
 
-        /** @brief Return axis which largest extent
+        /** @brief Return axis with largest extent
          */
         Axis dominantAxis() const
         {
           Axis _domAxis = X;
-          float _max = 0.0;
+          scalar_type _max = 0.0;
+          //LOG_MSG << fmt("% %") % Vec::a_[0] % Vec::a_[1]; 
           TOMO_FOREACH_DIM(i)
           {
-            float _abs = abs(this->a_[i]);
+            scalar_type _abs = Vec::a_[i];
+            if (_abs < 0) _abs = -_abs;
+
             if (_abs > _max)
             {
               _max = _abs;

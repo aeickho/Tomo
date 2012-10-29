@@ -55,35 +55,23 @@ namespace tomo
           return kdTree_.bounds_;
         }
 
+        template<class NODE_INTERSECTOR>
         void validate()
         {
           if( !valid() )
-            kdTree_.build(objs_);
+            kdTree_.template build<NODE_INTERSECTOR>(objs_,3);
         }
+
         bool valid() const 
         {
-          return kdTree_.empty();
+
+          return !kdTree_.empty();
         }
 
         TBD_PROPERTY_REF(kdtree_type,kdTree);
 
       protected:
         ctnr_type objs_;
-
-        /// Calculates the distance of a primitive to a kdtree node
-        scalar_type nodeDistance(const value_type* _p, const bounds_type _bounds) const
-        {
-          if (overlap(_bounds,_p->bounds())) return 0.0;
-          float _minDist = INF;
-
-          TOMO_FOREACH_DIM(i)
-          {
-            _minDist = std::min(std::min(std::abs(_p->center()[i] - _bounds.min()[i]),
-                                         std::abs(_bounds.max()[i]- _p->center()[i])),
-                                _minDist);
-          }
-          return _minDist;
-        }
       };
     }
   }

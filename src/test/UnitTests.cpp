@@ -5,6 +5,7 @@
 #include <boost/test/included/unit_test.hpp>
 #include <tbd/log.h>
 #include "tomo/draw/magick/Wrapper.hpp"
+#include "tomo/misc.hpp"
 
 LOG_INIT;
 
@@ -22,7 +23,7 @@ static const std::string testOutputName(std::string _testName,
   {
     ss << std::setw(3) << std::setfill('0') << n;
   }
-  ss << "." << _ext;
+  ss << _ext;
   return ss.str();
 }
 
@@ -32,8 +33,8 @@ static const std::string testOutputName(std::string _testName,
 #define TOMO_TEST_OUTPUT_NAME_(EXT) \
   TOMO_TEST_OUTPUT_NAME(EXT,-1)
 
-#include "TriangleSlicingTest.hpp"
 #include "LineSegmentConnectingTest.hpp"
+#include "TriangleSlicingTest.hpp"
 #include "PolygonSortingTest.hpp"
 #include "ToolchainTest.hpp"
 #include "SequencingTest.hpp"

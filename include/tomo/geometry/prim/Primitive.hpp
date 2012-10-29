@@ -33,7 +33,9 @@ namespace tomo
 }
 
 #define TOMO_PRIMITIVE_TYPES(PRIMITIVE) \
-        TOMO_MODEL_TYPES(PRIMITIVE) \
+        typedef typename PRIMITIVE::model_type model_type; \
+        using typename model_type::scalar_type; \
+        using model_type::dimensions_; \
         using typename PRIMITIVE::point_type; \
         using typename PRIMITIVE::vec_type; \
         using typename PRIMITIVE::bounds_type;

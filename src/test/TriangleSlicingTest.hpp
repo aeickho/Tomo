@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE( TriangleSlicerTest )
   {
     _w.clear();
     _w.draw<>(*_segmentPlane,Magick::Color("green"));
-    _w.image().write(TOMO_TEST_OUTPUT_NAME("png",i));
+    _w.image().write(TOMO_TEST_OUTPUT_NAME(".png",i));
     i++;
   }
 }

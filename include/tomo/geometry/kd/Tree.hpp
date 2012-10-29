@@ -18,18 +18,21 @@ namespace tomo
       struct Tree
       {   
         /// Node type
-        typedef Node<PRIMITIVE> Node;
-
+        typedef PRIMITIVE primitive_type;
+        
+        typedef Node<primitive_type> Node;
         typedef typename Node::Inner NodeInner;
-        typedef typename PRIMITIVE::scalar_type scalar_type;
-        typedef typename PRIMITIVE::vec_type vec_type;
-        typedef typename PRIMITIVE::bounds_type bounds_type;
+        typedef typename primitive_type::model_type model_type;
+        typedef typename primitive_type::scalar_type scalar_type;
+        typedef typename primitive_type::vec_type vec_type;
+        typedef typename primitive_type::point_type point_type;
+        typedef typename primitive_type::bounds_type bounds_type;
 
         /// Node container
         typedef std::vector<Node> NodeCont;
 
         /// Primitive container
-        typedef std::vector<const PRIMITIVE*> PrimCont;
+        typedef std::vector<const primitive_type*> PrimCont;
 
         NodeCont nodes_;
         PrimCont primLists_;
@@ -62,8 +65,9 @@ namespace tomo
           /// Insert Primitive pointers from _src into primLists_
         void insertLeafNode(unsigned _nodeIndex, const PrimCont& _src)
         {
-          nodes_[_nodeIndex].leaf_.offset(primLists_.size());
-          nodes_[_nodeIndex].leaf_.size(_src.size());
+          nodes_.resize(nodes_.size()+1);
+          nodes_[_nodeIndex].leaf_.begin(primLists_.size());
+          nodes_[_nodeIndex].leaf_.end(primLists_.size()+_src.size());
           primLists_.insert(primLists_.end(),_src.begin(),_src.end());
         }
 
@@ -97,13 +101,14 @@ namespace tomo
           return _found;
         }
 
-        void build(const std::vector<PRIMITIVE>& _objs, unsigned _primitivesPerNode = 10)
+        template<typename NODE_INTERSECTOR>
+        void build(const std::vector<primitive_type>& _objs, unsigned _primitivesPerNode = 10)
         {
           // Clear data containers and reserve memory 
           primLists_.clear();
           primLists_.reserve(_objs.size()*2);
           nodes_.clear();
-          nodes_.reserve(2*_objs.size()/_primitivesPerNode);
+      //    nodes_.reserve(2*MAX_DEPTH*_objs.size() / _primitivesPerNode);
           nodes_.resize(1);
 
           // State holder struct 
@@ -142,6 +147,7 @@ namespace tomo
               nodes_.resize(nodes_.size()+2);
               Node* _node = &nodes_[_state.nodeIndex_];
               base::Axis _axis = _state.bounds().dominantAxis();
+
               scalar_type _splitPos = (_state.bounds().min()[_axis] + _state.bounds().max()[_axis])/2; ///@todo Insert for split plane intersection functor here
               _node->inner_.setup(nodes_,_axis,_splitPos);
 
@@ -157,7 +163,7 @@ namespace tomo
               _right.nodeIndex_ = _state.nodeIndex_+1; /// Equal to _node->inner_.right(), but faster ;)
              
               // Make node geometry
-              NodeGeometry<typename PRIMITIVE::model_type> _nodeGeometry(_state.bounds(),_axis,_splitPos);
+              NodeGeometry<typename primitive_type::model_type> _nodeGeometry(_state.bounds(),_axis,_splitPos);
               
               // Split node
               _state.bounds().split(_splitPos,_axis,_state.bounds(),_right.bounds());
@@ -166,7 +172,7 @@ namespace tomo
               auto it = _state.primList().begin(), _leftIt = it;
               for (; it != _state.primList().end() ; ++it)
               { 
-                NodeIntersectResult _result = intersect(*(*it),_nodeGeometry);
+                NodeIntersectResult _result = NODE_INTERSECTOR()(*(*it),_nodeGeometry);
                 if (_result.right()) _right.primList().push_back(*it);
                 if (_result.left()) 
                 {

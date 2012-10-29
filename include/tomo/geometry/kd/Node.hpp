@@ -65,15 +65,15 @@ namespace tomo
 
           const_iterator begin(const cntr_type& _src) const
           {
-            return _src.begin() + offset_;
+            return _src.begin() + begin_;
           }
           const_iterator end(const cntr_type& _src) const
           {
-            return _begin(_src) + size_;
+            return _src.begin() + end_;
           }
 
-          TBD_PROPERTY(uint32_t,size);
-          TBD_PROPERTY(uint32_t,offset);
+          TBD_PROPERTY(uint32_t,begin);
+          TBD_PROPERTY(uint32_t,end);
         };
 
         Inner inner_;

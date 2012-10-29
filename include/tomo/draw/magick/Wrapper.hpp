@@ -86,7 +86,7 @@ namespace tomo
               wrapper_.drawLine(point_type(_splitPos,state_.bounds().min().y()),point_type(_splitPos,state_.bounds().max().y()));
               break;
             case geometry::base::Y:
-              wrapper_.drawLine(point_type(_splitPos,state_.bounds().min().y()),point_type(_splitPos,state_.bounds().max().y()));
+              wrapper_.drawLine(point_type(state_.bounds().min().x(),_splitPos),point_type(state_.bounds().max().x(),_splitPos));
               break;
             default:
               break;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "tomo/geometry/comp/Compound.hpp"
-#include "tomo/geometry/prim/Segment.hpp"
+#include "tomo/geometry/kd/visitor/SegmentFunctors.hpp"
 
 #include "Slice.hpp"
 #include "SliceStack.hpp"
@@ -12,7 +12,7 @@ namespace tomo
   {
     /// A SegmentStack holds several planes which are Compounds of Segments 
     struct SegmentStack : 
-      geometry::comp::PlaneStack< geometry::comp::Compound<geometry::prim::Segment> >
+      geometry::comp::PlaneStack<geometry::comp::Compound<geometry::prim::Segment>>
     {
       typedef geometry::comp::Compound<geometry::prim::Segment> SegmentPlane;
 
