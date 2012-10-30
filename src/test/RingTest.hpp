@@ -40,6 +40,7 @@ BOOST_AUTO_TEST_CASE( RingTest )
 {
   // create output image
   Wrapper _w(1024,1024);
+  _w.drawEndings(true);
   // create input compound (three circles)
   Compound<Segment> _segments;
   {

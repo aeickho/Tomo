@@ -45,12 +45,27 @@ namespace tomo
         template<class VERTEX>
         struct VertexNodeIntersector
         {
-          typedef typename kd::NodeGeometry<typename VERTEX::model_type> Node;
+          typedef VERTEX Vertex;
+          typedef typename kd::NodeGeometry<typename Vertex::model_type> NodeGeometry;
+          typedef typename Vertex::scalar_type scalar_type;
+          typedef typename Vertex::bounds_type bounds_type;
 
-          NodeIntersectResult operator()(const VERTEX& _v, const Node& _n)
+          NodeIntersectResult operator()(const Vertex& _v, const NodeGeometry& _n)
           {
             return NodeIntersectResult(_v.v()[_n.axis()] <= _n.splitPos(),
                                        _v.v()[_n.axis()] >= _n.splitPos());
+          }
+
+          template <typename NODE>
+          void nodeSetup(NodeGeometry& _nodeGeometry,
+                         NODE* _node, 
+                         Vertex*& _primitive)
+          {
+            base::Axis _axis = _nodeGeometry.bounds().dominantAxis();
+            scalar_type _splitPos = 0.5*(_nodeGeometry.bounds().min()[_axis] + _nodeGeometry.bounds().max()[_axis]);
+
+            _nodeGeometry.splitPos(_splitPos);
+            _nodeGeometry.axis(_axis);
           }
         };
       }

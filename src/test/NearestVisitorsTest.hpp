@@ -97,7 +97,8 @@ BOOST_AUTO_TEST_CASE( NearestVisitorsTest )
   // Test Nearest
   {
     typedef tomo::geometry::kd::visitor::Nearest<Vertices::kdtree_type,VVDist,VNodeDist> Nearest;
-    Nearest _nearest(_vertices.kdTree(),_vertex);
+    Nearest _nearest(_vertices.kdTree());
+    _nearest.primitive(const_cast<Vertex2f*>(&_vertex));
     _vertices.kdTree().traversal<>(_nearest);
 
     // Perform check 

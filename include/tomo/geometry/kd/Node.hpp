@@ -13,7 +13,7 @@ namespace tomo
       namespace bit=tbd::bit;
 
       template <typename PRIMITIVE>
-      union Node
+      struct Node
       {
         typedef typename PRIMITIVE::scalar_type scalar_type;
         typedef std::vector<const PRIMITIVE*> cntr_type;
@@ -62,6 +62,7 @@ namespace tomo
         struct Leaf
         {
           typedef typename cntr_type::const_iterator const_iterator;
+          typedef typename cntr_type::iterator iterator;
 
           const_iterator begin(const cntr_type& _src) const
           {
@@ -72,12 +73,24 @@ namespace tomo
             return _src.begin() + end_;
           }
 
+          iterator begin(cntr_type& _src) const
+          {
+            return _src.begin() + begin_;
+          }
+          iterator end(cntr_type& _src) const
+          {
+            return _src.begin() + end_;
+          }
+
           TBD_PROPERTY(uint32_t,begin);
           TBD_PROPERTY(uint32_t,end);
         };
 
-        Inner inner_;
-        Leaf leaf_;
+        union 
+        {
+          Inner inner_;
+          Leaf leaf_;
+        };
       };
     }
   }

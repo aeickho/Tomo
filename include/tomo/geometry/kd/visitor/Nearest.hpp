@@ -29,8 +29,7 @@ namespace tomo
           typedef typename KDTREE::primitive_type primitive_type;
           typedef typename KDTREE::scalar_type scalar_type;
           typedef typename KDTREE::point_type point_type;
-          typedef std::pair<scalar_type,const primitive_type*> pair_type;
-          typedef std::vector<const primitive_type*> ptr_vector_type;
+          typedef std::pair<scalar_type,primitive_type*> pair_type;
 
           struct State
           {
@@ -38,8 +37,8 @@ namespace tomo
             TBD_PROPERTY_REF(bounds_type,bounds);
           };
 
-          Nearest(const KDTree& _kdTree, const primitive_type& _primitive) :
-            primitive_(_primitive),
+          Nearest(KDTree& _kdTree) :
+            primitive_(NULL),
             kdTree_(_kdTree)
           {
             state_.node(_kdTree.root());
@@ -61,6 +60,7 @@ namespace tomo
           /// Root intersection
           bool root()
           {
+            TOMO_ASSERT(primitive_);
             nearest_ = pair_type(INF,NULL);
             return true;
           }
@@ -77,8 +77,8 @@ namespace tomo
 
             /// Calculate primitives squared distance to node's bounds using template functor
             SQR_NODE_DISTANCE _sqrNodeDistance;
-            scalar_type _leftDist = _sqrNodeDistance(primitive_,_left),
-                        _rightDist = _sqrNodeDistance(primitive_,_right);
+            scalar_type _leftDist = _sqrNodeDistance(*primitive_,_left),
+                        _rightDist = _sqrNodeDistance(*primitive_,_right);
             bool _leftFirst = _leftDist <= _rightDist;
             bool _traverseLeft = _leftDist <= nearest_.first;
             bool _traverseRight = _rightDist <= nearest_.first;
@@ -117,21 +117,27 @@ namespace tomo
             for (auto it = state_.node()->leaf_.begin(kdTree_.primLists_); 
                  it != state_.node()->leaf_.end(kdTree_.primLists_); ++it)
             {
-              const primitive_type& _nodePrim = *(*it);
-              if (&_nodePrim == &primitive_) continue;
-              scalar_type _distance = SQR_PRIM_DISTANCE()(primitive_,_nodePrim);
+              if (*it == primitive_ || *it == NULL) continue;
+              
+              scalar_type _distance = SQR_PRIM_DISTANCE()(*primitive_,**it);
               if (_distance <= nearest_.first )
-                nearest_ = pair_type(_distance,&_nodePrim);
+                nearest_ = pair_type(_distance,const_cast<primitive_type*>(*it));
             }
             return false;
           }
 
+          primitive_type* find(primitive_type* _primitive) 
+          {
+            primitive_ = _primitive;
+            kdTree_.template traversal<>(*this);
+            return nearest_.second;
+          }
 
           TBD_PROPERTY_REF(State,state);
           TBD_PROPERTY_REF(pair_type,nearest);
-          TBD_PROPERTY_RO(const primitive_type&,primitive);
+          TBD_PROPERTY(primitive_type*,primitive);
         private:
-          const KDTree& kdTree_;
+          KDTree& kdTree_;
         };
       }
     }

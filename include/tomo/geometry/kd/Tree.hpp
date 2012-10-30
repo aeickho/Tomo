@@ -13,14 +13,14 @@ namespace tomo
       template 
         <
           typename PRIMITIVE,
+          typename NODE = Node<PRIMITIVE>,
           unsigned MAX_DEPTH = 16
         >
       struct Tree
       {   
         /// Node type
         typedef PRIMITIVE primitive_type;
-        
-        typedef Node<primitive_type> Node;
+        typedef NODE Node;
         typedef typename Node::Inner NodeInner;
         typedef typename primitive_type::model_type model_type;
         typedef typename primitive_type::scalar_type scalar_type;
@@ -108,7 +108,7 @@ namespace tomo
           primLists_.clear();
           primLists_.reserve(_objs.size()*2);
           nodes_.clear();
-      //    nodes_.reserve(2*MAX_DEPTH*_objs.size() / _primitivesPerNode);
+          nodes_.reserve(2*MAX_DEPTH*_objs.size() / _primitivesPerNode);
           nodes_.resize(1);
 
           // State holder struct 
@@ -146,10 +146,13 @@ namespace tomo
               // Setup node
               nodes_.resize(nodes_.size()+2);
               Node* _node = &nodes_[_state.nodeIndex_];
-              base::Axis _axis = _state.bounds().dominantAxis();
 
-              scalar_type _splitPos = (_state.bounds().min()[_axis] + _state.bounds().max()[_axis])/2; ///@todo Insert for split plane intersection functor here
-              _node->inner_.setup(nodes_,_axis,_splitPos);
+              primitive_type* _primitive = NULL;
+              // Make node geometry
+              NodeGeometry<typename primitive_type::model_type> 
+                _nodeGeometry(_state.bounds(),_node->inner_.axis(),_node->inner_.splitPos());
+
+              NODE_INTERSECTOR().template nodeSetup<>(_nodeGeometry,_node,_primitive);
 
               // Change state
               _state.depth_++;
@@ -161,17 +164,15 @@ namespace tomo
               _right.primList().clear();
               _right.depth_ = _state.depth_;
               _right.nodeIndex_ = _state.nodeIndex_+1; /// Equal to _node->inner_.right(), but faster ;)
-             
-              // Make node geometry
-              NodeGeometry<typename primitive_type::model_type> _nodeGeometry(_state.bounds(),_axis,_splitPos);
-              
+
               // Split node
-              _state.bounds().split(_splitPos,_axis,_state.bounds(),_right.bounds());
+              _state.bounds().split(_nodeGeometry.splitPos(),_nodeGeometry.axis(),_state.bounds(),_right.bounds());
              
               // Insert objects of current state into left and right subnode
               auto it = _state.primList().begin(), _leftIt = it;
               for (; it != _state.primList().end() ; ++it)
               { 
+                if (*it == _primitive) continue;
                 NodeIntersectResult _result = NODE_INTERSECTOR()(*(*it),_nodeGeometry);
                 if (_result.right()) _right.primList().push_back(*it);
                 if (_result.left()) 
