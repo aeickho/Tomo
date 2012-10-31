@@ -14,6 +14,13 @@ namespace tomo
     {
       /// Contains visitor patters for kdtree traversal 
       namespace visitor
+      {
+      }
+
+      /// Contains policies how to build the kdtree
+      namespace build
+      {
+      }
     }
 
     /// Contains all geometric primitive types
@@ -21,8 +28,18 @@ namespace tomo
     {
     }
 
-    ///Containes all geometrix complex types
+    /// Contains all geometrix complex types
     namespace comp
+    {
+    }
+
+    /// Functors to determine the squared (!) distance between two primitives
+    namespace distance
+    {
+    }
+
+    /// Functors to determine an intersection between two primitives
+    namespace intersect
     {
     }
   }

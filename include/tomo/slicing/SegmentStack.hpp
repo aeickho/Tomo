@@ -1,7 +1,6 @@
 #pragma once
 
 #include "tomo/geometry/comp/Compound.hpp"
-#include "tomo/geometry/kd/visitor/SegmentFunctors.hpp"
 
 #include "Slice.hpp"
 #include "SliceStack.hpp"

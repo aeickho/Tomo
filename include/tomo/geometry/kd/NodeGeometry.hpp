@@ -17,6 +17,8 @@ namespace tomo
         typedef base::Axis axis_type;
         typedef base::Bounds<MODEL> bounds_type;
 
+        NodeGeometry() {}
+
         NodeGeometry(const bounds_type& _bounds, 
                      const axis_type _axis, 
                      const scalar_type _splitPos) :

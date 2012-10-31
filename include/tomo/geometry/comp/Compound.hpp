@@ -55,11 +55,11 @@ namespace tomo
           return kdTree_.bounds_;
         }
 
-        template<class NODE_INTERSECTOR>
+        template<class BUILD_POLICY>
         void validate()
         {
           if( !valid() )
-            kdTree_.template build<NODE_INTERSECTOR>(objs_,3);
+            kdTree_.template build<BUILD_POLICY>(objs_);
         }
 
         bool valid() const 

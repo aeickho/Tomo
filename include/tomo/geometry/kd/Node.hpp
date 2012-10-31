@@ -2,6 +2,8 @@
 #include <vector>
 #include <tbd/bit.h>
 #include <stdint.h>
+#include "NodeGeometry.hpp"
+#include "NodeIntersectResult.hpp"
 
 namespace tomo
 {
@@ -12,10 +14,29 @@ namespace tomo
       // get bit operations from TBD
       namespace bit=tbd::bit;
 
+#define TOMO_NODE_TYPES(NODE) \
+          typedef NODE Node; \
+          typedef typename Node::geometry_type geometry_type; \
+          typedef typename Node::primitive_type primitive_type; \
+          typedef typename Node::vec_type vec_type; \
+          typedef typename Node::point_type point_type; \
+          typedef typename Node::scalar_type scalar_type; \
+          typedef typename Node::bounds_type bounds_type; \
+          typedef typename Node::intersection_type intersection_type;\
+          typedef typename Node::cntr_type cntr_type;\
+          typedef typename Node::Inner NodeInner;\
+          typedef typename Node::Leaf NodeLeaf; 
+
       template <typename PRIMITIVE>
       struct Node
       {
-        typedef typename PRIMITIVE::scalar_type scalar_type;
+        typedef PRIMITIVE primitive_type;
+        typedef typename primitive_type::bounds_type bounds_type;
+        typedef typename primitive_type::scalar_type scalar_type;
+        typedef typename primitive_type::point_type point_type;
+        typedef typename primitive_type::vec_type vec_type;
+        typedef NodeGeometry< typename primitive_type::model_type > geometry_type; 
+        typedef NodeIntersectResult intersection_type;
         typedef std::vector<const PRIMITIVE*> cntr_type;
         
         bool isLeaf() const
@@ -36,15 +57,16 @@ namespace tomo
           {
             return bit::get<base::Axis>(data_,0,2);
           }
+
           /// Insert children
-          inline void setup(NodeCont& _nodes, base::Axis _axis, scalar_type _splitPos)
+          inline void setup(uint32_t _index, base::Axis _axis, scalar_type _splitPos)
           {
-            data_ = 0;
             bit::set(data_,true,31,1);
-            bit::set(data_,_nodes.size(),2,29);
+            bit::set(data_,_index,2,29);
             bit::set(data_,_axis,0,2);
             splitPos_ = _splitPos;
           }
+
           inline uint32_t left() const
           {
             return bit::get<uint32_t>(data_,2,29);
@@ -53,9 +75,9 @@ namespace tomo
           {
             return left() + 1;
           }
+
           TBD_PROPERTY_RO(scalar_type,splitPos);
-        private:
-          uint32_t      data_;
+          TBD_PROPERTY_RO(uint32_t,data);
         };
 
         /// Leaf node
@@ -86,7 +108,7 @@ namespace tomo
           TBD_PROPERTY(uint32_t,end);
         };
 
-        union 
+        union
         {
           Inner inner_;
           Leaf leaf_;

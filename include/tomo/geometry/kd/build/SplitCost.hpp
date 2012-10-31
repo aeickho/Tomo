@@ -1,28 +1,25 @@
 #pragma once
 
-#include <set>
-#include "tomo/geometry/prim/Segment.hpp"
-
 namespace tomo
 {
   namespace geometry
   {
     namespace kd 
     {
-      namespace visitor
+      namespace build
       {
-        struct SegmentNodeIntersectPointOnly
+        template <typename NODE, typename PRIM_NODE_INTERSECTION> 
+        struct CostEstimated
         {
-          typedef prim::Segment Segment;
-          typedef Segment::scalar_type scalar_type;
-          typedef Segment::bounds_type bounds_type;
-          typedef NodeGeometry<Segment::model_type> NodeGeometry;
+          TOMO_NODE_TYPES(NODE); 
 
-          NodeIntersectResult operator()(const Segment& _segment,
-                                         const NodeGeometry& _node)
+          base::Axis axis()
           {
-            return NodeIntersectResult(_segment[0][_node.axis()] <= _node.splitPos(),
-                                       _segment[0][_node.axis()] > _node.splitPos());
+
+          }
+
+          geometry_type split( const bounds_type& _bounds, const ctnr_type& _primitives )
+          {
           }
 
           template <typename NODE>
@@ -30,7 +27,6 @@ namespace tomo
                          NODE* _node, 
                          Segment*& _primitive)
           {
-
             base::Axis _axis = _nodeGeometry.bounds().dominantAxis();
             scalar_type _splitPos = 0.5*(_nodeGeometry.bounds().min()[_axis] + 
                                          _nodeGeometry.bounds().max()[_axis]);
@@ -79,41 +75,6 @@ namespace tomo
           scalar_type boundsLength(const bounds_type& _bounds)
           {
             return 2*(_bounds.size().x() + _bounds.size().y());
-          }
-        };
-
-        struct SegmentSegmentSqrDistance
-        {
-          typedef geometry::prim::Segment Segment;
-          typedef Segment::scalar_type scalar_type;
-
-          scalar_type operator()(const Segment& _a, const Segment& _b)
-          {
-            return (_a[1] - _b[0]).sqrLength(); 
-          }
-        };
-
-        struct SegmentBoundsSqrDistance
-        {
-          typedef geometry::prim::Segment Segment;
-          typedef Segment::scalar_type scalar_type;
-          typedef Segment::point_type point_type;
-          typedef Segment::bounds_type bounds_type;
-
-          scalar_type operator()(const Segment& _s, const bounds_type& _b)
-          {
-            const point_type& _p = _s[1];
-            if (_b.inside(_p)) return 0;
-
-            scalar_type _minDist = INF;
-            TOMO_FOREACH_DIM_(_p,i)
-            {
-              scalar_type _d = (_p[i] < _b.min()[i]) ? _b.min()[i] : _b.max()[i];
-              _d -= _p[i];
-              _d *= _d;
-              _minDist = std::min(_d,_minDist);
-            }
-            return _minDist*_minDist;
           }
         };
       }

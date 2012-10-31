@@ -1,9 +1,13 @@
 #pragma once
 
-#include "tomo/geometry/kd/visitor/VertexFunctors.hpp"
 #include "tomo/geometry/kd/visitor/Nearest.hpp"
 #include "tomo/geometry/kd/visitor/KNearest.hpp"
 #include "tomo/geometry/kd/visitor/InRadius.hpp"
+
+#include "tomo/geometry/intersect/VertexNode.hpp"
+#include "tomo/geometry/distance/VertexVertex.hpp"
+#include "tomo/geometry/distance/VertexBounds.hpp"
+#include "tomo/geometry/kd/build/HalfSplit.hpp"
 
 BOOST_AUTO_TEST_CASE( NearestVisitorsTest )
 {
@@ -24,10 +28,12 @@ BOOST_AUTO_TEST_CASE( NearestVisitorsTest )
     _vertices.add(Vertex2f(Point2f(RND,RND)));
   }
   
-  typedef tomo::geometry::kd::visitor::VertexNodeIntersector<Vertex2f> VNIntersector;
-  typedef tomo::geometry::kd::visitor::VertexVertexSqrDistance<Vertex2f> VVDist;
-  typedef tomo::geometry::kd::visitor::VertexBoundsSqrDistance<Vertex2f> VNodeDist;
-  _vertices.validate<VNIntersector>();
+  typedef tomo::geometry::intersect::VertexNode<Vertex2f> VNIntersect;
+  typedef tomo::geometry::distance::VertexVertex<Vertex2f> VVDist;
+  typedef tomo::geometry::distance::VertexBounds<Vertex2f> VNodeDist;
+  typedef tomo::geometry::kd::build::HalfSplit<Vertices::kdtree_type,VNIntersect> BuildPolicy;
+  
+  _vertices.validate<BuildPolicy>();
 
   const Vertex2f& _vertex = _vertices.objs()[n/2];
   int i = 0;
@@ -43,6 +49,8 @@ BOOST_AUTO_TEST_CASE( NearestVisitorsTest )
     if (&_v == &_vertex) continue;
     _verificationData.insert(std::make_pair<>(VVDist()(_v,_vertex),&_v));
   }
+
+  /*
   MapType::const_iterator it1, it2;
 
 
@@ -107,7 +115,7 @@ BOOST_AUTO_TEST_CASE( NearestVisitorsTest )
 
     _w.draw(*_nearest.nearest().second,Magick::Color("yellow"));
     _w.image().write(TOMO_TEST_OUTPUT_NAME("_nearest.png",++i));
-  }
+  }*/
 }
 
 

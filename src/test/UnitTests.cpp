@@ -35,5 +35,5 @@ static const std::string testOutputName(std::string _testName,
 #include "MatrixTest.hpp"
 #include "TriangleSlicerTest.hpp"
 #include "NearestVisitorsTest.hpp"
-#include "RingTest.hpp"
+//#include "RingTest.hpp"
 

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "tomo/geometry/kd/visitor/SegmentFunctors.hpp"
 #include "tomo/geometry/prim/Ring.hpp"
 
 namespace tomo

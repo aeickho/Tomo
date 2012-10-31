@@ -1,8 +1,6 @@
 #pragma once
 
 #include "Node.hpp"
-#include "NodeGeometry.hpp"
-#include "NodeIntersect.hpp"
 
 namespace tomo
 {
@@ -18,15 +16,7 @@ namespace tomo
         >
       struct Tree
       {   
-        /// Node type
-        typedef PRIMITIVE primitive_type;
-        typedef NODE Node;
-        typedef typename Node::Inner NodeInner;
-        typedef typename primitive_type::model_type model_type;
-        typedef typename primitive_type::scalar_type scalar_type;
-        typedef typename primitive_type::vec_type vec_type;
-        typedef typename primitive_type::point_type point_type;
-        typedef typename primitive_type::bounds_type bounds_type;
+        TOMO_NODE_TYPES(NODE);
 
         /// Node container
         typedef std::vector<Node> NodeCont;
@@ -62,14 +52,6 @@ namespace tomo
           return &nodes_[_nodeIndex];
         }
 
-          /// Insert Primitive pointers from _src into primLists_
-        void insertLeafNode(unsigned _nodeIndex, const PrimCont& _src)
-        {
-          nodes_.resize(nodes_.size()+1);
-          nodes_[_nodeIndex].leaf_.begin(primLists_.size());
-          nodes_[_nodeIndex].leaf_.end(primLists_.size()+_src.size());
-          primLists_.insert(primLists_.end(),_src.begin(),_src.end());
-        }
 
         /// Iterative traversal with visitor
         template<typename VISITOR>
@@ -77,7 +59,7 @@ namespace tomo
         {
           typedef typename VISITOR::State State;
 
-          State _stack[16];
+          State _stack[MAX_DEPTH];
           int _stackPt = -1;
 
           if (!_visitor.root()) return false;
@@ -101,14 +83,15 @@ namespace tomo
           return _found;
         }
 
-        template<typename NODE_INTERSECTOR>
-        void build(const std::vector<primitive_type>& _objs, unsigned _primitivesPerNode = 10)
+        template<typename BUILD_POLICY>
+        void build(const std::vector<primitive_type>& _objs)
         {
+          BUILD_POLICY _buildPolicy;
+
           // Clear data containers and reserve memory 
-          primLists_.clear();
+          clear();
           primLists_.reserve(_objs.size()*2);
-          nodes_.clear();
-          nodes_.reserve(2*MAX_DEPTH*_objs.size() / _primitivesPerNode);
+          nodes_.reserve(MAX_DEPTH*_objs.size()/2);
           nodes_.resize(1);
 
           // State holder struct 
@@ -118,6 +101,13 @@ namespace tomo
             State() : depth_(0), nodeIndex_(0) {}
             unsigned depth_;
             unsigned nodeIndex_;
+
+            void change(unsigned _depth, unsigned _nodeIndex)
+            {
+              depth_=_depth;
+              nodeIndex_=_nodeIndex;
+            }
+
             TBD_PROPERTY_REF(bounds_type,bounds);
             TBD_PROPERTY_REF(PrimCont,primList);
            } _state;
@@ -141,39 +131,32 @@ namespace tomo
 
           while (1)
           {
-            while (_state.depth_ < MAX_DEPTH && _state.primList().size() > _primitivesPerNode )
+            while (_state.depth_ < MAX_DEPTH)
             {
-              // Setup node
-              nodes_.resize(nodes_.size()+2);
-              Node* _node = &nodes_[_state.nodeIndex_];
+              geometry_type _nodeGeometry;
+              if (!_buildPolicy.split(_state.bounds(),_state.primList(),_nodeGeometry)) break;
 
-              primitive_type* _primitive = NULL;
-              // Make node geometry
-              NodeGeometry<typename primitive_type::model_type> 
-                _nodeGeometry(_state.bounds(),_node->inner_.axis(),_node->inner_.splitPos());
+              // Make an inner node
+              NodeInner& _innerNode = innerNodeSetup(_state.nodeIndex_,_nodeGeometry);
 
-              NODE_INTERSECTOR().template nodeSetup<>(_nodeGeometry,_node,_primitive);
-
-              // Change state
-              _state.depth_++;
-              _state.nodeIndex_ = _node->inner_.left();
+              // Change state (State is left subnode from now on!)
+              _state.change(_state.depth_++,_innerNode.left());
              
               // Initialize state to be pushed
               _stackPt++;
               State& _right = _stack[_stackPt];
+              _right.change(_state.depth_,_innerNode.right());
               _right.primList().clear();
-              _right.depth_ = _state.depth_;
-              _right.nodeIndex_ = _state.nodeIndex_+1; /// Equal to _node->inner_.right(), but faster ;)
 
-              // Split node
+              // Make bounds for subnodes
               _state.bounds().split(_nodeGeometry.splitPos(),_nodeGeometry.axis(),_state.bounds(),_right.bounds());
-             
+
               // Insert objects of current state into left and right subnode
               auto it = _state.primList().begin(), _leftIt = it;
               for (; it != _state.primList().end() ; ++it)
               { 
-                if (*it == _primitive) continue;
-                NodeIntersectResult _result = NODE_INTERSECTOR()(*(*it),_nodeGeometry);
+                NodeIntersectResult _result = _buildPolicy.intersect(*it,_nodeGeometry);
+
                 if (_result.right()) _right.primList().push_back(*it);
                 if (_result.left()) 
                 {
@@ -186,7 +169,7 @@ namespace tomo
             }
            
             // We have a leaf node!
-            insertLeafNode(_state.nodeIndex_,_state.primList());
+            leafNodeSetup(_state.nodeIndex_,_state.primList());
             
             // Nothing left to do
             if (_stackPt < 0) return;
@@ -195,6 +178,27 @@ namespace tomo
             _stackPt--;
           }
         }
+
+      private:
+        NodeInner& innerNodeSetup(unsigned _nodeIndex, geometry_type& _nodeGeometry)
+        {
+          NodeInner& _inner = nodes_[_nodeIndex].inner_;
+          nodes_.resize(nodes_.size()+2);
+          uint32_t _index = nodes_.size();
+          _inner.setup(_index,_nodeGeometry.axis(),_nodeGeometry.splitPos());
+          return _inner;
+        }
+
+        /// Insert Primitive pointers from _primList into primLists_
+        NodeLeaf& leafNodeSetup(unsigned _nodeIndex, const cntr_type& _primList)
+        {
+          nodes_.resize(nodes_.size()+1);
+          nodes_[_nodeIndex].leaf_.begin(primLists_.size());
+          nodes_[_nodeIndex].leaf_.end(primLists_.size()+_primList.size());
+          primLists_.insert(primLists_.end(),_primList.begin(),_primList.end());
+          return nodes_[_nodeIndex].leaf_;
+        }
+        
       };
 
     }
