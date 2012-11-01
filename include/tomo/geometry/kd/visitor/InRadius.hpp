@@ -61,6 +61,7 @@ namespace tomo
           bool root()
           {
             nearest_.clear();
+            nearestPrimitives_.clear();
             return SQR_NODE_DISTANCE()(primitive_,kdTree_.bounds_) < sqrRadius_;
           }
 
@@ -111,10 +112,14 @@ namespace tomo
                  it != state_.node()->leaf_.end(kdTree_.primLists_); ++it)
             {
               const primitive_type& _nodePrim = *(*it);
+              if (nearestPrimitives_.find(&_nodePrim) != nearestPrimitives_.end()) continue;
               if (&_nodePrim == &primitive_) continue;
               scalar_type _distance = SQR_PRIM_DISTANCE()(primitive_,_nodePrim);
               if (_distance < sqrRadius_ )
-                nearest_.insert(pair_type(_distance,&_nodePrim));
+              {
+                  nearest_.insert(pair_type(_distance,&_nodePrim));
+                  nearestPrimitives_.insert(&_nodePrim);
+              }
             }
             return false;
           }
@@ -132,6 +137,7 @@ namespace tomo
         private:
           const KDTree& kdTree_;
           scalar_type sqrRadius_;
+          std::set<const primitive_type*> nearestPrimitives_;
         };
       }
     }

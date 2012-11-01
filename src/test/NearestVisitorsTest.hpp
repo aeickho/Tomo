@@ -78,7 +78,6 @@ BOOST_AUTO_TEST_CASE( NearestVisitorsTest )
     _verificationData.insert(std::make_pair<>(VVDist()(_v,_vertex),&_v));
   }
 
-  /*
   MapType::const_iterator it1, it2;
 
 
@@ -143,7 +142,7 @@ BOOST_AUTO_TEST_CASE( NearestVisitorsTest )
 
     _w.draw(*_nearest.nearest().second,Magick::Color("yellow"));
     _w.image().write(TOMO_TEST_OUTPUT_NAME("_nearest.png",++i));
-  }*/
+  }
 }
 
 

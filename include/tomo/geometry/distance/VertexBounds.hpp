@@ -17,7 +17,7 @@ namespace tomo
 
         scalar_type operator()(const Vertex& _v, const bounds_type& _b)
         {
-          return PointBounds<point_type,bounds_type>(_v.v(),_b);
+          return PointBounds<point_type,bounds_type>()(_v.v(),_b);
         }
       };
     }
