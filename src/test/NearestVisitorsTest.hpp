@@ -8,6 +8,28 @@
 #include "tomo/geometry/distance/VertexVertex.hpp"
 #include "tomo/geometry/distance/VertexBounds.hpp"
 #include "tomo/geometry/kd/build/HalfSplit.hpp"
+#include "tomo/geometry/kd/build/SplitCost.hpp"
+
+
+struct VertexSplitPos
+{
+  typedef tomo::geometry::prim::Vertex2f Vertex;
+  typedef Vertex::scalar_type scalar_type;
+  scalar_type operator()(const Vertex* _v, tomo::geometry::base::Axis _axis)
+  {
+    return _v->v()[_axis];
+  }
+};
+
+struct VertexIntersectionCost
+{
+  typedef tomo::geometry::prim::Vertex2f Vertex;
+  typedef Vertex::scalar_type scalar_type;
+  scalar_type operator()(const Vertex* _v)
+  {
+    return 0.5;
+  }
+};
 
 BOOST_AUTO_TEST_CASE( NearestVisitorsTest )
 {
@@ -25,14 +47,20 @@ BOOST_AUTO_TEST_CASE( NearestVisitorsTest )
   int n = 1000;
   for (int i = 0; i < n; i++)
   {
-    _vertices.add(Vertex2f(Point2f(RND,RND)));
+    _vertices.add(Vertex2f(Point2f(0.5+0.5*std::sin(RND*M_PI*2),RND)));
   }
   
   typedef tomo::geometry::intersect::VertexNode<Vertex2f> VNIntersect;
   typedef tomo::geometry::distance::VertexVertex<Vertex2f> VVDist;
   typedef tomo::geometry::distance::VertexBounds<Vertex2f> VNodeDist;
-  typedef tomo::geometry::kd::build::HalfSplit<Vertices::kdtree_type,VNIntersect> BuildPolicy;
+  //typedef tomo::geometry::kd::build::HalfSplit<Vertices::kdtree_type,VNIntersect> BuildPolicy;
   
+  typedef tomo::geometry::kd::build::SplitCost<
+        Vertices::kdtree_type,
+        VNIntersect,
+        VertexSplitPos,
+        VertexIntersectionCost> BuildPolicy;
+
   _vertices.validate<BuildPolicy>();
 
   const Vertex2f& _vertex = _vertices.objs()[n/2];

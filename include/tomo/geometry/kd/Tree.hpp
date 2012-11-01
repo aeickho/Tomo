@@ -8,14 +8,14 @@ namespace tomo
   {
     namespace kd
     {
-      template 
-        <
-          typename PRIMITIVE,
-          typename NODE = Node<PRIMITIVE>,
-          unsigned MAX_DEPTH = 16
-        >
+      template
+      <
+      typename PRIMITIVE,
+               typename NODE = Node<PRIMITIVE>,
+               unsigned MAX_DEPTH = 16
+               >
       struct Tree
-      {   
+      {
         TOMO_NODE_TYPES(NODE);
 
         /// Node container
@@ -28,7 +28,7 @@ namespace tomo
         PrimCont primLists_;
         bounds_type bounds_;
 
-        bool empty() const 
+        bool empty() const
         {
           return nodes_.empty();
         }
@@ -69,9 +69,9 @@ namespace tomo
           {
             while (!_visitor.state().node()->isLeaf())
             {
-              _stackPt += _visitor.inner(_stack[_stackPt+1]); 
+              _stackPt += _visitor.inner(_stack[_stackPt+1]);
             }
-           
+
             _found |= _visitor.leaf();
             if (_found) return true;
             if (_stackPt < 0) return _found;
@@ -88,13 +88,13 @@ namespace tomo
         {
           BUILD_POLICY _buildPolicy;
 
-          // Clear data containers and reserve memory 
+          // Clear data containers and reserve memory
           clear();
           primLists_.reserve(_objs.size()*2);
           nodes_.reserve(MAX_DEPTH*_objs.size()/2);
           nodes_.resize(1);
 
-          // State holder struct 
+          // State holder struct
           // needed for stack for iterative build and initial state
           struct State
           {
@@ -110,13 +110,13 @@ namespace tomo
 
             TBD_PROPERTY_REF(bounds_type,bounds);
             TBD_PROPERTY_REF(PrimCont,primList);
-           } _state;
-          
+          } _state;
+
           int _stackPt = -1;
 
           // Declare state and reserve memory for each stack item
           State _stack[MAX_DEPTH];
-          for (int i = 0; i < MAX_DEPTH; i++) 
+          for (int i = 0; i < MAX_DEPTH; i++)
             _stack[i].primList().reserve(_objs.size() >> i);
 
           // Fill initial primitive list with pointers of input objects
@@ -126,7 +126,7 @@ namespace tomo
           {
             _state.bounds().extend(it->bounds());
             _state.primList().push_back(&(*it));
-          } 
+          }
           bounds_ = _state.bounds();
 
           while (1)
@@ -141,7 +141,7 @@ namespace tomo
 
               // Change state (State is left subnode from now on!)
               _state.change(_state.depth_++,_innerNode.left());
-             
+
               // Initialize state to be pushed
               _stackPt++;
               State& _right = _stack[_stackPt];
@@ -154,23 +154,23 @@ namespace tomo
               // Insert objects of current state into left and right subnode
               auto it = _state.primList().begin(), _leftIt = it;
               for (; it != _state.primList().end() ; ++it)
-              { 
+              {
                 NodeIntersectResult _result = _buildPolicy.intersect(*it,_nodeGeometry);
 
                 if (_result.right()) _right.primList().push_back(*it);
-                if (_result.left()) 
+                if (_result.left())
                 {
-                  *_leftIt = *it; 
-                  ++_leftIt; 
-                } 
+                  *_leftIt = *it;
+                  ++_leftIt;
+                }
               }
-              // Erase remaining objects at back of container 
+              // Erase remaining objects at back of container
               _state.primList().erase(_leftIt,_state.primList().end());
             }
-           
+
             // We have a leaf node!
             leafNodeSetup(_state.nodeIndex_,_state.primList());
-            
+
             // Nothing left to do
             if (_stackPt < 0) return;
 
@@ -198,7 +198,7 @@ namespace tomo
           primLists_.insert(primLists_.end(),_primList.begin(),_primList.end());
           return nodes_[_nodeIndex].leaf_;
         }
-        
+
       };
 
     }
