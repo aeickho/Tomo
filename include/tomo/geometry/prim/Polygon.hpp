@@ -1,10 +1,8 @@
 #pragma once
 
-#include <vector>
-#include <set>
 #include <boost/type_traits/is_const.hpp>
 #include <boost/type_traits/remove_reference.hpp>
-
+#include <boost/foreach.hpp>
 #include <boost/geometry/geometries/polygon.hpp>
 #include "Ring.hpp"
 #include "tomo/geometry/base/Bounds.hpp"
@@ -19,14 +17,44 @@ namespace tomo
 
       struct Polygon : Primitive2f
       {
-        Polygon();
-        Polygon(const BoostPolygon& _boostPolygon);
-        Polygon(const Ring& _outer, const std::vector<Ring>& _inners);
+        Polygon() {}
+        Polygon(const BoostPolygon& _boostPolygon) : 
+          polygon_(_boostPolygon)
+        {}
+      
+        Polygon(const Ring& _outer, const std::vector<Ring>& _inners)
+        {
+          polygon_.outer() = _outer();
+          BOOST_FOREACH ( const Ring& _inner, _inners )
+          {
+            polygon_.inners().push_back(_inner());
+          }
+        }
 
-        void segments(ray_type& _ray, std::vector<Segment>& _segments ) const;
-        void fetchSegments(std::vector<Segment>& _segments) const;
-        void boundingRays(float _angle, ray_type& _rayBegin, ray_type& _rayEnd) const;
-        void add(const Ring& _ring);
+        void fetchSegments(std::vector<Segment>& _segments) const
+        {
+          Ring _outer(polygon_.outer());
+          _outer.fetchSegments(_segments);
+
+          BOOST_FOREACH( const BoostRing& _ring, polygon_.inners() )
+          {
+            Ring _inner(_ring);
+            _inner.fetchSegments(_segments);
+          }
+        }
+
+        void add(const Ring& _ring)
+        {
+          switch (_ring.location())
+          {
+          case Ring::INNER:
+            polygon_.inners().push_back(_ring());
+            break;
+          case Ring::OUTER:
+            polygon_.outer() = _ring();
+            break;
+          }
+        }
 
         operator const BoostPolygon& () const
         {
@@ -46,12 +74,6 @@ namespace tomo
 
         TBD_PROPERTY(BoostPolygon,polygon);
         TBD_PROPERTY_REF(bounds_type,bounds);
-
-      private:
-        void segmentsFromSegMarkers(
-          const ray_type& _ray,
-          const std::set<float>& _segMarkers,
-          std::vector<Segment>& _segments) const;
       };
     }
   }

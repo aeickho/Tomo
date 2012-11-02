@@ -22,6 +22,7 @@ namespace tomo
           typedef typename Node::point_type point_type; \
           typedef typename Node::scalar_type scalar_type; \
           typedef typename Node::bounds_type bounds_type; \
+          typedef typename Node::model_type model_type; \
           typedef typename Node::intersection_type intersection_type;\
           typedef typename Node::cntr_type cntr_type;\
           typedef typename Node::Inner NodeInner;\
@@ -35,6 +36,7 @@ namespace tomo
         typedef typename primitive_type::scalar_type scalar_type;
         typedef typename primitive_type::point_type point_type;
         typedef typename primitive_type::vec_type vec_type;
+        typedef typename primitive_type::model_type model_type;
         typedef NodeGeometry< typename primitive_type::model_type > geometry_type; 
         typedef NodeIntersectResult intersection_type;
         typedef std::vector<const PRIMITIVE*> cntr_type;

@@ -207,7 +207,7 @@ namespace tomo
           return true;
         }
 
-        bool intersect(const ray_type& _ray, scalar_type* _clampTMin = nullptr, scalar_type* _clampTMax = nullptr)
+        bool intersect(const ray_type& _ray, scalar_type* _clampTMin = nullptr, scalar_type* _clampTMax = nullptr) const
         {
           scalar_type _tMin = _ray.tNear();
           scalar_type _tMax = _ray.tFar();

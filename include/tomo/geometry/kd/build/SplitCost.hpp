@@ -1,4 +1,5 @@
 #pragma once
+#include "tomo/geometry/intersect/SegmentNode.hpp"
 
 namespace tomo
 {
@@ -40,31 +41,35 @@ namespace tomo
               TBD_PROPERTY_RO(const primitive_type*,prim);
             };
 
-            // A bucket contains two split candidates: 1 left and 1 right
-            struct Bucket
-            {
-              Bucket() : cost_(0) {}
-              
-              void put(scalar_type _pos, const primitive_type* _prim)
-              {
-                if (_pos >= leftExt_ && _pos <= rightExt_)
-                {
-                  if (!left_.prim() || _pos <= left_.pos() )  left_.put(_pos,_prim);
-                  if (!right_.prim() || _pos >= right_.pos()) right_.put(_pos,_prim);
-                }
-              }
-
-              TBD_PROPERTY_REF(SplitCandidate,left);
-              TBD_PROPERTY_REF(SplitCandidate,right);
-              TBD_PROPERTY(scalar_type,leftExt);
-              TBD_PROPERTY(scalar_type,rightExt);
-              TBD_PROPERTY_REF(scalar_type,cost);
-            };
              
 #define N_BUCKETS 8
             // With this bucket structure, we can achieve building a good kdtree within O(n*log n)
             struct Buckets
             {
+            private:
+
+              // A bucket contains two split candidates: 1 left and 1 right
+              struct Bucket
+              {
+                Bucket() : cost_(0) {}
+              
+                void put(scalar_type _pos, const primitive_type* _prim)
+                {
+                  if (_pos >= leftExt_ && _pos <= rightExt_)
+                  {
+                    if (!left_.prim() || _pos <= left_.pos() )  left_.put(_pos,_prim);
+                    if (!right_.prim() || _pos >= right_.pos()) right_.put(_pos,_prim);
+                  }
+                }
+
+                TBD_PROPERTY_REF(SplitCandidate,left);
+                TBD_PROPERTY_REF(SplitCandidate,right);
+                TBD_PROPERTY(scalar_type,leftExt);
+                TBD_PROPERTY(scalar_type,rightExt);
+                TBD_PROPERTY_REF(scalar_type,cost);
+              };
+
+            public:
               Buckets(const bounds_type& _bounds)
               { 
                 axis_ = _bounds.dominantAxis();
@@ -95,13 +100,6 @@ namespace tomo
 
                 _bucket->cost() += PRIM_INTERSECT_COST()(_primitive);
                 _bucket->put(_splitPos,_primitive);
-              }
-
-              scalar_type splitCost(scalar_type _splitPos, 
-                                    scalar_type _leftCost, 
-                                    scalar_type _rightCost)
-              {
-                return ((_splitPos - min_)  * _leftCost + (max_ - _splitPos) * _rightCost);
               }
 
               SplitCandidate* splitCandidate()
@@ -165,6 +163,13 @@ namespace tomo
                 if (_bucketIndex < 0 || _bucketIndex >= N_BUCKETS) return nullptr;
 
                 return &buckets_[_bucketIndex];
+              }
+
+              scalar_type splitCost(scalar_type _splitPos, 
+                                    scalar_type _leftCost, 
+                                    scalar_type _rightCost)
+              {
+                return ((_splitPos - min_)  * _leftCost + (max_ - _splitPos) * _rightCost);
               }
 
               scalar_type min_;

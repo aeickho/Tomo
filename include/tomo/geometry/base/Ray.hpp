@@ -14,18 +14,18 @@ namespace tomo
       {
         TOMO_MODEL_TYPES(MODEL)
         typedef base::Point<MODEL> point_type;
-        typedef base::Vec<MODEL> vector_type;
+        typedef base::Vec<MODEL> vec_type;
 
-        Ray(const point_type _org = point_type(), const vector_type _dir = vector_type(),
-            scalar_type _tNear = 0.002, scalar_type _tFar = MODEL::scalarMax()) :
+        Ray(const point_type _org = point_type(), const vec_type _dir = vec_type(),
+            scalar_type _tNear = 0.0, scalar_type _tFar = MODEL::scalarMax()) :
           org_(_org), dir_(_dir), tNear_(_tNear), tFar_(_tFar), primitive_(NULL)  {  }
 
         bool intersection(void* _primitive, scalar_type _t, scalar_type _tNear, scalar_type _tFar)
         {
-          if (_t >= _tNear && _t <= _tFar)
+          if (_t >= _tNear && _t <= _tFar && _t >= tNear_ && _t <= tFar_)
           {
             primitive_ = _primitive;
-            tFar_ = _t;
+            t_ = _t;
             return true;
           }
           return false;
@@ -41,14 +41,15 @@ namespace tomo
           return org_ + tFar_ * dir_;
         }
 
-        void params(point_type _org, vector_type _dir)
+        void params(point_type _org, vec_type _dir)
         {
           org_=_org;
           dir_=_dir;
         }
 
         TBD_PROPERTY_REF(point_type,org);
-        TBD_PROPERTY_REF(vector_type,dir);
+        TBD_PROPERTY_REF(vec_type,dir);
+        TBD_PROPERTY_REF(scalar_type,t);
         TBD_PROPERTY_REF(scalar_type,tNear);
         TBD_PROPERTY_REF(scalar_type,tFar);
 

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Polygon.hpp"
-#include <boost/foreach.hpp>
 
 namespace tomo
 {
@@ -45,6 +44,13 @@ namespace tomo
           {
             _polygon.fetchSegments(_segments);
           }
+        }
+
+        bounds_type bounds() const 
+        {
+          TOMO_NOT_IMPLEMENTED();
+          ///@todo MultiPolygon should hold a KDTree as member (which already has bounds)
+          return bounds_type(); 
         }
 
         TBD_PROPERTY_REF(std::vector<Polygon>,polygons);
