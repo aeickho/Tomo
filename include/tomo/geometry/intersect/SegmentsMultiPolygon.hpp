@@ -11,6 +11,7 @@ namespace tomo
   {
     namespace intersect
     {
+      /// Determines the intersection set between a multipolygon and a set of segments
       template
         <
           template<class,class> class RESULT_CONTAINER=std::vector

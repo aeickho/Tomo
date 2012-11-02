@@ -35,6 +35,11 @@ namespace tomo
             SegmentSplitCost
           >
         {
+          typedef Tree<prim::Segment> KDTree;
+          SegmentSplitCost(const KDTree& _kdTree)
+          {
+            TOMO_NOT_IMPLEMENTED();
+          }
         };
       }
     }

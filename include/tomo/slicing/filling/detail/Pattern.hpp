@@ -6,6 +6,7 @@ namespace tomo
     {
       namespace detail
       {
+        /// Generate the line pattern for filling
         template
         <
         typename SEGMENT = tomo::geometry::prim::Segment,
@@ -30,7 +31,6 @@ namespace tomo
 
             Segment _segment(_boundingSegments.first[0] + 0.5*_inc,
                              _boundingSegments.first[1] + 0.5*_inc);
-
             for (unsigned i = 1; i < _nLines; ++i)
             {
               _segments.push_back(_segment);

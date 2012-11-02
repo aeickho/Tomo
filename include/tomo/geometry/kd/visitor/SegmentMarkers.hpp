@@ -11,6 +11,9 @@ namespace tomo
     {
       namespace visitor
       {
+        /**@brief Finds the segment markers (^= intersection points) between 
+         *        a segment and segments sorted by a kdtree
+        **/
         struct SegmentMarkers 
         {
           typedef prim::Segment Segment;
@@ -26,6 +29,7 @@ namespace tomo
           SegmentMarkers(const KDTree& _kdTree) :
             rayTraversal_(_kdTree)
           {
+            TOMO_NOT_IMPLEMENTED();
           }
 
           bool root()
