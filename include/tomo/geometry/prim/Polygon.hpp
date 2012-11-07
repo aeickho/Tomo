@@ -33,13 +33,11 @@ namespace tomo
 
         void fetchSegments(std::vector<Segment>& _segments) const
         {
-          Ring _outer(polygon_.outer());
-          _outer.fetchSegments(_segments);
+          Ring(polygon_.outer()).fetchSegments(_segments);
 
           BOOST_FOREACH( const BoostRing& _ring, polygon_.inners() )
           {
-            Ring _inner(_ring);
-            _inner.fetchSegments(_segments);
+            Ring(_ring).fetchSegments(_segments);
           }
         }
 

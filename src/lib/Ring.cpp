@@ -91,7 +91,7 @@ namespace tomo
       Ring::vec_type Ring::getNormal(BoostRing::const_iterator it) const
       {
         BoostRing::const_iterator _prev, _next;
-        nextPrev(it,_prev,_next);
+        prevNext(it,_prev,_next);
         return 0.5*(getNormal(_prev,it) + getNormal(it,_next));
 
       }
@@ -112,7 +112,7 @@ namespace tomo
         return (_determinant < 0) ? CW : CCW;
       }
 
-      void Ring::nextPrev(BoostRing::const_iterator it,
+      void Ring::prevNext(BoostRing::const_iterator it,
                           BoostRing::const_iterator& _prev,
                           BoostRing::const_iterator& _next) const
       {
@@ -124,7 +124,7 @@ namespace tomo
       Ring::scalar_type Ring::determinant(BoostRing::const_iterator it) const
       {
         BoostRing::const_iterator _prev, _next;
-        nextPrev(it,_prev,_next);
+        prevNext(it,_prev,_next);
         return (it->x()*_next->y() + _prev->x()*it->y() + _prev->y()*_next->x()) -
                (_prev->y()*it->x() + it->y()*_next->x() + _prev->x()*_next->y());
       }
