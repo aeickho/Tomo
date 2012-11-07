@@ -1,11 +1,12 @@
 #pragma once
 
-#include <boost/geometry/geometries/ring.hpp>
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/nvp.hpp>
-
 #include "Segment.hpp"
 #include "Vertex.hpp"
+
+#include <boost/geometry/geometries/ring.hpp>
+#include <boost/geometry/geometries/register/ring.hpp>
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/nvp.hpp>
 
 namespace tomo
 {
@@ -13,9 +14,7 @@ namespace tomo
   {
     namespace prim
     {
-      typedef boost::geometry::model::ring<base::BoostPoint2> BoostRing;
-
-      struct Ring  : Primitive2f
+      struct Ring  : Primitive2f, std::vector<base::Point2f> 
       {
         enum IntersectResult { DISJOINT, OVERLAP, A_WITHIN_B, B_WITHIN_A };
         enum Location { INNER, OUTER };
@@ -26,50 +25,37 @@ namespace tomo
         /// Default constructor
         Ring(Location _location = OUTER);
 
-        /// Boost wrapper constructor
-        Ring(const BoostRing& _boostRing);
-
         void add(point_type _point);
 
         void fetchSegments(std::vector<Segment>& _segments) const;
         void fetchSegments(
           const Segment& _segment,
           std::vector<Segment>& _segments) const;
-        void fetchSegments(BoostRing::const_iterator it1,
-                               BoostRing::const_iterator it2,
+        void fetchSegments(Ring::const_iterator it1,
+                               Ring::const_iterator it2,
                                std::vector<Segment>& _segments) const;
 
         void fetchVertices(std::vector<Vertex2f>& _vertices) const;
-        void resize(scalar_type _distance, std::vector<Ring>& _rings);
 
         friend IntersectResult intersect(const Ring& _a, const Ring& _b, std::vector<Ring>& _out);
 
-        scalar_type determinant(BoostRing::const_iterator it) const;
-        void prevNext(BoostRing::const_iterator it,
-                      BoostRing::const_iterator& _prev,
-                      BoostRing::const_iterator& _next) const;
+        scalar_type determinant(Ring::const_iterator it) const;
+        void prevNext(Ring::const_iterator it,
+                      Ring::const_iterator& _prev,
+                      Ring::const_iterator& _next) const;
         
         Orientation orientation() const;
-        vec_type getNormal(BoostRing::const_iterator it) const ;
-
-        const BoostRing& operator()() const
-        {
-          return ring_;
-        }
-        BoostRing& operator()()
-        {
-          return ring_;
-        }
+        vec_type getNormal(Ring::const_iterator it) const ;
 
         TBD_PROPERTY(Location,location);
-        TBD_PROPERTY_REF(BoostRing,ring);
-
       private:
-        vec_type getNormal(BoostRing::const_iterator _p0, BoostRing::const_iterator _p1) const;
+        vec_type getNormal(Ring::const_iterator _p0, Ring::const_iterator _p1) const;
       };
     }
   }
 }
+
+BOOST_GEOMETRY_REGISTER_RING(tomo::geometry::prim::Ring)
 
 namespace boost
 {
@@ -106,10 +92,10 @@ namespace boost
     template<class ARCHIVE>
     void serialize(
         ARCHIVE& _ar, 
-        tomo::geometry::prim::BoostRing& _boostRing, 
+        tomo::geometry::prim::Ring& _boostRing, 
         const unsigned int _fileVersion)
     {
-      _ar & (std::vector<tomo::geometry::base::BoostPoint2> &)_boostRing;
+      _ar & (std::vector<tomo::geometry::base::Point2f> &)_boostRing;
     }
   }
 }

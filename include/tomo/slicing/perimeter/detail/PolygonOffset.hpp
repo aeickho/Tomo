@@ -14,9 +14,7 @@ namespace tomo
         struct PolygonOffset
         {
           typedef geometry::prim::Ring Ring;
-          typedef geometry::prim::BoostRing BoostRing;
-          typedef geometry::prim::Polygon Polygon;
-          typedef geometry::prim::BoostPolygon BoostPolygon;
+          typedef geometry::prim::Polygon Polygon; 
           typedef POLYGON_CNTR<Polygon,std::allocator<Polygon>> Polygons;
           typedef Polygon::scalar_type scalar_type;
           typedef Polygon::point_type point_type;
@@ -27,41 +25,34 @@ namespace tomo
             scalar_type _offset,
             POLYGON_CNTR<Polygon,std::allocator<Polygon>>& _output)
           {
-            const BoostPolygon& _bP = _input;
-            Ring _outer(_bP.outer());
+            Ring _outer(_input.boundary());
             
             std::vector<Ring> _outerRings;
             RingOffset<>()(_outer,_offset,_outerRings);
 
             std::vector<Ring> _innerRings;
-            for ( const BoostRing& _inner : _bP.inners() )
+            for ( const Ring& _inner : _input.holes() )
               RingOffset<>()(_inner,-_offset,_innerRings);
 
-            std::vector<BoostPolygon> _innerPolygons;
+            std::vector<Polygon> _innerPolygons;
             _innerPolygons.reserve(_innerRings.size());
             for ( const Ring& _inner : _innerRings )
             {
-              BoostPolygon _bP;
-              _bP.outer() = _inner();
-              boost::geometry::correct(_bP.outer());
-              _innerPolygons.push_back(_bP);
+              Polygon _polygon(_inner);
+              boost::geometry::correct(_polygon.boundary());
+              _innerPolygons.push_back(_polygon);
             }
 
-            std::vector<BoostPolygon> _outerPolygons;
+            std::vector<Polygon> _outerPolygons;
             _outerPolygons.reserve(_outerRings.size());
             for ( const Ring& _outer : _outerRings )
             {
-              BoostPolygon _bP;
-              _bP.outer() = _outer();
-              boost::geometry::correct(_bP.outer());
-              _outerPolygons.push_back(_bP);
+              Polygon _polygon(_outer);
+              boost::geometry::correct(_polygon.boundary());
+              _outerPolygons.push_back(_polygon);
             }
 
-            std::vector<BoostPolygon> _outputPolygons;
-            boost::geometry::difference(_outerPolygons,_innerPolygons,_outputPolygons);
-
-            for ( const BoostPolygon& _p : _outputPolygons )
-              _output.push_back(Polygon(_p));
+            boost::geometry::difference(_outerPolygons,_innerPolygons,_output);
           }
         };
       }

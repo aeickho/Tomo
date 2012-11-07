@@ -34,13 +34,13 @@ namespace tomo
         /// universal assign
         template<class INSERT_ITERATOR> 
           void assign(INSERT_ITERATOR _from, INSERT_ITERATOR _to)
-        {
+        { 
           polygons_.assign(_from,_to);
         }
         /// fetch line segments out of all polygons
         void fetchSegments(std::vector<Segment>& _segments) const
         {
-          BOOST_FOREACH( const Polygon& _polygon, polygons_ )
+          for( const Polygon& _polygon : polygons_ )
           {
             _polygon.fetchSegments(_segments);
           }

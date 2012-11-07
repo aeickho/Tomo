@@ -3,7 +3,9 @@
 
 #include "Coord.hpp"
 #include "Matrix.hpp"
+
 #include <boost/geometry/geometries/point_xy.hpp>
+#include <boost/geometry/geometries/register/point.hpp>
 
 namespace tomo
 {
@@ -11,8 +13,6 @@ namespace tomo
   {
     namespace base
     {
-      typedef boost::geometry::model::d2::point_xy<DEFAULT_TYPE> BoostPoint2;
-
       /** @brief Template class to represent a point
        * @tparam dimensions_ Number of dimensions
        * @tparam Scalar_TYPE Coordinate type
@@ -31,10 +31,6 @@ namespace tomo
         Point( scalar_type _x, scalar_type _y ) : coords_type(_x,_y) { }
         Point( scalar_type _x, scalar_type _y, scalar_type _z ) : coords_type(_x,_y,_z) { }
         Point( scalar_type _x, scalar_type _y, scalar_type _z, scalar_type _w ) : coords_type(_x,_y,_z,_w) { }
-        Point ( BoostPoint2 _boostPoint ) :
-          coords_type(boost::geometry::get<0>(_boostPoint),
-                      boost::geometry::get<1>(_boostPoint))
-        {}
 
         friend Point operator*( const matrix_type& _m, const Point& _p)
         {
@@ -73,12 +69,6 @@ namespace tomo
           Point p;
           TOMO_FOREACH_DIM(i) p[i] = a[i] + b[i];
           return p;
-        }
-
-        BoostPoint2 as() const
-        {
-          BOOST_STATIC_ASSERT(dimensions_ == 2);
-          return BoostPoint2(this->x(),this->y());
         }
 
         operator const scalar_type*() const
@@ -126,4 +116,7 @@ namespace tomo
     }
   }
 }
+
+BOOST_GEOMETRY_REGISTER_POINT_2D_GET_SET(tomo::geometry::base::Point2f,float,cs::cartesian,x,y,x,y)
+
 #endif /* _POINT_HPP */

@@ -8,10 +8,9 @@
 #include <list>
 
 using tomo::geometry::prim::Ring;
-using tomo::geometry::prim::BoostRing;
 using tomo::geometry::base::Point2f;
 
-BOOST_GEOMETRY_REGISTER_MULTI_POLYGON(std::vector<tomo::geometry::prim::BoostPolygon>);
+BOOST_GEOMETRY_REGISTER_MULTI_POLYGON(std::vector<tomo::geometry::prim::Polygon>);
 
 /// create test polygon
 void makePolygon(Ring& _ring,
@@ -20,7 +19,7 @@ void makePolygon(Ring& _ring,
                  int _numSegments = 24,
                  bool _inverse = false)
 {
-  _ring().clear();
+  _ring.clear();
   for (int i = 0; i < _numSegments; i++)
   {
     float _angle = float(i)/float(_numSegments)*M_PI*2.0;
@@ -40,8 +39,7 @@ void makePolygon(Ring& _ring,
     }
 
     if (_inverse) _sin = -_sin;
-    Point2f _p = Point2f(_cos,_sin) + _center;
-    _ring().push_back(_p.as());
+    _ring.add(Point2f(_cos,_sin) + _center);
   }
 }
 
@@ -52,7 +50,7 @@ void makeCircle(Ring& _ring,
                  int _numSegments = 24,
                  bool _inverse = false)
 {
-  _ring().clear();
+  _ring.clear();
   for (int i = 0; i < _numSegments; i++)
   {
     float _angle = float(i)/float(_numSegments)*M_PI*2.0;
@@ -60,8 +58,7 @@ void makeCircle(Ring& _ring,
           _cos = _radius*cos(_angle);
 
     if (_inverse) _sin = -_sin;
-    Point2f _p = Point2f(_cos,_sin) + _center;
-    _ring().push_back(_p.as());
+    _ring.push_back(Point2f(_cos,_sin) + _center);
   }
 }
 
@@ -71,12 +68,12 @@ typedef std::vector<Ring> Rings;
 
 void unify(const Rings& _input, Rings& _output)
 {
-  typedef std::list<BoostRing> Container;
+  typedef std::list<Ring> Container;
   Container _inputRings;
 
   BOOST_FOREACH( const Ring& _ring, _input)
   {
-    BoostRing _newRing(_ring());
+    Ring _newRing(_ring);
     boost::geometry::correct(_newRing);
     _inputRings.push_back(_newRing);
   }
@@ -88,7 +85,7 @@ void unify(const Rings& _input, Rings& _output)
     ++j;
     for (; j != _inputRings.end(); ++j)
     {
-      std::vector<BoostRing> _newRings;
+      std::vector<Ring> _newRings;
       boost::geometry::union_(*i,*j,_newRings);
       if (_newRings.size() == 1)
       {
@@ -99,7 +96,7 @@ void unify(const Rings& _input, Rings& _output)
     }
   }
 
-  BOOST_FOREACH ( const BoostRing& _inputRing, _inputRings )
+  BOOST_FOREACH ( const Ring& _inputRing, _inputRings )
   {
     _output.push_back(Ring(_inputRing));
   }
@@ -146,22 +143,18 @@ BOOST_AUTO_TEST_CASE( PolygonOffsetTest )
   using namespace tomo::geometry;
   using prim::Segment;
   using prim::Polygon;
-  using prim::BoostPolygon;
   using base::Vec2f;
   using tomo::slicing::perimeter::detail::PolygonOffset;
 
   Ring _ring;
   makePolygon(_ring,Point2f(0.5,0.5),0.4);
 
-  Polygon _polygon;
-  BoostPolygon& _bP = _polygon;
-  _bP.outer() = _ring();
+  Polygon _polygon(_ring);
   
   makeCircle(_ring,Point2f(0.3,0.7),0.1);
-  _bP.inners().push_back(_ring());
+  _polygon.holes().push_back(_ring);
   makeCircle(_ring,Point2f(0.6,0.35),0.07);
-  _bP.inners().push_back(_ring());
-
+  _polygon.holes().push_back(_ring);
 
   int i = 0;
   Wrapper _w(1024,1024);

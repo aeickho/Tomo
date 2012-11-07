@@ -2,7 +2,6 @@
 
 #include <boost/type_traits/is_const.hpp>
 #include <boost/type_traits/remove_reference.hpp>
-#include <boost/foreach.hpp>
 #include <boost/geometry/geometries/polygon.hpp>
 #include "Ring.hpp"
 #include "tomo/geometry/base/Bounds.hpp"
@@ -13,31 +12,27 @@ namespace tomo
   {
     namespace prim
     {
-      typedef boost::geometry::model::polygon<base::BoostPoint2> BoostPolygon;
-
       struct Polygon : Primitive2f
       {
         Polygon() {}
-        Polygon(const BoostPolygon& _boostPolygon) : 
-          polygon_(_boostPolygon)
+
+        Polygon(const Ring& _boundary) :
+          boundary_(_boundary)
         {}
-      
-        Polygon(const Ring& _outer, const std::vector<Ring>& _inners)
-        {
-          polygon_.outer() = _outer();
-          BOOST_FOREACH ( const Ring& _inner, _inners )
-          {
-            polygon_.inners().push_back(_inner());
-          }
+
+        Polygon(const Ring& _boundary, const std::vector<Ring>& _holes) :
+          boundary_(_boundary),
+          holes_(_holes)
+        {  
         }
 
         void fetchSegments(std::vector<Segment>& _segments) const
         {
-          Ring(polygon_.outer()).fetchSegments(_segments);
+          boundary_.fetchSegments(_segments);
 
-          BOOST_FOREACH( const BoostRing& _ring, polygon_.inners() )
+          for( const Ring& _ring : holes_ )
           {
-            Ring(_ring).fetchSegments(_segments);
+            _ring.fetchSegments(_segments);
           }
         }
 
@@ -46,48 +41,91 @@ namespace tomo
           switch (_ring.location())
           {
           case Ring::INNER:
-            polygon_.inners().push_back(_ring());
+            holes_.push_back(_ring);
             break;
           case Ring::OUTER:
-            polygon_.outer() = _ring();
+            boundary_ = _ring;
             break;
           }
-        }
-
-        operator const BoostPolygon& () const
-        {
-          return polygon_;
-        }
-        operator BoostPolygon& ()
-        {
-          return polygon_;
         }
 
         template<class ARCHIVE>
         void serialize( ARCHIVE& _ar, const unsigned int _fileVersion )
         {
-          _ar & polygon_;
-          _ar & bounds_;
+          _ar & boundary_;
+          _ar & holes_;
         }
 
-        TBD_PROPERTY(BoostPolygon,polygon);
         TBD_PROPERTY_REF(bounds_type,bounds);
+
+        TBD_PROPERTY_REF(Ring,boundary);
+        TBD_PROPERTY_REF(std::vector<Ring>,holes);
       };
     }
   }
 }
 
+/// Boost Geometry Polygon Type Registration
 namespace boost
 {
-  namespace serialization
+  namespace geometry
   {
-    using tomo::geometry::prim::BoostPolygon;
-
-    template<class ARCHIVE>
-    void serialize(ARCHIVE& _ar, BoostPolygon& _boostPolygon, const unsigned int _fileVersion)
+    namespace traits
     {
-      _ar & _boostPolygon.outer();
-      _ar & _boostPolygon.inners();
+      using tomo::geometry::prim::Ring;
+      using tomo::geometry::prim::Polygon;
+
+      template<> struct tag<Polygon>
+      {
+        typedef polygon_tag type;
+      };
+      template<> struct ring_const_type<Polygon>
+      {
+        typedef Ring const& type;
+      };
+      template<> struct ring_mutable_type<Polygon>
+      {
+        typedef Ring& type;
+      };
+
+      template<> struct interior_const_type<Polygon>
+      {
+        typedef std::vector<Ring> const& type;
+      };
+
+      template<> struct interior_mutable_type<Polygon>
+      {
+        typedef std::vector<Ring>& type;
+      };
+
+      template<> struct exterior_ring<Polygon>
+      {
+        static Ring& get(Polygon& p)
+        {
+          return p.boundary();
+        }
+
+        static Ring const& get(Polygon const& p)
+        {
+          return p.boundary();
+        }
+      };
+
+      template<> struct interior_rings<Polygon>
+      {
+        typedef std::vector<Ring> holes_type;
+
+        static holes_type& get(Polygon& p)
+        {
+          return p.holes();
+        }
+
+        static holes_type const& get(Polygon const& p)
+        {
+          return p.holes();
+        }
+      };
     }
   }
-}
+} // namespace boost::geometry::traits
+

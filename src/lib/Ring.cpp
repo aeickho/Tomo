@@ -20,57 +20,31 @@ namespace tomo
     namespace prim
     {
       using boost::geometry::get;
-      using base::BoostPoint2;
       
       Ring::Ring(Location _location) : 
         location_(_location)
       {
       }
-      
-      Ring::Ring(const BoostRing& _boostRing) :
-        ring_(_boostRing)
-      {
-      }
-
 
       void Ring::add(point_type _point)
       {
-        ring_.push_back(_point.as());
-      }
-
-      void Ring::resize(scalar_type _distance, std::vector<Ring>& _rings )
-      {
-        /*
-            Ring _ring(OUTER);
-            _ring.segments() = this->segments();
-            std::vector<Segment>& _segments = _ring.segments();
-
-            BOOST_FOREACH( Segment& _segment, _segments )
-            {
-              vec_type _normal(_distance * (_segment.normal()).normalized());
-              _segment.front() += _normal;
-              _segment.back() += _normal;
-            }
-            _ring.adapt();
-
-            _rings.push_back(_ring);
-        */
+        push_back(_point);
       }
 
       void Ring::fetchSegments(std::vector<Segment>& _segments) const
       {
-        if (ring_.size() < 2) return;
+        if (size() < 2) return;
 
-        BoostRing::const_iterator it = ring_.begin();
-        BoostPoint2 p0 = ring_.back(), p1 = ring_.front();
-        _segments.reserve(_segments.size() + ring_.size());
+        Ring::const_iterator it = begin();
+        point_type p0 = back(), p1 = front();
+        _segments.reserve(_segments.size() + size());
         _segments.push_back(Segment(p0,p1));
 
         while (1)
         {
           p0 = (*it);
           ++it;
-          if (it == ring_.end()) break;
+          if (it == end()) break;
           p1 = (*it);
           _segments.push_back(Segment(p0,p1));
         }
@@ -78,25 +52,24 @@ namespace tomo
 
       void Ring::fetchVertices(std::vector<Vertex2f>& _vertices) const
       {
-        if (ring_.size() < 2) return;
+        if (size() < 2) return;
 
-        BoostRing::const_iterator it = ring_.begin();
-
-        for (; it != ring_.end(); ++it)
+        Ring::const_iterator it = begin();
+        
+        for (; it != end(); ++it)
         {
           _vertices.push_back(Vertex2f(point_type(*it),getNormal(it)));
         }
       }
 
-      Ring::vec_type Ring::getNormal(BoostRing::const_iterator it) const
+      Ring::vec_type Ring::getNormal(Ring::const_iterator it) const
       {
-        BoostRing::const_iterator _prev, _next;
+        Ring::const_iterator _prev, _next;
         prevNext(it,_prev,_next);
         return 0.5*(getNormal(_prev,it) + getNormal(it,_next));
-
       }
 
-      Ring::vec_type Ring::getNormal(BoostRing::const_iterator _p0, BoostRing::const_iterator _p1) const
+      Ring::vec_type Ring::getNormal(Ring::const_iterator _p0, Ring::const_iterator _p1) const
       {
         vec_type _d = point_type(*_p0) - point_type(*_p1);
         return vec_type(-_d.y(),_d.x());
@@ -104,26 +77,26 @@ namespace tomo
 
       Ring::Orientation Ring::orientation() const
       {
-        BoostRing::const_iterator it = ring_.begin();
+        Ring::const_iterator it = begin();
         scalar_type _determinant = 0.0;
-        for (; it != ring_.end(); ++it)
+        for (; it != end(); ++it)
           _determinant += determinant(it);
 
         return (_determinant < 0) ? CW : CCW;
       }
 
-      void Ring::prevNext(BoostRing::const_iterator it,
-                          BoostRing::const_iterator& _prev,
-                          BoostRing::const_iterator& _next) const
+      void Ring::prevNext(Ring::const_iterator it,
+                          Ring::const_iterator& _prev,
+                          Ring::const_iterator& _next) const
       {
-        BoostRing::const_iterator _last = --ring_.end();
-        _prev = (it == ring_.begin()) ? _last : it-1,
-        _next = (it == _last) ? ring_.begin() : it+1;
+        Ring::const_iterator _last = --end();
+        _prev = (it == begin()) ? _last : it-1,
+        _next = (it == _last) ? begin() : it+1;
       }
 
-      Ring::scalar_type Ring::determinant(BoostRing::const_iterator it) const
+      Ring::scalar_type Ring::determinant(Ring::const_iterator it) const
       {
-        BoostRing::const_iterator _prev, _next;
+        Ring::const_iterator _prev, _next;
         prevNext(it,_prev,_next);
         return (it->x()*_next->y() + _prev->x()*it->y() + _prev->y()*_next->x()) -
                (_prev->y()*it->x() + it->y()*_next->x() + _prev->x()*_next->y());
@@ -132,17 +105,17 @@ namespace tomo
       Ring::IntersectResult intersect(const Ring& _a, const Ring& _b, vector<Ring> _output)
       { 
         /// Make Cheese and union
-        vector<BoostRing> _rings;
-        boost::geometry::union_(_a(),_b(),_rings);
+        vector<Ring> _rings;
+        boost::geometry::union_(_a,_b,_rings);
         
         if (_rings.size() != 1)
         {
-          BOOST_FOREACH( BoostRing& _ring, _rings )
+          BOOST_FOREACH( Ring& _ring, _rings )
             _output.push_back(Ring(_ring));
           return Ring::DISJOINT;
         }
 /*
-        BoostRing& _unionRing = _output.front()();
+        Ring& _unionRing = _output.front()();
         if (_a().size() != _unionRing.size() && 
             _b().size() != _unionRing.size()) goto overlap;
 
