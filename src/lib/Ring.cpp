@@ -6,9 +6,8 @@
 #include <boost/assert.hpp>
 #include <boost/foreach.hpp>
 
-#include <boost/geometry.hpp>
+#include <boost/geometry/algorithms/for_each.hpp>
 #include <boost/geometry/algorithms/union.hpp>
-#include <boost/geometry/algorithms/area.hpp>
 
 
 using namespace std;
@@ -35,19 +34,20 @@ namespace tomo
       {
         if (size() < 2) return;
 
-        Ring::const_iterator it = begin();
-        point_type p0 = back(), p1 = front();
-        _segments.reserve(_segments.size() + size());
-        _segments.push_back(Segment(p0,p1));
-
-        while (1)
+        struct Functor
         {
-          p0 = (*it);
-          ++it;
-          if (it == end()) break;
-          p1 = (*it);
-          _segments.push_back(Segment(p0,p1));
-        }
+          Functor(std::vector<Segment>& _segments) :
+            segments_(_segments) {}
+          TBD_PROPERTY_REF(std::vector<Segment>,segments);
+
+          void operator()( boost::geometry::model::referring_segment<point_type> _segment)
+          {
+            segments_.push_back(Segment(_segment.first,_segment.second));
+          }
+        } _functor(_segments);
+
+        _segments.reserve(_segments.size() + size());
+        boost::geometry::for_each_segment(*this,_functor);
       }
 
       void Ring::fetchVertices(std::vector<Vertex2f>& _vertices) const

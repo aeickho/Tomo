@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Primitive.hpp"
+#include <boost/geometry/geometries/segment.hpp>
+#include <boost/geometry/geometries/register/segment.hpp>
+
 namespace tomo
 {
   namespace geometry
@@ -47,14 +50,17 @@ namespace tomo
         {
           return p_[0];
         }
+
         const point_type& p0() const
         {
           return p_[0];
         }
+
         point_type& p1()
         {
           return p_[1];
         }
+
         const point_type& p1() const
         {
           return p_[1];
@@ -70,7 +76,10 @@ namespace tomo
       private:
         point_type p_[2];
       };
+
+      typedef boost::geometry::model::referring_segment<Segment::point_type> ReferringSegment;
     }
   }
 }
 
+BOOST_GEOMETRY_REGISTER_SEGMENT(tomo::geometry::prim::Segment,tomo::geometry::prim::Segment::point_type,p0,p1)
