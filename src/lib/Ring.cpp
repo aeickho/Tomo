@@ -38,12 +38,12 @@ namespace tomo
         {
           Functor(std::vector<Segment>& _segments) :
             segments_(_segments) {}
-          TBD_PROPERTY_REF(std::vector<Segment>,segments);
 
-          void operator()( boost::geometry::model::referring_segment<point_type> _segment)
+          template<class T> void operator()( const T& _segment)
           {
             segments_.push_back(Segment(_segment.first,_segment.second));
           }
+          TBD_PROPERTY_REF(std::vector<Segment>,segments);
         } _functor(_segments);
 
         _segments.reserve(_segments.size() + size());
@@ -106,7 +106,7 @@ namespace tomo
       { 
         /// Make Cheese and union
         vector<Ring> _rings;
-        boost::geometry::union_(_a,_b,_rings);
+        //boost::geometry::union_(_a,_b,_rings);
         
         if (_rings.size() != 1)
         {

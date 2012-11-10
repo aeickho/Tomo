@@ -28,12 +28,9 @@ namespace tomo
         void add(point_type _point);
 
         void fetchSegments(std::vector<Segment>& _segments) const;
-        void fetchSegments(
-          const Segment& _segment,
-          std::vector<Segment>& _segments) const;
         void fetchSegments(Ring::const_iterator it1,
-                               Ring::const_iterator it2,
-                               std::vector<Segment>& _segments) const;
+                           Ring::const_iterator it2,
+                           std::vector<Segment>& _segments) const;
 
         void fetchVertices(std::vector<Vertex2f>& _vertices) const;
 
