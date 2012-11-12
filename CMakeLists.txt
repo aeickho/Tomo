@@ -18,9 +18,9 @@ SET (CMAKE_PROJECT_DOC_DIR
 
 # requirements
 FIND_PACKAGE(Qt4 REQUIRED)
-
+FIND_PACKAGE( Boost 1.52.0 COMPONENTS program_options REQUIRED )
 # include directories
-INCLUDE_DIRECTORIES(. ${CMAKE_CURRENT_BINARY_DIR} ./include ./TbdLib/include /usr/include/ImageMagick  )
+INCLUDE_DIRECTORIES(. ${CMAKE_CURRENT_BINARY_DIR} ./include ./TbdLib/include /usr/include/ImageMagick ${Boost_INCLUDE_DIR} )
 
 # tomo library
 AUX_SOURCE_DIRECTORY(./src/lib tomo_src)
