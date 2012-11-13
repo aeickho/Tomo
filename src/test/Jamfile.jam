@@ -4,13 +4,14 @@ project : requirements <include>.
                        <include>../../include
                        <include>../../TbdLib/include 
                        <include>/usr/include/ImageMagick
+                       
                        <library>ImageMagick
                        <library>/tomo//tomo
                        <library>/boost//system
                        <library>/boost//timer
-                       <cxxflags>-std=c++11 
-                       <cxxflags>-fcolor-diagnostics ;
 
+                       <cflags>-std=c++11 
+                       <cflags>-fcolor-diagnostics ;
 
 exe UnitTests : UnitTests.cpp ;
 
