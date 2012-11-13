@@ -1,0 +1,3 @@
+# replace "<path to>" to complete the path to your boost build directory...
+boost-build <path to>/boost_1_52_0/tools/build/v2 ;
+
