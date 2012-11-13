@@ -1,9 +1,6 @@
 #pragma once
-#include "Visitor.hpp"
 
-#include <tbd/property.h>
 #include <map>
-#include <vector>
 
 namespace tomo
 {
@@ -20,21 +17,19 @@ namespace tomo
                  typename SQR_PRIM_DISTANCE,
                  typename SQR_NODE_DISTANCE
                  >
-        struct KNearest : Visitor<KDTREE>
+        struct KNearest
         {
           typedef KDTREE KDTree;
-          typedef typename KDTree::Node Node;
-          typedef typename KDTree::bounds_type bounds_type;
+          TOMO_INHERIT_MODEL_TYPES(KDTREE)
+          typedef typename KDTree::node_type node_type;
           typedef typename KDTree::primitive_type primitive_type;
-          typedef typename KDTree::scalar_type scalar_type;
-          typedef typename KDTree::point_type point_type;
           typedef std::multimap<scalar_type,const primitive_type*> map_type;
           typedef std::pair<scalar_type,const primitive_type*> pair_type;
 
           struct State
           {
             TBD_PROPERTY_REF(bounds_type,bounds);
-            TBD_PROPERTY(const Node*,node);
+            TBD_PROPERTY(const node_type*,node);
           };
 
           KNearest(const KDTree& _kdTree, const primitive_type& _primitive, unsigned _k = 1) :
@@ -113,8 +108,10 @@ namespace tomo
           /// Leaf node intersection
           bool leaf()
           {
-            for (auto it = state_.node()->leaf_.begin(kdTree_.primLists_);
-                 it != state_.node()->leaf_.end(kdTree_.primLists_); ++it)
+            typename KDTree::prim_const_iterator _begin, _end;
+            kdTree_.leafRange(state_.node()->leaf_,_begin,_end);
+
+            for (auto it = _begin; it != _end; ++it)
             {
               const primitive_type& _nodePrim = *(*it);
               if (nearestPrimitives_.find(&_nodePrim) != nearestPrimitives_.end()) continue;

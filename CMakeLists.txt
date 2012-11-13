@@ -18,9 +18,22 @@ SET (CMAKE_PROJECT_DOC_DIR
 
 # requirements
 FIND_PACKAGE(Qt4 REQUIRED)
-FIND_PACKAGE( Boost 1.52.0 COMPONENTS program_options REQUIRED )
+
+link_directories ( ${Boost_LIBRARY_DIRS} )
+include_directories ( ${Boost_INCLUDE_DIRS} )
+
+set(Boost_ADDITIONAL_VERSIONS "1.52.0")
+FIND_PACKAGE(Boost 1.52.0 COMPONENTS program_options REQUIRED)
+
+set(Boost_LIBRARY_DIRS "/usr/local/lib")
+set(Boost_LIBRARIES "/usr/local/lib/libboost_program_options.so")
+message( ${Boost_INCLUDE_DIRS} )
+message( ${Boost_LIBRARY_DIRS} )
+message(${Boost_LIBRARIES})
+
 # include directories
-INCLUDE_DIRECTORIES(. ${CMAKE_CURRENT_BINARY_DIR} ./include ./TbdLib/include /usr/include/ImageMagick ${Boost_INCLUDE_DIR} )
+INCLUDE_DIRECTORIES(. ${CMAKE_CURRENT_BINARY_DIR} ./include ./TbdLib/include)
+INCLUDE_DIRECTORIES(SYSTEM /usr/include/ImageMagick)
 
 # tomo library
 AUX_SOURCE_DIRECTORY(./src/lib tomo_src)
@@ -29,7 +42,7 @@ ADD_LIBRARY(tomo STATIC ${tomo_src})
 
 # OpenMeshCore library
 ADD_LIBRARY(OpenMeshCore SHARED ${OpenMesh_src})
-SET_TARGET_PROPERTIES( OpenMeshCore PROPERTIES COMPILE_FLAGS " -pipe -O3 -DINCLUDE_TEMPLATES -W -Wall -Wno-unused -DNDEBUG -D_REENTRANT -fPIC " )
+SET_TARGET_PROPERTIES( OpenMeshCore PROPERTIES COMPILE_FLAGS " -pipe -O3 -DINCLUDE_TEMPLATES -W -Wall -Wno-unused -DNDEBUG -D_REENTRANT -fPIC" )
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Qunused-arguments -ferror-limit=1")
 
@@ -54,11 +67,11 @@ ADD_DEFINITIONS(${QT_DEFINITIONS})
 # Apps
 # DebugSlicer
 ADD_EXECUTABLE(tomo-debugslicer ./src/app/debugslicer/DebugSlicer.hpp ./src/app/debugslicer/debugslicer.cpp)
-TARGET_LINK_LIBRARIES(tomo-debugslicer boost_program_options tomo Magick++ rt)
+TARGET_LINK_LIBRARIES(tomo-debugslicer tomo Magick++ rt ${Boost_LIBRARIES})
 
 # Tests and Benchmarking
 ADD_EXECUTABLE(TomoUnitTests ./src/test/UnitTests.cpp)
-TARGET_LINK_LIBRARIES(TomoUnitTests boost_unit_test_framework  tomo Magick++ rt)
+TARGET_LINK_LIBRARIES(TomoUnitTests ${Boost_LIBRARY_DIRS}/libboost_unit_test_framework.so  tomo Magick++ rt)
 
 ADD_EXECUTABLE(TomoBenchmark ./src/test/Benchmark.cpp)
 TARGET_LINK_LIBRARIES(TomoBenchmark tomo rt boost_system boost_timer)

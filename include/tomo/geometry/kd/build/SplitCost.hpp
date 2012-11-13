@@ -5,34 +5,35 @@ namespace tomo
 {
   namespace geometry
   {
-    namespace kd 
+    namespace kd
     {
       namespace build
       {
-        template <typename KDTREE, 
-                  typename PRIM_NODE_INTERSECTION,
-                  typename PRIM_SPLITPOS,
-                  typename PRIM_INTERSECT_COST> 
+        template <typename KDTREE,
+                 typename PRIM_SPLITPOS,
+                 typename PRIM_INTERSECT_COST>
         struct SplitCost
         {
-          typedef typename KDTREE::Node NODE; 
-          TOMO_NODE_TYPES(NODE); 
+          TOMO_INHERIT_MODEL_TYPES(KDTREE)
+          typedef typename KDTREE::primitive_type primitive_type;
+          typedef typename KDTREE::prim_cntr_type prim_cntr_type;
+          typedef typename KDTREE::geometry_type geometry_type;
 
           bool split( const bounds_type& _bounds,
-                      const cntr_type& _primitives,
+                      const prim_cntr_type& _primitives,
                       geometry_type& _nodeGeometry)
           {
             // A split candidate holds a possible split position and a pointer to a primitive
             struct SplitCandidate
             {
-              SplitCandidate(scalar_type _pos = INF, 
-                            const primitive_type* _prim = nullptr) :
+              SplitCandidate(scalar_type _pos = INF,
+                             const primitive_type* _prim = nullptr) :
                 pos_(_pos),
                 prim_(_prim)
               {}
 
               void put(scalar_type _pos, const primitive_type* _prim)
-              { 
+              {
                 prim_=_prim;
                 pos_=_pos;
               }
@@ -40,8 +41,9 @@ namespace tomo
               TBD_PROPERTY(scalar_type,pos);
               TBD_PROPERTY_RO(const primitive_type*,prim);
             };
+            SplitCandidate splitCandidate_;
 
-             
+
 #define N_BUCKETS 8
             // With this bucket structure, we can achieve building a good kdtree within O(n*log n)
             struct Buckets
@@ -52,7 +54,7 @@ namespace tomo
               struct Bucket
               {
                 Bucket() : cost_(0) {}
-              
+
                 void put(scalar_type _pos, const primitive_type* _prim)
                 {
                   if (_pos >= leftExt_ && _pos <= rightExt_)
@@ -71,13 +73,13 @@ namespace tomo
 
             public:
               Buckets(const bounds_type& _bounds)
-              { 
+              {
                 axis_ = _bounds.dominantAxis();
                 min_ = _bounds.min()[axis_];
                 max_ = _bounds.max()[axis_];
 
                 invSize_ = N_BUCKETS / (max_ - min_);
-              
+
                 scalar_type _bucketSize = (max_ - min_) / N_BUCKETS;
                 scalar_type _bucketPos = min_;
                 for (int i = 0; i < N_BUCKETS; i++)
@@ -88,7 +90,7 @@ namespace tomo
                 }
 
                 buckets_[0].leftExt(_bucketSize*0.5 + min_);
-                buckets_[N_BUCKETS-1].rightExt(_bucketPos-_bucketSize*0.5); 
+                buckets_[N_BUCKETS-1].rightExt(_bucketPos-_bucketSize*0.5);
               }
 
               void insert(const primitive_type* _primitive)
@@ -106,16 +108,16 @@ namespace tomo
               {
                 SplitCandidate* _bestSplitCandidate = NULL;
 
-                scalar_type _minSplitCost = INF; 
+                scalar_type _minSplitCost = INF;
                 scalar_type _overallCost = 0;
-                for (int i = 0; i < N_BUCKETS; i++) 
+                for (int i = 0; i < N_BUCKETS; i++)
                   _overallCost += buckets_[i].cost();
-                
+
                 scalar_type _rightCost = _overallCost, _leftCost = 0;
-                
+
                 // The minimum cost is the extent of bounds
                 scalar_type _minCost = max_ - min_;
-                scalar_type _cost = INF; 
+                scalar_type _cost = INF;
 
                 for (int i = 0; i < N_BUCKETS; i++)
                 {
@@ -127,7 +129,7 @@ namespace tomo
                   {
                     _cost = splitCost(_left->pos(),_leftCost,_rightCost);
 
-                    if (_cost < _minSplitCost) 
+                    if (_cost < _minSplitCost)
                     {
                       _minSplitCost = _cost;
                       _bestSplitCandidate = _left;
@@ -140,7 +142,7 @@ namespace tomo
                   if (_right->prim())
                   {
                     _cost = splitCost(_right->pos(),_leftCost,_rightCost);
-                    if (_cost < _minSplitCost) 
+                    if (_cost < _minSplitCost)
                     {
                       _minSplitCost = _cost;
                       _bestSplitCandidate = _right;
@@ -165,8 +167,8 @@ namespace tomo
                 return &buckets_[_bucketIndex];
               }
 
-              scalar_type splitCost(scalar_type _splitPos, 
-                                    scalar_type _leftCost, 
+              scalar_type splitCost(scalar_type _splitPos,
+                                    scalar_type _leftCost,
                                     scalar_type _rightCost)
               {
                 return ((_splitPos - min_)  * _leftCost + (max_ - _splitPos) * _rightCost);
@@ -185,19 +187,15 @@ namespace tomo
             }
 
             SplitCandidate* _splitCandidate = _buckets.splitCandidate();
-
             if (!_splitCandidate) return false;
+
+            splitCandidate_ = *_splitCandidate;
 
             _nodeGeometry.axis(_buckets.axis());
             _nodeGeometry.splitPos(_splitCandidate->pos());
             _nodeGeometry.bounds(_bounds);
 
             return true;
-          }
-
-          intersection_type intersect( const primitive_type* _prim, const geometry_type& _nodeGeometry)
-          {
-            return PRIM_NODE_INTERSECTION()(*_prim,_nodeGeometry);
           }
         };
       }

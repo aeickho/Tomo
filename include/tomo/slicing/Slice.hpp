@@ -6,11 +6,11 @@ namespace tomo
 {
   namespace slicing
   {
-    using geometry::prim::Polygon;
-    using geometry::prim::MultiPolygon;
-
     struct Slice
     {
+      typedef geometry::prim::MultiPolygon MultiPolygon;
+      typedef geometry::prim::Polygon Polygon;
+
       Slice(float _pos);
 
       void add(Polygon& _polygon);

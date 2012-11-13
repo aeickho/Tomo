@@ -19,28 +19,31 @@ namespace tomo
           typedef Ring::scalar_type scalar_type;
           typedef Ring::point_type point_type;
           typedef Ring::vec_type vec_type;
+          
 
           void operator()(const Ring& _ring, scalar_type _offset, Rings& _outputRings)
           {
             Ring::const_iterator _it0 = _ring.begin(),
-                                      _it1 = _it0+1;
+                                 _it1 = _it0+1;
             Polygon _output;
-            std::vector<Polygon> _unionOutput;
 
             while (1)
             {
-              if (_it0 == _ring.end()) break;
-              if (_it1 == _ring.end()) _it1 = _ring.begin();
+              if (_it1 == _ring.end()) break;
 
               Polygon _polygon;
-              point_type _p0 = *_it0;
-              point_type _p1 = *_it1;
+              point_type _p0 = *_it0, _p1 = *_it1;
+              if (_p0 != _p1) 
+              {
+
               generateConnectionPolygon(_p0,_p1,fabs(_offset),_polygon);
-              _unionOutput.clear();
+              std::vector<Polygon> _unionOutput;
               boost::geometry::union_(_polygon,_output,_unionOutput);
 
-              TOMO_ASSERT(_unionOutput.size() == 1);
-              _output = _unionOutput[0];
+              //TOMO_ASSERT(_unionOutput.size() == 1);
+              if (_unionOutput.size() == 1) // continue;
+              _output =_unionOutput[0];
+              }
               ++_it0;
               ++_it1;
             }
@@ -53,6 +56,18 @@ namespace tomo
             {
               _outputRings.insert(_outputRings.end(),_output.holes().begin(),_output.holes().end());
             }
+          }
+          
+          /// Overloaded method for extending a single ring
+          void operator()(Ring& _ring, scalar_type _offset)
+          {
+            Rings _outputRings;
+            TOMO_ASSERT(_offset >= 0);
+            this->operator()(_ring,_offset,_outputRings);
+ 
+            TOMO_ASSERT(_outputRings.size() == 1);
+
+            _ring = _outputRings[0];
           }
 
         private:

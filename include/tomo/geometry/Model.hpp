@@ -39,4 +39,10 @@ namespace tomo
       using typename MODEL::scalar_type; \
       using MODEL::dimensions_;
 
+#define TOMO_INHERIT_MODEL_TYPES(MODEL) \
+      typedef typename MODEL::scalar_type scalar_type;\
+      typedef typename MODEL::point_type point_type;\
+      typedef typename MODEL::vec_type vec_type;\
+      typedef typename MODEL::bounds_type bounds_type;\
+      typedef typename MODEL::model_type model_type;
 

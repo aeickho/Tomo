@@ -23,7 +23,7 @@ namespace tomo
         Polygon(const Ring& _boundary, const std::vector<Ring>& _holes) :
           boundary_(_boundary),
           holes_(_holes)
-        {  
+        {
         }
 
         void fetchSegments(std::vector<Segment>& _segments) const

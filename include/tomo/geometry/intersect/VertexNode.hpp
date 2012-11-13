@@ -7,10 +7,10 @@ namespace tomo
   {
     namespace intersect
     {
-      template<class VERTEX>
+      template<class MODEL>
       struct VertexNode
       {
-        typedef VERTEX Vertex;
+        typedef prim::Vertex<MODEL> Vertex;
         typedef typename Vertex::point_type point_type;
         typedef kd::NodeGeometry<typename Vertex::model_type> NodeGeometry;
 

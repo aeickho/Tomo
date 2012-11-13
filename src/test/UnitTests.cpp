@@ -33,9 +33,10 @@ static const std::string testOutputName(std::string _testName,
   TOMO_TEST_OUTPUT_NAME(EXT,-1)
 
 #include "MatrixTest.hpp"
-#include "TriangleSlicerTest.hpp"
-#include "NearestVisitorsTest.hpp"
+//#include "TriangleSlicerTest.hpp"
+//#include "NearestVisitorsTest.hpp"
 #include "PerimeterTest.hpp"
+#include "SkirtTest.hpp"
 //#include "LineFillingTest.hpp"
 //#include "RingTest.hpp"
 

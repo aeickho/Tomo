@@ -9,11 +9,14 @@ namespace tomo
         template <typename KDTREE, typename PRIM_NODE_INTERSECTION> 
         struct HalfSplit
         {
-          typedef typename KDTREE::Node NODE; 
-          TOMO_NODE_TYPES(NODE);
+          TOMO_INHERIT_MODEL_TYPES(KDTREE);
+          typedef typename KDTREE::node_type node_type;
+          typedef typename KDTREE::geometry_type geometry_type;
+          typedef typename KDTREE::primitive_type primitive_type;
+          typedef typename KDTREE::prim_cntr_type prim_cntr_type;
 
           bool split( const bounds_type& _bounds, 
-                      const cntr_type& _primitives,
+                      const prim_cntr_type& _primitives,
                       geometry_type& _nodeGeometry)
           {
             if (_primitives.size() < 3) return false;
@@ -26,7 +29,11 @@ namespace tomo
             return true;
           }
 
-          intersection_type intersect( const primitive_type* _prim, const geometry_type& _nodeGeometry)
+          void nodeAttributes(Node& _node)
+          {
+          }
+
+          NodeIntersectResult intersect( const primitive_type* _prim, const geometry_type& _nodeGeometry)
           {
             return PRIM_NODE_INTERSECTION()(*_prim,_nodeGeometry);
           }

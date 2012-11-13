@@ -7,10 +7,10 @@ namespace tomo
   {
     namespace distance
     {
-      template<class VERTEX>
+      template<class MODEL>
       struct VertexBounds
       {
-        typedef VERTEX Vertex;
+        typedef prim::Vertex<MODEL> Vertex;
         typedef typename Vertex::scalar_type scalar_type;
         typedef typename Vertex::bounds_type bounds_type;
         typedef typename Vertex::point_type point_type;

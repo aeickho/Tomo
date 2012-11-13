@@ -1,9 +1,4 @@
 #pragma once
-#include "Visitor.hpp"
-
-#include <tbd/property.h>
-#include <map>
-#include <vector>
 
 namespace tomo
 {
@@ -24,16 +19,14 @@ namespace tomo
         struct Nearest
         {
           typedef KDTREE KDTree;
-          typedef typename KDTREE::Node Node;
-          typedef typename KDTREE::bounds_type bounds_type;
+          TOMO_INHERIT_MODEL_TYPES(KDTREE);
+          typedef typename KDTREE::node_type node_type;
           typedef typename KDTREE::primitive_type primitive_type;
-          typedef typename KDTREE::scalar_type scalar_type;
-          typedef typename KDTREE::point_type point_type;
           typedef std::pair<scalar_type,primitive_type*> pair_type;
 
           struct State
           {
-            TBD_PROPERTY(const Node*,node);
+            TBD_PROPERTY(const node_type*,node);
             TBD_PROPERTY_REF(bounds_type,bounds);
           };
 
@@ -114,11 +107,12 @@ namespace tomo
             /// For each primitive in leaf node, calculate distance
             /// Distance is smaller than current found nearest primitive,
             /// replace it
-            for (auto it = state_.node()->leaf_.begin(kdTree_.primLists_); 
-                 it != state_.node()->leaf_.end(kdTree_.primLists_); ++it)
+            typename KDTree::prim_const_iterator _begin, _end;
+            kdTree_.leafRange(state_.node()->leaf_,_begin,_end);
+            for (auto it = _begin; it != _end; ++it)
             {
               if (*it == primitive_ || *it == NULL) continue;
-              
+
               scalar_type _distance = SQR_PRIM_DISTANCE()(*primitive_,**it);
               if (_distance <= nearest_.first )
                 nearest_ = pair_type(_distance,const_cast<primitive_type*>(*it));

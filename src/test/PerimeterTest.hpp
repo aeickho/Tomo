@@ -1,7 +1,7 @@
 #pragma once
 
 #include <boost/geometry.hpp>
-#include <boost/geometry/multi/geometries/register/multi_polygon.hpp>
+#include "tomo/geometry/prim/MultiPolygon.hpp"
 #include "tomo/slicing/perimeter/detail/RingOffset.hpp"
 #include "tomo/slicing/perimeter/detail/PolygonOffset.hpp"
 
@@ -9,9 +9,6 @@
 
 using tomo::geometry::prim::Ring;
 using tomo::geometry::base::Point2f;
-
-BOOST_GEOMETRY_REGISTER_MULTI_POLYGON(std::vector<tomo::geometry::prim::Polygon>);
-
 /// create test polygon
 void makePolygon(Ring& _ring,
                  Point2f _center,
@@ -20,7 +17,7 @@ void makePolygon(Ring& _ring,
                  bool _inverse = false)
 {
   _ring.clear();
-  for (int i = 0; i < _numSegments; i++)
+  for (int i = 0; i <= _numSegments; i++)
   {
     float _angle = float(i)/float(_numSegments)*M_PI*2.0;
     float _sin = _radius*sin(_angle),
@@ -41,7 +38,53 @@ void makePolygon(Ring& _ring,
     if (_inverse) _sin = -_sin;
     _ring.add(Point2f(_cos,_sin) + _center);
   }
+
+  boost::geometry::correct(_ring);
 }
+
+          template<int NUM_SEGMENTS = 48>
+          void generateConnectionPolygon( const Point2f& _p0,
+                                          const Point2f& _p1,
+                                          float _offset,
+                                          tomo::geometry::prim::Polygon& _polygon)
+          {
+            Ring& _ring = _polygon.boundary();
+            using tomo::geometry::prim::Polygon; 
+            typedef Polygon::vec_type vec_type;
+            typedef Polygon::point_type point_type;
+            typedef Polygon::scalar_type scalar_type;
+
+            geometry::prim::Segment _segment(_p0,_p1);
+            vec_type _n = -_offset * _segment.normal().normalized();
+            _ring.clear();
+            _ring.reserve(5+NUM_SEGMENTS/2);
+            _ring.push_back(_p0 +(-_n));
+
+            for (int i = 0; i < NUM_SEGMENTS; i++)
+            {
+              scalar_type _angle = i*M_PI*2.0/NUM_SEGMENTS;
+              scalar_type _sin = _offset*sin(_angle),
+                          _cos = _offset*cos(_angle);
+              if (_n.y() > 0)
+              {
+                _sin = -_sin;
+                _cos = -_cos;
+              }
+              vec_type _v(-_sin,_cos);
+
+              if (dot(_v,_n) > 0)
+              {
+                point_type _p = point_type(_cos,_sin) + _p0;
+                _ring.push_back(_p);
+              }
+            }
+
+            _ring.push_back(_p0 + _n);
+            _ring.push_back(_p1 + _n);
+            _ring.push_back(_p1 +(-_n));
+            boost::geometry::correct(_ring);
+          }
+
 
 /// create test polygon
 void makeCircle(Ring& _ring,
@@ -51,7 +94,7 @@ void makeCircle(Ring& _ring,
                  bool _inverse = false)
 {
   _ring.clear();
-  for (int i = 0; i < _numSegments; i++)
+  for (int i = 0; i <= _numSegments; i++)
   {
     float _angle = float(i)/float(_numSegments)*M_PI*2.0;
     float _sin = _radius*sin(_angle),
@@ -60,6 +103,7 @@ void makeCircle(Ring& _ring,
     if (_inverse) _sin = -_sin;
     _ring.push_back(Point2f(_cos,_sin) + _center);
   }
+  boost::geometry::correct(_ring);
 }
 
 
@@ -107,11 +151,12 @@ BOOST_AUTO_TEST_CASE( RingOffsetTest )
   using namespace tomo::geometry;
   using prim::Segment;
   using base::Vec2f;
+  using base::Point2f;
   using tomo::slicing::perimeter::detail::RingOffset;
+  using tomo::geometry::prim::Polygon; 
 
   Ring _ring;
   makePolygon(_ring,Point2f(0.5,0.5),0.4);
-
   int i = 0;
   Wrapper _w(1024,1024);
   _w.scale(tomo::geometry::base::Vec2f(1024,1024));
@@ -143,6 +188,7 @@ BOOST_AUTO_TEST_CASE( PolygonOffsetTest )
   using namespace tomo::geometry;
   using prim::Segment;
   using prim::Polygon;
+  using prim::MultiPolygon;
   using base::Vec2f;
   using tomo::slicing::perimeter::detail::PolygonOffset;
 
@@ -163,7 +209,7 @@ BOOST_AUTO_TEST_CASE( PolygonOffsetTest )
   for (float _offset = 0.02; _offset < 0.10; _offset += 0.02)
   {
     _w.clear();
-    std::vector<Polygon> _outputPolygons;
+    MultiPolygon _outputPolygons;
     PolygonOffset<>()(_polygon,_offset,_outputPolygons);
     _w.draw(_polygon,Magick::Color("green"));
     _w.draw<>(_outputPolygons,Magick::Color("white"));
@@ -173,7 +219,7 @@ BOOST_AUTO_TEST_CASE( PolygonOffsetTest )
   for (float _offset = 0.02; _offset < 0.10; _offset += 0.02)
   {
     _w.clear();
-    std::vector<Polygon> _outputPolygons;
+    MultiPolygon _outputPolygons;
     PolygonOffset<>()(_polygon,-_offset,_outputPolygons);
     _w.draw(_polygon,Magick::Color("green"));
     _w.draw<>(_outputPolygons,Magick::Color("white"));

@@ -23,11 +23,9 @@ namespace tomo
         struct InRadius
         {
           typedef KDTREE KDTree;
-          typedef typename KDTREE::Node Node;
-          typedef typename KDTREE::bounds_type bounds_type;
-          typedef typename KDTREE::primitive_type primitive_type;
-          typedef typename KDTREE::scalar_type scalar_type;
-          typedef typename KDTREE::point_type point_type;
+          TOMO_INHERIT_MODEL_TYPES(KDTREE)
+          typedef typename KDTree::node_type node_type;
+          typedef typename KDTree::primitive_type primitive_type;
           typedef std::multimap<scalar_type,const primitive_type*> map_type;
           typedef std::pair<scalar_type,const primitive_type*> pair_type;
 
@@ -108,8 +106,9 @@ namespace tomo
           /// Leaf node intersection
           bool leaf()
           {
-            for (auto it = state_.node()->leaf_.begin(kdTree_.primLists_);
-                 it != state_.node()->leaf_.end(kdTree_.primLists_); ++it)
+            typename KDTree::prim_const_iterator _begin, _end;
+            kdTree_.leafRange(state_.node()->leaf_,_begin,_end);
+            for (auto it = _begin; it != _end; ++it)
             {
               const primitive_type& _nodePrim = *(*it);
               if (nearestPrimitives_.find(&_nodePrim) != nearestPrimitives_.end()) continue;

@@ -17,12 +17,12 @@ namespace tomo
 
     void Slice::add(Polygon& _polygon)
     {
-      polygons_.polygons().push_back(_polygon);
+      polygons_.push_back(_polygon);
     }
 
     void Slice::clear()
     {
-      polygons_.polygons().clear();
+      polygons_.clear();
     }
   }
 }

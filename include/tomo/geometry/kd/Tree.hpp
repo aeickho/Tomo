@@ -11,22 +11,25 @@ namespace tomo
       template
       <
       typename PRIMITIVE,
-               typename NODE = Node<PRIMITIVE>,
+               typename NODE = Node,
                unsigned MAX_DEPTH = 16
                >
       struct Tree
       {
-        TOMO_NODE_TYPES(NODE);
+        TOMO_INHERIT_MODEL_TYPES(PRIMITIVE)
+        typedef NODE node_type;
+        typedef typename node_type::Inner NodeInner;
+        typedef typename node_type::Leaf NodeLeaf;
+        typedef PRIMITIVE primitive_type;
+        typedef NodeGeometry<model_type> geometry_type;
 
         /// Node container
-        typedef std::vector<Node> NodeCont;
+        typedef std::vector<node_type> node_cntr_type;
 
         /// Primitive container
-        typedef std::vector<const primitive_type*> PrimCont;
-
-        NodeCont nodes_;
-        PrimCont primLists_;
-        bounds_type bounds_;
+        typedef std::vector<const primitive_type*> prim_cntr_type;
+        typedef typename prim_cntr_type::iterator prim_iterator;
+        typedef typename prim_cntr_type::const_iterator prim_const_iterator;
 
         bool empty() const
         {
@@ -37,17 +40,17 @@ namespace tomo
           nodes_.clear();
           primLists_.clear();
         }
-        const Node* root() const
+        const node_type* root() const
         {
           return &nodes_[0];
         }
 
-        Node* root()
+        node_type* root()
         {
           return &nodes_[0];
         }
 
-        const Node* node(unsigned _nodeIndex) const
+        const node_type* node(unsigned _nodeIndex) const
         {
           return &nodes_[_nodeIndex];
         }
@@ -109,7 +112,7 @@ namespace tomo
             }
 
             TBD_PROPERTY_REF(bounds_type,bounds);
-            TBD_PROPERTY_REF(PrimCont,primList);
+            TBD_PROPERTY_REF(prim_cntr_type,primList);
           } _state;
 
           int _stackPt = -1;
@@ -136,10 +139,12 @@ namespace tomo
               geometry_type _nodeGeometry;
               if (!_buildPolicy.split(_state.bounds(),_state.primList(),_nodeGeometry)) break;
 
+              
               // Make an inner node
               NodeInner& _innerNode = innerNodeSetup(_state.nodeIndex_,_nodeGeometry);
+              _buildPolicy.nodeAttributes(nodes_[_state.nodeIndex_]);
 
-              // Change state (State is left subnode from now on!)
+              // Change state (State represents left subnode from now on!)
               _state.change(_state.depth_++,_innerNode.left());
 
               // Initialize state to be pushed
@@ -179,6 +184,21 @@ namespace tomo
           }
         }
 
+        void leafRange(const NodeLeaf& _leaf, prim_iterator& _begin, prim_iterator& _end)
+        {
+          _begin = primLists_.begin() + _leaf.begin();
+          _end = primLists_.begin() + _leaf.end();
+        }
+
+        void leafRange(const NodeLeaf& _leaf, 
+                       prim_const_iterator& _begin, 
+                       prim_const_iterator& _end) const
+        {
+          _begin = primLists_.begin() + _leaf.begin();
+          _end = primLists_.begin() + _leaf.end();
+        }
+
+        TBD_PROPERTY_REF(bounds_type,bounds);
       private:
         NodeInner& innerNodeSetup(unsigned _nodeIndex, geometry_type& _nodeGeometry)
         {
@@ -190,7 +210,7 @@ namespace tomo
         }
 
         /// Insert Primitive pointers from _primList into primLists_
-        NodeLeaf& leafNodeSetup(unsigned _nodeIndex, const cntr_type& _primList)
+        NodeLeaf& leafNodeSetup(unsigned _nodeIndex, const prim_cntr_type& _primList)
         {
           nodes_.resize(nodes_.size()+1);
           nodes_[_nodeIndex].leaf_.begin(primLists_.size());
@@ -199,8 +219,9 @@ namespace tomo
           return nodes_[_nodeIndex].leaf_;
         }
 
+        node_cntr_type nodes_;
+        prim_cntr_type primLists_;
       };
-
     }
   }
 }
