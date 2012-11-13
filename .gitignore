@@ -25,3 +25,8 @@ CMakeCache.txt
 CMakeFiles
 cmake_install.cmake
 Makefile
+
+# ignore personal files
+boost-build.jam
+user-config.jam
+
