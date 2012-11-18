@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TomoTestCase.hpp"
+#include <boost/geometry.hpp>
 
 struct TomoBenchmark : TomoTestCase
 {
@@ -8,19 +9,19 @@ struct TomoBenchmark : TomoTestCase
 };
 
 
-#define TOMO_BENCHMARK_BEGIN( test_name, object_name ) \
+#define TOMO_BENCHMARK_BEGIN( test_name ) \
   BOOST_FIXTURE_TEST_CASE( test_name##_benchmark, TomoBenchmark ) \
   {\
-    std::string _formatStr(std::string(#test_name)+";%w");\
     do {\
-      std::list<std::string>&& _testFiles = getTestFiles();\
-      for ( const std::string& _testFile : _testFiles )\
+      std::string _formatStr(std::string(#test_name)+";%w");\
+      typedef tomo::test::generators::test_name generator_type;\
+      generator_type _generator;\
+      generator_type::ObjectList&& _objs = _generator.generate();\
+      int _nObj = 0;\
+      for ( const generator_type::Object& _obj : _objs )\
       {\
-        object_name _obj;\
-        std::ifstream ifs(_testFile);\
-        boost::archive::text_iarchive ia(ifs);\
-        ia >> _obj;
-        /**@todo Bring boost timer to work... */
+
+    /**@todo Bring boost timer to work... */
       //  boost::timer::cpu_timer t;
 
 #define TOMO_BENCHMARK_END }} while(0);}
