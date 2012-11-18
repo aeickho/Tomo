@@ -3,7 +3,6 @@
 #include <tbd/log.h>
 #include "tomo/draw/magick/Wrapper.hpp"
 #include <boost/program_options.hpp>
-#include <boost/foreach.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <list>
@@ -17,9 +16,6 @@ int main(int ac, char* av[])
 {
   cout << "Debug Slicer 0.1 -- written by Wilston Oreo." << endl;
   cout << "A command line tool which generates geometric primities with different parameter sets." << endl;
-
-//  srand((long long)av);
-//
 
   string _meshFile, _gcodeFile, _outputFile, _printerSettingsFile;
   vector<string> _inputFiles;

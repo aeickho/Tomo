@@ -1,7 +1,7 @@
 #pragma once
 
 #include "tomo/slicing/SliceStack.hpp"
-#include "perimeter/detail/RingOffset.hpp"
+#include "tomo/geometry/algorithm/RingOffset.hpp"
 
 namespace tomo
 {
@@ -14,7 +14,7 @@ namespace tomo
       
       Ring operator()(scalar_type _width, const SliceStack& _sliceStack)
       {
-        using perimeter::detail::RingOffset;
+        using geometry::algorithm::RingOffset;
         using geometry::prim::MultiPolygon;
         using geometry::prim::Polygon;
         Ring _skirt;

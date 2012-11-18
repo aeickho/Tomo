@@ -2,7 +2,6 @@
 
 #include <Magick++.h>
 #include "tomo/draw/DrawInterface.hpp"
-#include <boost/foreach.hpp>
 
 namespace tomo
 {
@@ -15,6 +14,8 @@ namespace tomo
         typedef geometry::prim::Ring Ring;
         typedef geometry::prim::Segment Segment;
         typedef geometry::prim::Polygon Polygon;
+        typedef geometry::prim::LineString LineString;
+        typedef geometry::prim::MultiLineString MultiLineString;
         typedef geometry::base::Point3f Point3f;
 
         Wrapper(int _width, int _height) :
@@ -24,8 +25,7 @@ namespace tomo
           scale_(1,1),
           offset_(0,0)
         {
-          image_ = Magick::Image( Magick::Geometry(_width,_height), Magick::Color("black") );
-          image_.fillColor(Magick::Color("none"));
+          clear(_width,_height);
         }
 
         ///@todo Make TreeDrawVisitor generic
@@ -123,14 +123,14 @@ namespace tomo
         template <typename PRIMITIVE>
         void draw(const geometry::comp::Compound<PRIMITIVE>& _compound, Magick::Color _color)
         {
-          BOOST_FOREACH( const PRIMITIVE& _primitive, _compound.objs() )
-          draw(_primitive,_color);
+          for( const PRIMITIVE& _primitive : _compound.objs() )
+            draw(_primitive,_color);
         }
 
         template <typename PRIMITIVE>
         void draw(const std::vector<PRIMITIVE*> _primitives, Magick::Color _color)
         {
-          BOOST_FOREACH( PRIMITIVE* _primitive, _primitives )
+          for ( PRIMITIVE* _primitive : _primitives )
             draw(*_primitive,_color);
         }
 
@@ -199,13 +199,26 @@ namespace tomo
         template<class PRIMITIVE>
         void draw(const std::vector<PRIMITIVE> _primitives, Magick::Color _color)
         {
-          BOOST_FOREACH( const PRIMITIVE& _primitive, _primitives )
-          draw(_primitive,_color);
+          for( const PRIMITIVE& _primitive : _primitives )
+            draw(_primitive,_color);
         }
 
         void draw(const std::vector<Segment>& _lineSegments, Magick::Color _color)
         {
           draw<Segment>(_lineSegments,_color);
+        }
+
+        void draw(const LineString& _lineString, Magick::Color _color)
+        {
+          std::vector<Segment> _lineSegments;
+          _lineString.fetchSegments(_lineSegments);
+          draw(_lineSegments,_color);
+        }
+
+        void draw(const MultiLineString& _multiLineString, Magick::Color _color)
+        {
+          for (const LineString& _lineString : _multiLineString)
+            draw(_lineString,_color);
         }
 
         void draw(const Ring& _ring, Magick::Color _color)
@@ -224,7 +237,13 @@ namespace tomo
 
         void clear()
         {
-          image_ = Magick::Image( Magick::Geometry(image_.columns(),image_.rows()), Magick::Color("black") );
+          clear(image_.columns(),image_.rows());
+        }
+
+        void clear(int _width, int _height)
+        {
+          image_ = Magick::Image( Magick::Geometry(_width,_height), Magick::Color("black") );
+          image_.fillColor(Magick::Color("none"));
         }
 
         TBD_PROPERTY(bool,drawEndings);

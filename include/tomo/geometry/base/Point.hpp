@@ -21,6 +21,7 @@ namespace tomo
       struct Point : public Coords<MODEL>
       {
         TOMO_MODEL_TYPES(MODEL);
+
         typedef Coords<MODEL> coords_type;
         typedef Vec<MODEL> vector_type;
         typedef Matrix<Model<dimensions_+1,scalar_type>> matrix_type;
@@ -101,10 +102,17 @@ namespace tomo
           return _projPoint;
         }
 
+
+      private:
+        friend class boost::serialization::access; 
+        
         template<class ARCHIVE>
         void serialize( ARCHIVE& _ar, const unsigned int _fileVersion )
         {
-          this->template serialize(_ar,_fileVersion);
+          TOMO_FOREACH_DIM(i)
+            _ar & this->operator[](i);
+
+          //this->template serialize(_ar,_fileVersion);
         }
       };
 
@@ -118,5 +126,26 @@ namespace tomo
 }
 
 BOOST_GEOMETRY_REGISTER_POINT_2D_GET_SET(tomo::geometry::base::Point2f,float,cs::cartesian,x,y,x,y)
+/*
+namespace boost {
+namespace serialization {
+
+template<class ARCHIVE, class MODEL>
+void serialize(ARCHIVE & ar, tomo::geometry::base::Point<MODEL>& _point, const unsigned int version)
+{
+  ar & base_object<tomo::geometry::base::Coords<MODEL> >(_point);
+}
+
+template<class ARCHIVE>
+void serialize(ARCHIVE & ar, tomo::geometry::base::Point2f& _point, const unsigned int version)
+{
+  serialize<ARCHIVE,tomo::geometry::Model2f>(ar,_point,version);
+}
+
+} // namespace serialization
+} // namespace boost
+*/
+
+
 
 #endif /* _POINT_HPP */

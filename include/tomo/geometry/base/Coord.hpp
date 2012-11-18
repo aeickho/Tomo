@@ -8,6 +8,8 @@
 #include <sstream>
 #include <tbd/log.h>
 
+#include <boost/serialization/base_object.hpp>
+
 namespace tomo
 {
   namespace geometry
@@ -15,7 +17,7 @@ namespace tomo
     namespace base
     {
       typedef enum { X,Y,Z,W } Axis;
-     
+
 /// Compiler macro for iterating over each dimension
 #define TOMO_FOREACH_DIM(i) for (int i = 0; i < dimensions_; i++)
 #define TOMO_FOREACH_DIM_(t,i) for (int i = 0; i < t.dimensions_; i++)
@@ -192,14 +194,6 @@ namespace tomo
         }
 
 
-        template<class ARCHIVE>
-        void serialize( ARCHIVE& _ar, const unsigned int _fileVersion )
-        {
-          TOMO_FOREACH_DIM(i)
-          {
-            _ar & a_[i];
-          }
-        }
       protected:
         /// Array to store coordinate values
         scalar_type a_[dimensions_];
@@ -215,4 +209,21 @@ namespace tomo
     }
   }
 }
+
+
+namespace boost {
+namespace serialization {
+
+template<class ARCHIVE, class MODEL>
+void serialize(ARCHIVE & ar, tomo::geometry::base::Coords<MODEL>& _coords, const unsigned int version)
+{
+  TOMO_FOREACH_DIM_(_coords,i)
+    ar & _coords[i];
+}
+
+} // namespace serialization
+} // namespace boost
+
+
+
 #endif /* _COORD_HPP */

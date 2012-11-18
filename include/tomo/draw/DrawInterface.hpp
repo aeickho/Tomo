@@ -5,6 +5,7 @@
 #include "tomo/geometry/comp/Compound.hpp"
 #include "tomo/geometry/prim/Vertex.hpp"
 #include "tomo/geometry/prim/Polygon.hpp"
+#include "tomo/geometry/prim/LineString.hpp"
 #include "tomo/slicing/SegmentStack.hpp"
 
 namespace tomo

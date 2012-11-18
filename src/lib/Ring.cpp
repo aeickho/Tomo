@@ -37,13 +37,12 @@ namespace tomo
         using boost::geometry::get;
         
         struct Functor
-        {
+         {
           Functor(std::vector<Segment>& _segments) :
             segments_(_segments) {}
 
           template<class T> void operator()( const T& _segment)
           {
-            //LOG_MSG << fmt("% %, % %") % get<0>(_segment.first) % get<1>(_segment.first) % get<0>(_segment.second) % get<1>(_segment.second); 
             segments_.push_back(Segment(_segment.first,_segment.second));
           }
           std::vector<Segment>& segments_;
@@ -51,7 +50,6 @@ namespace tomo
 
         _segments.reserve(_segments.size() + size());
         boost::geometry::for_each_segment(*this,_functor);
-        LOG_MSG << _segments.size();
       }
 
       void Ring::fetchVertices(std::vector<Vertex2f>& _vertices) const

@@ -1,45 +1,14 @@
-#include "BenchmarkDefs.hpp"
-#include <fstream>
+#define BOOST_TEST_DYN_LINK
+#define BOOST_TEST_MAIN
+#define BOOST_TEST_MODULE Tomo
 
-using namespace std;
+#include <boost/test/included/unit_test.hpp>
+#include "TomoBenchmark.hpp"
 
-BENCHMARK_BEGIN( KDTreeBuild )
+LOG_INIT;
+
+TOMO_BENCHMARK_BEGIN( Skirt, MultiPolygon )
 {
-  DO_ITERATIONS
-  {
-  }
 }
-BENCHMARK_END()
+TOMO_BENCHMARK_END
 
-BENCHMARK_BEGIN( LineSegmentConnecting )
-{
-  DO_ITERATIONS
-  {
-  }
-}
-BENCHMARK_END()
-
-
-
-int main(int ac, char* av[])
-{
-  TOMO_ASSERT(ac <= 2);
-
-  if (ac == 1) 
-  {
-    __outputStream = &cout; 
-  } else
-  if (ac == 2)
-  {
-    __outputStream = new ofstream(av[1]);
-  }
-
-  (*__outputStream) << "#Iterations;" << NUM_ITERATIONS << endl;
-  
-  boost::timer::cpu_timer t; 
-  KDTreeBuild();
-  LineSegmentConnecting();
-  (*__outputStream) << boost::timer::format(t.elapsed(),ACCURACY,"Overall;%w") << endl; 
-
-  return EXIT_SUCCESS;
-}
