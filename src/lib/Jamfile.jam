@@ -3,7 +3,10 @@ project : requirements <include>../../include
                        <include>../../TbdLib/include 
                        
                        <cflags>-std=c++11 
-                       <cflags>-fcolor-diagnostics ;
+                       <cflags>-fcolor-diagnostics 
+
+        : usage-requirements <library>/OpenMesh
+        ;
 
 lib tomo : [ glob *.cpp ] ;
 
