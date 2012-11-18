@@ -1,0 +1,18 @@
+use-project /boost : ../../../boost_1_52_0 ;
+use-project /tomo : ../lib ;
+
+project : requirements <include>. 
+                       <include>../../include
+                       <include>../../TbdLib/include 
+                       <include>/usr/include/ImageMagick
+
+                       <library>/tomo//tomo
+                       <library>/boost//system
+                       <library>/boost//timer
+
+                       <cflags>-std=c++11 
+                       <cflags>-fcolor-diagnostics ;
+
+exe test : [ glob *.cpp ] ;
+
+

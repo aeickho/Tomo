@@ -5,6 +5,6 @@ use-project /tomo : src/lib ;
 
 build-project src/lib ;
 build-project src/test ;
-build-project src/OpenMesh ;
-
+#build-project src/OpenMesh ;
+#build-project src/cg2ex1 ;
 
