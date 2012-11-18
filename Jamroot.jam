@@ -3,7 +3,8 @@ using clang ;
 use-project /boost : ../boost_1_52_0 ;
 use-project /tomo : src/lib ;
 
-
 build-project src/lib ;
 build-project src/test ;
+build-project src/OpenMesh ;
+
 
