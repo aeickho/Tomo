@@ -1,12 +1,13 @@
 
-project : requirements <include>../../include 
+project : requirements # include paths
+                       <include>../../include 
                        <include>../../TbdLib/include 
-                       
+                       # compilter options
                        <cflags>-std=c++11 
-                       <cflags>-fcolor-diagnostics 
-
+        # require OpenMesh to link
         : usage-requirements <library>/OpenMesh
         ;
 
+# build tomo library
 lib tomo : [ glob *.cpp ] ;
 
