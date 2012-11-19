@@ -6,7 +6,9 @@ project : requirements <include>.
                        <library>/boost//timer
 
                        <cflags>-fcolor-diagnostics 
-                       <cflags>-w ;
+                       <cflags>-w 
+        : usage-requirements <include>/usr/include/clang/3.1/include
+        ;
 
 lib OpenMesh  : [ glob *.cc ] ;
 
