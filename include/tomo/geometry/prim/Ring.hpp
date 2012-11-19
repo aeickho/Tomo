@@ -17,7 +17,10 @@ namespace tomo
       struct Ring  : Primitive2f, std::vector<base::Point2f> 
       {
         enum IntersectResult { DISJOINT, OVERLAP, A_WITHIN_B, B_WITHIN_A };
-        enum Location { INNER, OUTER };
+      enum Location :
+        unsigned char { INNER, OUTER };
+      enum Correct :
+        unsigned char { OPEN, CLOSED };
 
         /// Orientation of ring (CW = clockwise, CCW = counter-clockwise)
         enum Orientation { CW, CCW };
@@ -26,6 +29,8 @@ namespace tomo
         Ring(Location _location = OUTER);
 
         void add(point_type _point);
+        void close();
+        bool closed();
 
         void fetchSegments(std::vector<Segment>& _segments) const;
         void fetchSegments(Ring::const_iterator it1,
@@ -45,8 +50,9 @@ namespace tomo
         vec_type getNormal(Ring::const_iterator it) const ;
 
         TBD_PROPERTY(Location,location);
+        TBD_PROPERTY_RO(Correct,correct);
       private:
-        vec_type getNormal(Ring::const_iterator _p0, Ring::const_iterator _p1) const;
+        static vec_type getNormal(Ring::const_iterator _p0, Ring::const_iterator _p1);
       };
     }
   }

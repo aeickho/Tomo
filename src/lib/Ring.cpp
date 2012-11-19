@@ -8,6 +8,7 @@
 
 #include <boost/geometry/algorithms/for_each.hpp>
 #include <boost/geometry/algorithms/union.hpp>
+#include <boost/geometry/algorithms/correct.hpp>
 
 
 using namespace std;
@@ -28,6 +29,20 @@ namespace tomo
       void Ring::add(point_type _point)
       {
         push_back(_point);
+      }
+
+      void Ring::close()
+      {
+        if( !closed() )
+        {
+//          boost::geometry::correct(*this);
+          correct_ = CLOSED;
+        }
+      }
+     
+      bool Ring::closed()
+      {
+        return correct() == CLOSED;
       }
 
       void Ring::fetchSegments(std::vector<Segment>& _segments) const
@@ -71,7 +86,7 @@ namespace tomo
         return 0.5*(getNormal(_prev,it) + getNormal(it,_next));
       }
 
-      Ring::vec_type Ring::getNormal(Ring::const_iterator _p0, Ring::const_iterator _p1) const
+      Ring::vec_type Ring::getNormal(Ring::const_iterator _p0, Ring::const_iterator _p1) 
       {
         vec_type _d = point_type(*_p0) - point_type(*_p1);
         return vec_type(-_d.y(),_d.x());
