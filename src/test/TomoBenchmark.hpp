@@ -1,7 +1,9 @@
 #pragma once
 
 #include "TomoTestCase.hpp"
+#include "wrap_boost_geometry_begin.hpp"
 #include <boost/geometry.hpp>
+#include "wrap_boost_geometry_end.hpp"
 
 struct TomoBenchmark : TomoTestCase
 {

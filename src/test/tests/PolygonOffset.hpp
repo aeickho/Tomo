@@ -1,6 +1,8 @@
 #pragma once
 
+#include <wrap_boost_geometry_begin.hpp>
 #include <boost/geometry.hpp>
+#include <wrap_boost_geometry_end.hpp>
 #include "tomo/geometry/algorithm/PolygonOffset.hpp"
 #include "../generators/PolygonOffset.hpp"
 
