@@ -1,0 +1,4 @@
+This is the output folder for all tomo tests.
+When you run ./bin/UnitTests, it should generate a couple of output test images.
+
+
