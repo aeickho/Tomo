@@ -1,9 +1,18 @@
-using clang ;
+# use clang cause gcc is eighties
+using clang : # version
+              3.1
+            : # compiler
+            : # options
+             <cxxflags>-ferror-limit=1 # stop at first error
+             <cxxflags>-fcolor-diagnostics # color my life
+             ;
 
+# path where we get our libraries from
 use-project /boost : ../boost_1_52_0 ;
 use-project /tomo : src/lib ;
 use-project /OpenMesh : src/OpenMesh ;
 
+# projects to build
 build-project src/lib ;
 build-project src/test ;
 #build-project src/OpenMesh ;

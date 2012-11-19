@@ -1,15 +1,17 @@
-project : requirements <include>.             
+project : requirements # include paths
+                       <include>.             
                        <include>/usr/include/clang/3.1/include
                        <include>../../include
-                       
+                       # libraries to use
                        <library>/boost//system
                        <library>/boost//timer
-
-                       <cflags>-fcolor-diagnostics 
-                       <cflags>-w 
+                       # keep calm and compile on
+                       <cflags>-w
+        # care for correct includes 
         : usage-requirements <include>/usr/include/clang/3.1/include
         ;
 
+# build open mesh library
 lib OpenMesh  : [ glob *.cc ] ;
 
 

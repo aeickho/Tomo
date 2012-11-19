@@ -1,19 +1,26 @@
+# get image magick from system
 lib ImageMagick : : <name>Magick++ <search>/usr/lib ;
 
-project : requirements <include>.
+project : requirements # include paths
+                       <include>.
                        <include>../../include
                        <include>../../TbdLib/include
                        <include>/usr/include/ImageMagick
-                       
+                       # libraries to use
                        <library>ImageMagick
                        <library>/tomo//tomo
                        <library>/boost//system
                        <library>/boost//timer
+                       # we use cutting edge c++ here
+                       <cflags>-std=c++11 ;
 
-                       <cflags>-std=c++11
-                       <cflags>-fcolor-diagnostics ;
-
+# build unit test
 exe UnitTests : UnitTests.cpp ;
+<<<<<<< HEAD
 
 exe Benchmark : Benchmark.cpp BoostTimerWrapper.cpp ;
+=======
+# build benchmarks
+exe Benchmark : Benchmark.cpp ;
+>>>>>>> 0cb00c0333132ca7d565566e14629a17f9dd215c
 
