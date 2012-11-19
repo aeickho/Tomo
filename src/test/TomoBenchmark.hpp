@@ -1,11 +1,9 @@
 #pragma once
 
 #include "TomoTestCase.hpp"
-<<<<<<< HEAD
+
 #include "BoostTimerWrapper.hpp"
-=======
 #include "wrap_boost_geometry_begin.hpp"
->>>>>>> 0cb00c0333132ca7d565566e14629a17f9dd215c
 #include <boost/geometry.hpp>
 #include "wrap_boost_geometry_end.hpp"
 

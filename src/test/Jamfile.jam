@@ -16,11 +16,6 @@ project : requirements # include paths
 
 # build unit test
 exe UnitTests : UnitTests.cpp ;
-<<<<<<< HEAD
 
-exe Benchmark : Benchmark.cpp BoostTimerWrapper.cpp ;
-=======
 # build benchmarks
-exe Benchmark : Benchmark.cpp ;
->>>>>>> 0cb00c0333132ca7d565566e14629a17f9dd215c
-
+exe Benchmark : Benchmark.cpp BoostTimerWrapper.cpp ;
