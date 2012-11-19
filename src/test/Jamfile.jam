@@ -15,5 +15,5 @@ project : requirements <include>.
 
 exe UnitTests : UnitTests.cpp ;
 
-exe Benchmark : Benchmark.cpp ;
+exe Benchmark : Benchmark.cpp BoostTimerWrapper.cpp ;
 

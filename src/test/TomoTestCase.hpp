@@ -38,7 +38,8 @@ struct TomoTestCase
 
   void writeImage(std::string _name = std::string(), bool _numbers = true)
   {
-    wrapper_.image().write(testOutputName(_name+".png",_numbers));
+    if (wrapper_.image().rows() * wrapper_.image().columns() > 1)
+      wrapper_.image().write(testOutputName(_name+".png",_numbers));
   }
 
   TBD_PROPERTY_REF(Wrapper,wrapper)

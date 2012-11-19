@@ -5,7 +5,7 @@
 // wrap boost test includes for clang compatibility (see https://svn.boost.org/trac/boost/ticket/5986)
 #include "wrap_boost_test_begin.hpp"
 #include <boost/test/included/unit_test.hpp>
-#include "wrap_boost_test_begin.hpp"
+#include "wrap_boost_test_end.hpp"
 
 #include <tbd/log.h>
 #include "TomoTestCase.hpp"
@@ -14,7 +14,7 @@ LOG_INIT;
 
 using namespace tomo;
 
-//#include "tests/Matrix.hpp"
+#include "tests/Matrix.hpp"
 #include "tests/TriangleSlicer.hpp"
 //#include "tests/NearestVisitors.hpp"
 
