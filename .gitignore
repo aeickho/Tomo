@@ -3,6 +3,7 @@ doc/html
 doc/latex
 bin
 moc
+testdata
 
 # ignore temporary swap files
 *.sw?
