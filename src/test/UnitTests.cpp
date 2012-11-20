@@ -20,4 +20,4 @@ using namespace tomo;
 #include "tests/PolygonOffset.hpp"
 #include "tests/LineFilling.hpp"
 #include "tests/Skirt.hpp"
-
+#include "tests/Perimeter.hpp"

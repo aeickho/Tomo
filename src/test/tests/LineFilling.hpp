@@ -20,18 +20,18 @@ TOMO_TEST_CASE( LineFilling, 1024 )
   _w.drawBounds(true);
 
   typedef filling::LineFilling<RepRapState,filling::LinePattern> LineFilling;
-  LineFilling _lineFilling;
   MultiPolygon _out;
   MultiLineString _fillingPattern;
   filling::LinePattern _pattern(30.0,0.01);
+  LineFilling _lineFilling(_pattern);
   _pattern(_obj.bounds(),_fillingPattern);
   _w.draw(_fillingPattern,Magick::Color("orange"));
   writeImage();
 
   _w.clear();
   _w.drawEndings(true);
-  _lineFilling(_obj,_out);
-  _w.draw(_lineFilling.fillingPattern_,Magick::Color("green"));
+  MultiLineString&& _fillingOutput = _lineFilling(_obj,_out);
+  _w.draw(_fillingOutput,Magick::Color("green"));
   writeImage();  
 }
 TOMO_TEST_CASE_END

@@ -9,11 +9,11 @@ namespace tomo
   {
     namespace generators
     {
-      struct Skirt : 
+      struct Perimeter : 
         Generator<geometry::prim::MultiPolygon>
       {
         typedef geometry::prim::MultiPolygon MultiPolygon;
-        TOMO_TEST_GENERATOR_DECL(Skirt,MultiPolygon)
+        TOMO_TEST_GENERATOR_DECL(Perimeter,MultiPolygon)
 
         ObjectList generate() const
         {
