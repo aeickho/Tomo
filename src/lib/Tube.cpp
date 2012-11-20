@@ -47,8 +47,8 @@ namespace tomo
  
           Point2f _innerPoint(_cos*innerRadius_,_sin*innerRadius_);
           Point2f _outerPoint(_cos*outerRadius_,_sin*outerRadius_);  
-          _inner.add(_innerPoint);
-          _outer.add(_outerPoint);
+          _inner.push_back(_innerPoint);
+          _outer.push_back(_outerPoint);
         }
 
         _polygon.add(_outer);

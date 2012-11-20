@@ -24,8 +24,8 @@ namespace tomo
           _multiPolygon.push_back(create::circleWith3Holes(Point2f(0.25,0.3),0.2));
           _multiPolygon.push_back(create::circleWith3Holes(Point2f(0.75,0.3),0.2));
           _multiPolygon.push_back(create::circleWith3Holes(Point2f(0.5,0.7),0.2));
-          boost::geometry::correct(_multiPolygon);
-          
+          _multiPolygon.update();
+
           _objs.push_back(_multiPolygon);
           return _objs;
         }

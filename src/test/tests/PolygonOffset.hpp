@@ -16,9 +16,9 @@ TOMO_TEST_CASE( PolygonOffset, 1024 )
   {
     _w.clear();
     MultiPolygon _outputPolygons;
-    PolygonOffset<>()(_obj,_offset,_outputPolygons);
+    PolygonOffset()(_obj,_offset,_outputPolygons);
     _w.draw(_obj,Magick::Color("green"));
-    _w.draw<>(_outputPolygons,Magick::Color("white"));
+    _w.draw(_outputPolygons,Magick::Color("white"));
     writeImage();
   }
 
@@ -26,9 +26,9 @@ TOMO_TEST_CASE( PolygonOffset, 1024 )
   {
     _w.clear();
     MultiPolygon _outputPolygons;
-    PolygonOffset<>()(_obj,-_offset,_outputPolygons);
+    PolygonOffset()(_obj,-_offset,_outputPolygons);
     _w.draw(_obj,Magick::Color("green"));
-    _w.draw<>(_outputPolygons,Magick::Color("white"));
+    _w.draw(_outputPolygons,Magick::Color("white"));
     writeImage();
   }
 }

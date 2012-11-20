@@ -18,9 +18,7 @@ namespace tomo
 
           BOOST_FOREACH( const Ring& _ring, _input)
           {
-            Ring _newRing(_ring);
-            boost::geometry::correct(_newRing);
-            _inputRings.push_back(_newRing);
+            _inputRings.push_back(_ring);
           }
 
           typedef RingList::iterator iterator;

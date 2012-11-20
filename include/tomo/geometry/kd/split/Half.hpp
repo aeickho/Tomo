@@ -6,8 +6,11 @@ namespace tomo
     {
       namespace build
       {
-        template <typename KDTREE, typename PRIM_NODE_INTERSECTION> 
-        struct HalfSplit
+        template <
+          typename KDTREE, 
+          typename PRIM_NODE_INTERSECTION,
+          size_t N_PRIMITIVES = 3> 
+        struct Half
         {
           TOMO_INHERIT_MODEL_TYPES(KDTREE);
           typedef typename KDTREE::node_type node_type;
@@ -15,11 +18,11 @@ namespace tomo
           typedef typename KDTREE::primitive_type primitive_type;
           typedef typename KDTREE::prim_cntr_type prim_cntr_type;
 
-          bool split( const bounds_type& _bounds, 
-                      const prim_cntr_type& _primitives,
-                      geometry_type& _nodeGeometry)
+          bool operator()( const bounds_type& _bounds, 
+                           const prim_cntr_type& _primitives,
+                           Candidate& _splitCandidate)
           {
-            if (_primitives.size() < 3) return false;
+            if (_primitives.size() < N_PRIMITIVES) return false;
 
             base::Axis _axis = _bounds.dominantAxis();
             _nodeGeometry.axis(_axis);
@@ -27,15 +30,6 @@ namespace tomo
             _nodeGeometry.bounds(_bounds);
             
             return true;
-          }
-
-          void nodeAttributes(Node& _node)
-          {
-          }
-
-          NodeIntersectResult intersect( const primitive_type* _prim, const geometry_type& _nodeGeometry)
-          {
-            return PRIM_NODE_INTERSECTION()(*_prim,_nodeGeometry);
           }
         };
       }

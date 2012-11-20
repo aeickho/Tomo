@@ -42,9 +42,9 @@ namespace tomo
             }
 
             if (_inverse) _sin = -_sin;
-            _ring.add(point_type(_cos,_sin) + _center);
+            _ring.push_back(point_type(_cos,_sin) + _center);
           }
-          boost::geometry::correct(_ring);
+          _ring.update();
           return _ring;
         }
       }

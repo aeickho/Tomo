@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../generators/VertexNearestVisitors.hpp"
+
 #include "tomo/geometry/kd/build/Vertex.hpp"
 #include "tomo/geometry/kd/visitor/Nearest.hpp"
 #include "tomo/geometry/kd/visitor/KNearest.hpp"
@@ -12,25 +14,14 @@
 
 
 
-BOOST_AUTO_TEST_CASE( NearestVisitorsTest )
+TOMO_TEST_CASE( VertexNearestVisitors, 1024 )
 {
   using tomo::geometry::base::Vec2f;
-  using tomo::geometry::base::Point2f;
   using tomo::geometry::prim::Vertex2f;
   using tomo::geometry::Model2f;
   using tomo::geometry::comp::Compound;
 
-  Wrapper _w(1024,1024);
-  _w.scale(Vec2f(1024,1024));
-
   typedef std::vector<Vertex2f> Vertices;
-  Vertices _vertices;
-
-  int n = 1000;
-  for (int i = 0; i < n; i++)
-  {
-    _vertices.push_back(Vertex2f(Point2f(0.5+0.5*std::sin(RND*M_PI*2),RND)));
-  }
   
   typedef tomo::geometry::intersect::VertexNode<Model2f> VNIntersect;
   typedef tomo::geometry::distance::VertexVertex<Model2f> VVDist;
@@ -40,14 +31,17 @@ BOOST_AUTO_TEST_CASE( NearestVisitorsTest )
   typedef tomo::geometry::kd::build::VertexTreeBuildPolicy<Model2f> BuildPolicy;
 
   VertexKDTree _kdTree;
-  _kdTree.build<BuildPolicy>(_vertices);
+  _kdTree.build<BuildPolicy>(_obj);
 
-  const Vertex2f& _vertex = _vertices[n/2];
+  const Vertex2f& _vertex = _obj[_obj.size()/2];
+
   int i = 0;
-  _w.draw<>(_vertices,"green");
-//  _w.draw(_kdTree,"white");
-  _w.image().write(TOMO_TEST_OUTPUT_NAME("_test.png",++i));
+  _w.draw(_obj,"green");
+  _w.draw(_kdTree,"white");
+  writeImage();
 
+  
+/*
   typedef std::multimap<float,const Vertex2f*> MapType;
   MapType _verificationData;
 
@@ -84,7 +78,6 @@ BOOST_AUTO_TEST_CASE( NearestVisitorsTest )
     // Write image output
     _w.image().write(TOMO_TEST_OUTPUT_NAME("_kNearest.png",++i));
   }
-/*
   // Test InRadius
   {
     typedef tomo::geometry::kd::visitor::InRadius<VertexKDTree,VVDist,VNodeDist> InRadius;
@@ -123,5 +116,6 @@ BOOST_AUTO_TEST_CASE( NearestVisitorsTest )
     _w.image().write(TOMO_TEST_OUTPUT_NAME("_nearest.png",++i));
   }*/
 }
+TOMO_TEST_CASE_END
 
 

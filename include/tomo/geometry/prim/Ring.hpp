@@ -17,10 +17,8 @@ namespace tomo
       struct Ring  : Primitive2f, std::vector<base::Point2f> 
       {
         enum IntersectResult { DISJOINT, OVERLAP, A_WITHIN_B, B_WITHIN_A };
-      enum Location :
-        unsigned char { INNER, OUTER };
-      enum Correct :
-        unsigned char { OPEN, CLOSED };
+        enum Location : unsigned char { INNER, OUTER };
+        typedef std::vector<base::Point2f> ctnr_type;
 
         /// Orientation of ring (CW = clockwise, CCW = counter-clockwise)
         enum Orientation { CW, CCW };
@@ -28,9 +26,10 @@ namespace tomo
         /// Default constructor
         Ring(Location _location = OUTER);
 
-        void add(point_type _point);
-        void close();
-        bool closed();
+        void clear();
+        void push_back(point_type _point);
+
+        void update();
 
         void fetchSegments(std::vector<Segment>& _segments) const;
         void fetchSegments(Ring::const_iterator it1,
@@ -48,11 +47,20 @@ namespace tomo
         
         Orientation orientation() const;
         vec_type getNormal(Ring::const_iterator it) const ;
+        
+        const bounds_type& bounds() const
+        {
+          return bounds_;
+        }
 
-        TBD_PROPERTY(Location,location);
-        TBD_PROPERTY_RO(Correct,correct);
+        TBD_PROPERTY(Location,location)
+        TBD_PROPERTY_RO(bool,correct)
+        TBD_PROPERTY_RO(scalar_type,length)
+
       private:
         static vec_type getNormal(Ring::const_iterator _p0, Ring::const_iterator _p1);
+
+        bounds_type bounds_;
       };
     }
   }
@@ -60,45 +68,3 @@ namespace tomo
 
 BOOST_GEOMETRY_REGISTER_RING(tomo::geometry::prim::Ring)
 
-namespace boost
-{
-  namespace serialization
-  { 
-    template<class ARCHIVE, class TYPE>
-    void load(
-        ARCHIVE& _ar, 
-        boost::geometry::model::d2::point_xy<TYPE>& _p, 
-        const unsigned int _fileVersion)
-    {
-      TYPE x,y;
-      _ar >> x >> y;
-      _p.set<0>(x);
-      _p.set<1>(y);
-    }
-    template<class ARCHIVE, class TYPE>
-    void save(
-        ARCHIVE& _ar, 
-        const boost::geometry::model::d2::point_xy<TYPE>& _p, 
-        const unsigned int _fileVersion)
-    {
-      _ar << _p.template get<0>() << _p.template get<1>();
-    }
-    template<class ARCHIVE, class TYPE>
-    void serialize(
-        ARCHIVE& _ar, 
-        boost::geometry::model::d2::point_xy<TYPE>& _p, 
-        const unsigned int _fileVersion)
-    {
-      split_free(_ar,_p,_fileVersion);
-    }
-
-    template<class ARCHIVE>
-    void serialize(
-        ARCHIVE& _ar, 
-        tomo::geometry::prim::Ring& _boostRing, 
-        const unsigned int _fileVersion)
-    {
-      _ar & (std::vector<tomo::geometry::base::Point2f> &)_boostRing;
-    }
-  }
-}

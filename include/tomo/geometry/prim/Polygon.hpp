@@ -1,8 +1,10 @@
 #pragma once
 
+#include <boost/geometry.hpp>
 #include <boost/type_traits/is_const.hpp>
 #include <boost/type_traits/remove_reference.hpp>
 #include <boost/geometry/geometries/polygon.hpp>
+
 #include "Ring.hpp"
 #include "tomo/geometry/base/Bounds.hpp"
 
@@ -14,13 +16,17 @@ namespace tomo
     {
       struct Polygon : Primitive2f
       {
+        typedef std::vector<Ring> holes_type;
+
         Polygon() {}
 
         Polygon(const Ring& _boundary) :
+          correct_(false),
           boundary_(_boundary)
         {}
 
         Polygon(const Ring& _boundary, const std::vector<Ring>& _holes) :
+          correct_(false),
           boundary_(_boundary),
           holes_(_holes)
         {
@@ -47,6 +53,7 @@ namespace tomo
             boundary_ = _ring;
             break;
           }
+          correct_ = false;
         }
 
         template<class ARCHIVE>
@@ -56,10 +63,33 @@ namespace tomo
           _ar & holes_;
         }
 
-        TBD_PROPERTY_REF(bounds_type,bounds);
+        void update()
+        {
+          if (correct_) return;
+          bounds_type _bounds;
+          boundary_.update();
+          _bounds.extend(boundary_.bounds());
 
-        TBD_PROPERTY_REF(Ring,boundary);
-        TBD_PROPERTY_REF(std::vector<Ring>,holes);
+          for( Ring& _ring : holes_ )
+          {
+            _ring.update();
+            _bounds.extend(_ring.bounds());
+          }
+
+          boost::geometry::correct(*this);
+          bounds_=_bounds;
+        }
+
+        holes_type& holes()
+        {
+        	correct_ = false;
+        	return holes_;
+        }
+ 
+        TBD_PROPERTY_RO(bool,correct)
+        TBD_PROPERTY_REF(Ring,boundary)
+        TBD_PROPERTY_REF_RO(bounds_type,bounds)
+        TBD_PROPERTY_REF_RO(holes_type,holes);
       };
     }
   }

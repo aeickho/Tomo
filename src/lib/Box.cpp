@@ -34,10 +34,10 @@ namespace tomo
         typedef Ring::point_type ring_point_type;
         
         _outer.reserve(4);
-        _outer.add(ring_point_type(_min.x(),_min.y()));
-        _outer.add(ring_point_type(_max.x(),_min.y()));
-        _outer.add(ring_point_type(_max.x(),_max.y()));
-        _outer.add(ring_point_type(_min.x(),_max.y()));
+        _outer.push_back(ring_point_type(_min.x(),_min.y()));
+        _outer.push_back(ring_point_type(_max.x(),_min.y()));
+        _outer.push_back(ring_point_type(_max.x(),_max.y()));
+        _outer.push_back(ring_point_type(_min.x(),_max.y()));
         _polygon.add(_outer);
         _slice->add(_polygon);
       }

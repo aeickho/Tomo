@@ -9,10 +9,13 @@ namespace tomo
   {
     namespace prim
     {
-/*
+
       struct MultiPolygon : Primitive2f, std::vector<Polygon>
       {
-        MultiPolygon()
+        typedef std::vector<Polygon> ctnr_type;
+
+        MultiPolygon() :
+          correct_(false)
         {
 
         }
@@ -26,6 +29,7 @@ namespace tomo
         template<class INSERT_ITERATOR> 
           void assign(INSERT_ITERATOR _from, INSERT_ITERATOR _to)
         { 
+          correct_ = false;
           assign(_from,_to);
         }
 
@@ -38,15 +42,28 @@ namespace tomo
           }
         }
 
-        bounds_type bounds() const 
+        void push_back(const Polygon& _polygon)
         {
-          TOMO_NOT_IMPLEMENTED();
-          ///@todo MultiPolygon should hold a KDTree as member (which already has bounds)
-          return bounds_type(); 
+          correct_ = false;
+          ctnr_type::push_back(_polygon);
         }
+
+        void update() 
+        {
+          if (correct_) return;
+          bounds_type _bounds;
+          for ( Polygon& _polygon : *this )
+          {
+            _polygon.update();
+            _bounds.extend(_polygon.bounds());
+          }
+          boost::geometry::correct(*this);
+          bounds_=_bounds;
+        }
+
+        TBD_PROPERTY_RO(bool,correct)
+        TBD_PROPERTY_REF_RO(bounds_type,bounds)
       };
-*/
-      typedef std::vector<Polygon> MultiPolygon; 
     }
   }
 }

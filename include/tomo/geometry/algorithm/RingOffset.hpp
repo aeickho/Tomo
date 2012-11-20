@@ -105,7 +105,7 @@ namespace tomo
           _ring.push_back(_p0 + _n);
           _ring.push_back(_p1 + _n);
           _ring.push_back(_p1 +(-_n));
-          boost::geometry::correct(_ring);
+          _ring.update();
         }
       };
     }

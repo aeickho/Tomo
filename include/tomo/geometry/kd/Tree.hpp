@@ -137,9 +137,9 @@ namespace tomo
             while (_state.depth_ < MAX_DEPTH)
             {
               geometry_type _nodeGeometry;
-              if (!_buildPolicy.split(_state.bounds(),_state.primList(),_nodeGeometry)) break;
 
-              
+//              if (!_buildPolicy.split()(_state.bounds(),_state.primList(),_splitCandidate)) break;
+
               // Make an inner node
               NodeInner& _innerNode = innerNodeSetup(_state.nodeIndex_,_nodeGeometry);
               _buildPolicy.nodeAttributes(nodes_[_state.nodeIndex_]);
@@ -160,7 +160,7 @@ namespace tomo
               auto it = _state.primList().begin(), _leftIt = it;
               for (; it != _state.primList().end() ; ++it)
               {
-                NodeIntersectResult _result = _buildPolicy.intersect(*it,_nodeGeometry);
+                NodeIntersectResult _result = _buildPolicy.intersect()(*it,_nodeGeometry);
 
                 if (_result.right()) _right.primList().push_back(*it);
                 if (_result.left())

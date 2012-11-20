@@ -5,7 +5,7 @@
 #include <math.h>
 #include <boost/assert.hpp>
 #include <boost/foreach.hpp>
-
+#include <boost/geometry.hpp>
 #include <boost/geometry/algorithms/for_each.hpp>
 #include <boost/geometry/algorithms/union.hpp>
 #include <boost/geometry/algorithms/correct.hpp>
@@ -22,27 +22,32 @@ namespace tomo
       using boost::geometry::get;
       
       Ring::Ring(Location _location) : 
-        location_(_location)
+        location_(_location),
+        correct_(false),
+        length_(0.0)
       {
+      }
+      
+      void Ring::push_back(point_type _point)
+      {
+        correct_ = false;
+        ctnr_type::push_back(_point);
+      }
+ 
+      void Ring::clear()
+      {
+        correct_ = false;
+        ctnr_type::clear();
       }
 
-      void Ring::add(point_type _point)
+      void Ring::update()
       {
-        push_back(_point);
-      }
-
-      void Ring::close()
-      {
-        if( !closed() )
-        {
-//          boost::geometry::correct(*this);
-          correct_ = CLOSED;
-        }
-      }
-     
-      bool Ring::closed()
-      {
-        return correct() == CLOSED;
+        if (correct_) return;
+        
+        boost::geometry::correct(*this);
+        boost::geometry::envelope(*this,bounds_);
+        length_ = boost::geometry::perimeter(*this);
+        correct_ = true;
       }
 
       void Ring::fetchSegments(std::vector<Segment>& _segments) const

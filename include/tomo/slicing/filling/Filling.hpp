@@ -34,8 +34,9 @@ namespace tomo
           fillingPattern_.clear();
           MultiLineString _fillingPattern;
 
+ //         _in.update();
           ///@todo Bounding is hard-coded for now, implement MultiPolygon::bounds()!!!
-          PATTERN()(Bounds2f(Point2f(-0.3,-0.3),Point2f(1.7,1.7)),_fillingPattern);
+          PATTERN()(_in.bounds(),_fillingPattern);
 
           boost::geometry::intersection(_fillingPattern,_in,fillingPattern_);
 

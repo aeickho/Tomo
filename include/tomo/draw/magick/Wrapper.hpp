@@ -14,6 +14,7 @@ namespace tomo
         typedef geometry::prim::Ring Ring;
         typedef geometry::prim::Segment Segment;
         typedef geometry::prim::Polygon Polygon;
+        typedef geometry::prim::MultiPolygon MultiPolygon;
         typedef geometry::prim::LineString LineString;
         typedef geometry::prim::MultiLineString MultiLineString;
         typedef geometry::base::Point3f Point3f;
@@ -21,6 +22,7 @@ namespace tomo
         Wrapper(int _width, int _height) :
           drawEndings_(false),
           drawNormals_(false),
+          drawBounds_(true),
           vertexWidth_(4.0),
           scale_(1,1),
           offset_(0,0)
@@ -34,12 +36,12 @@ namespace tomo
         {
           typedef typename KDTREE::bounds_type bounds_type;
           typedef typename KDTREE::scalar_type scalar_type;
-          typedef typename KDTREE::Node Node;
+          typedef typename KDTREE::node_type node_type;
 
           struct State
           {
             TBD_PROPERTY_REF(bounds_type,bounds);
-            TBD_PROPERTY(const Node*,node);
+            TBD_PROPERTY(const node_type*,node);
           };
 
           TreeDrawVisitor(const KDTREE& _kdTree, Wrapper& _wrapper, Magick::Color _color) :
@@ -48,14 +50,14 @@ namespace tomo
             kdTree_(_kdTree)
           {
             state_.node(_kdTree.root());
-            state_.bounds(_kdTree.bounds_);
+            state_.bounds(_kdTree.bounds());
           }
 
           /// Define what to do in the root node (draw bounding box)
           bool root()
           {
             wrapper_.image().strokeColor(color_);
-            wrapper_.drawRect(kdTree_.bounds_.min(),kdTree_.bounds_.max());
+            wrapper_.drawRect(kdTree_.bounds().min(),kdTree_.bounds().max());
             return true;
           }
 
@@ -77,7 +79,7 @@ namespace tomo
             scalar_type _splitPos = state_.node()->inner_.splitPos();
             state_.bounds().split(_splitPos,_axis,_left,_right);
 
-            unsigned _alphaValue = 10000+55000*state_.bounds().radius()/kdTree_.bounds_.radius();
+            unsigned _alphaValue = 10000+55000*state_.bounds().radius()/kdTree_.bounds().radius();
             wrapper_.image().strokeColor(Magick::Color(_alphaValue,_alphaValue,_alphaValue));
 
             switch (_axis)
@@ -112,14 +114,14 @@ namespace tomo
           const KDTREE& kdTree_;
         };
 
-        template <typename PRIMITIVE>
-        void draw(const geometry::kd::Tree<PRIMITIVE>& _kdTree,
+/*        template <typename KDTREE>
+        void draw(const KDTREE& _kdTree,
                   Magick::Color _color)
         {
-          TreeDrawVisitor< geometry::kd::Tree<PRIMITIVE> > _visitor(_kdTree,*this,_color);
+          TreeDrawVisitor< KDTREE > _visitor(_kdTree,*this,_color);
           _kdTree.traversal(_visitor);
         }
-
+*/
         template <typename PRIMITIVE>
         void draw(const geometry::comp::Compound<PRIMITIVE>& _compound, Magick::Color _color)
         {
@@ -226,6 +228,7 @@ namespace tomo
           std::vector<Segment> _lineSegments;
           _ring.fetchSegments(_lineSegments);
           draw(_lineSegments,_color);
+          if (drawBounds()) draw(_ring.bounds(),_color);
         }
 
         void draw(const Polygon& _polygon, Magick::Color _color)
@@ -233,6 +236,15 @@ namespace tomo
           std::vector<Segment> _lineSegments;
           _polygon.fetchSegments(_lineSegments);
           draw(_lineSegments,_color);
+          if (drawBounds()) draw(_polygon.bounds(),_color);
+        }
+
+        void draw(const MultiPolygon& _polygon, Magick::Color _color)
+        {
+          std::vector<Segment> _lineSegments;
+          _polygon.fetchSegments(_lineSegments);
+          draw(_lineSegments,_color);
+          if (drawBounds()) draw(_polygon.bounds(),_color);
         }
 
         void clear()
@@ -248,6 +260,7 @@ namespace tomo
 
         TBD_PROPERTY(bool,drawEndings);
         TBD_PROPERTY(bool,drawNormals);
+        TBD_PROPERTY(bool,drawBounds);
         TBD_PROPERTY(float,vertexWidth);
         TBD_PROPERTY_REF(vec_type,scale);
         TBD_PROPERTY_REF(vec_type,offset);

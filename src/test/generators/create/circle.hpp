@@ -18,10 +18,9 @@ namespace tomo
             bool _inverse = false,
             int _numSegments = 48)
         {
-
           typedef geometry::prim::Ring Ring;
           typedef Ring::point_type point_type;
-          Ring _ring;
+          Ring _ring(_inverse ? Ring::INNER : Ring::OUTER);
 
           for (int i = 0; i <= _numSegments; i++)
           {
@@ -32,7 +31,7 @@ namespace tomo
             if (_inverse) _sin = -_sin;
             _ring.push_back(point_type(_cos,_sin) + _center);
           }
-          boost::geometry::correct(_ring);
+          _ring.update();
           return _ring;
         }
       }

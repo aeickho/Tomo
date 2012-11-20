@@ -1,8 +1,8 @@
 #pragma once
 
 #include "tomo/misc.hpp"
-#pragma once
 #include "Ray.hpp"
+#include <boost/geometry/geometries/register/box.hpp>
 
 #include <vector>
 #include <limits>
@@ -241,8 +241,8 @@ namespace tomo
           _ar & max_;
         }
 
-        TBD_PROPERTY_MON(point_type,min,validate);
-        TBD_PROPERTY_MON(point_type,max,validate);
+        TBD_PROPERTY_REF_MON(point_type,min,validate);
+        TBD_PROPERTY_REF_MON(point_type,max,validate);
       };
 
       // Bounds operators
@@ -278,3 +278,5 @@ namespace tomo
     }
   }
 }
+
+BOOST_GEOMETRY_REGISTER_BOX(tomo::geometry::base::Bounds2f,tomo::geometry::base::Point2f,min(),max())

@@ -15,10 +15,9 @@ LOG_INIT;
 using namespace tomo;
 
 #include "tests/Matrix.hpp"
-#include "tests/TriangleSlicer.hpp"
-//#include "tests/NearestVisitors.hpp"
-
+//#include "tests/TriangleSlicer.hpp"
+//#include "tests/VertexNearestVisitors.hpp"
 #include "tests/PolygonOffset.hpp"
-#include "tests/Skirt.hpp"
 #include "tests/LineFilling.hpp"
+#include "tests/Skirt.hpp"
 

@@ -17,13 +17,14 @@ TOMO_TEST_CASE( LineFilling, 1024 )
   using tomo::geometry::base::Point2f;
 
   RepRapState _state;
+  _w.drawBounds(true);
 
   typedef filling::LineFilling<RepRapState,filling::LinePattern> LineFilling;
   LineFilling _lineFilling;
   MultiPolygon _out;
   MultiLineString _fillingPattern;
   filling::LinePattern _pattern(30.0,0.01);
-  _pattern(Bounds2f(Point2f(0.0,0.0),Point2f(0.7,0.7)),_fillingPattern);
+  _pattern(_obj.bounds(),_fillingPattern);
   _w.draw(_fillingPattern,Magick::Color("orange"));
   writeImage();
 

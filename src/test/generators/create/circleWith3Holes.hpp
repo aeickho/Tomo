@@ -23,14 +23,12 @@ namespace tomo
           Polygon _polygon;
           _polygon.boundary(circle(_center,_radius,false,_numSegments));
 
-          _polygon.holes().push_back(
-              circle(_center + point_type(-_radius/3,-_radius/3),_radius/4,true,_numSegments));
-          _polygon.holes().push_back(
-              circle(_center + point_type(_radius/3,-_radius/3),_radius/4,true,_numSegments));
-          _polygon.holes().push_back(
-              circle(_center + point_type(0,_radius/3),_radius/4,true,_numSegments));
+          _polygon.add(circle(_center + point_type(-_radius/3,-_radius/3),_radius/4,true,_numSegments));
+          _polygon.add(circle(_center + point_type(_radius/3,-_radius/3),_radius/4,true,_numSegments));
+          _polygon.add(circle(_center + point_type(0,_radius/3),_radius/4,true,_numSegments));
 
-          boost::geometry::correct(_polygon);
+          _polygon.update();
+
           return _polygon;
         }
       }
