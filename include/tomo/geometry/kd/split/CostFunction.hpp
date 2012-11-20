@@ -21,7 +21,7 @@ namespace tomo
           typedef typename KDTREE::geometry_type geometry_type;
           typedef Candidate<KDTREE> candidate_type;
 
-          bool operator()( const bounds_type& _bounds,
+          void operator()( const bounds_type& _bounds,
                            const prim_cntr_type& _primitives,
                            candidate_type& _splitCandidate)
           {
