@@ -7,61 +7,72 @@ namespace tomo
     namespace algorithm
     {
       /// Template concept for letting a functor perform on each ring of a certain primitve
-      template<typename PRIMITIVE, typename FUNCTOR>
+      template<typename PRIMITIVE>
       struct ForEachRing
       {
 
       };
 
       /// Template concept for letting a functor perform on a std::vector of rings
-      template<typename FUNCTOR>
-      struct ForEachRing< prim::Polygon::holes_type >
+      template<>
+      struct ForEachRing< std::vector<prim::Ring> >
       {
-        typedef std::vector<prim::Ring> primitive_type;
-        void operator(primitive_type& _rings, FUNCTOR& _f)
+        typedef prim::Ring Ring;
+        typedef std::vector<Ring> primitive_type;
+        
+        template<typename FUNCTOR>
+        void operator()(primitive_type& _rings, FUNCTOR& _f) const
         {
           for ( Ring& _ring : _rings) _f(_ring);
         }
 
-        void operator(const primitive_type& _rings, FUNCTOR& _f)
+        template<typename FUNCTOR>
+        void operator()(const primitive_type& _rings, FUNCTOR& _f) const
         {
           for ( const Ring& _ring : _rings) _f(_ring);
         }
       };
 
       /// Template concept for letting a functor perform on the rings of a polygon
-      template<typename FUNCTOR>
+      template<>
       struct ForEachRing<prim::Polygon>
       {
         typedef prim::Polygon primitive_type;
-        void operator(const primitive_type& _polygon, FUNCTOR& _f)
+        
+        template<typename FUNCTOR>
+        void operator()(const primitive_type& _polygon, FUNCTOR& _f) const
         {
           _f(_polygon.boundary());
-          ForEachRing<primitive_type::holes_type,FUNCTOR>()(_polygon.holes(),_f);
+          ForEachRing()(_polygon.holes(),_f);
         }
 
-        void operator(primitive_type& _polygon, FUNCTOR& _f)
+        template<typename FUNCTOR>
+        void operator()(primitive_type& _polygon, FUNCTOR& _f) const
         {
           _f(_polygon.boundary());
-          ForEachRing<primitive_type::holes_type,FUNCTOR>()(_polygon.holes(),_f);
+          ForEachRing()(_polygon.holes(),_f);
         }
       };
 
       /// Template concept for letting a functor perform on the rings of a multipolygon
-      template<typename FUNCTOR>
+      template<>
       struct ForEachRing<prim::MultiPolygon>
       {
+        typedef prim::Polygon Polygon;
         typedef prim::MultiPolygon primitive_type;
-        void operator(const primitive_type& _multiPolygon, FUNCTOR& _f)
+        
+        template<typename FUNCTOR>
+        void operator()(const primitive_type& _multiPolygon, FUNCTOR& _f) const
         {
           for ( const Polygon& _polygon : _multiPolygon )
-            ForEachRing<Polygon,FUNCTOR>()(_polygon,_f);  
+            ForEachRing()(_polygon,_f);  
         }
 
-        void operator(primitive_type& _multiPolygon, FUNCTOR& _f)
+        template<typename FUNCTOR>
+        void operator()(primitive_type& _multiPolygon, FUNCTOR& _f) const
         {
           for ( Polygon& _polygon : _multiPolygon )
-            ForEachRing<Polygon,FUNCTOR>()(_polygon,_f);          
+            ForEachRing()(_polygon,_f);          
         }
       };
     }

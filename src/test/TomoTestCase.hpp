@@ -71,6 +71,7 @@ private:
       {\
         Wrapper& _w = wrapper();\
         _w.clear(_res,_res);\
+        _w.scale(Wrapper::vec_type(_res,_res));\
         _generator.draw(_w,_obj);\
         std::stringstream ss; ss << "_testobj" << std::setw(3) << std::setfill('0') << ++_nObj;\
         writeImage(ss.str(),false);\

@@ -21,8 +21,9 @@ namespace tomo
 
         Wrapper(int _width, int _height) :
           drawEndings_(false),
+          drawLineStringEndings_(false),
           drawNormals_(false),
-          drawBounds_(true),
+          drawBounds_(false),
           vertexWidth_(4.0),
           scale_(1,1),
           offset_(0,0)
@@ -215,6 +216,13 @@ namespace tomo
           std::vector<Segment> _lineSegments;
           _lineString.fetchSegments(_lineSegments);
           draw(_lineSegments,_color);
+          if (drawLineStringEndings())
+          {
+            image_.strokeColor("yellow");
+            drawCircle(_lineSegments.front()[0],4);
+            image_.strokeColor("blue");
+            drawCircle(_lineSegments.back()[1],7);
+          }
         }
 
         void draw(const MultiLineString& _multiLineString, Magick::Color _color)
@@ -259,6 +267,7 @@ namespace tomo
         }
 
         TBD_PROPERTY(bool,drawEndings);
+        TBD_PROPERTY(bool,drawLineStringEndings);
         TBD_PROPERTY(bool,drawNormals);
         TBD_PROPERTY(bool,drawBounds);
         TBD_PROPERTY(float,vertexWidth);

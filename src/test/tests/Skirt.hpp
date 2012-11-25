@@ -17,9 +17,10 @@ TOMO_TEST_CASE( Skirt, 1024 )
   {
     _slice->polygons(_obj);
   }
+
   _w.draw(_obj,Magick::Color("green"));
 
-  Ring&& _skirt = Skirt()(0.05,_sliceStack);
+  Ring&& _skirt = Skirt(0.05)(_sliceStack);
   _w.draw(_skirt,Magick::Color("red"));
 
   writeImage();

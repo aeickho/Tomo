@@ -1,29 +1,25 @@
 purpose: 3D Slicing & Printing Processor
 code name: tomo
 
-Requirements:
--------------
+Compiling with Ubuntu 12.04:
+----------------------------
 
-sudo apt-get install libboost-all-dev
-sudo apt-get install libgl-dev
-sudo apt-get install freeglut3-dev
-sudo apt-get install libmagick++-dev
-
-Clone git repository 'TbdLib' from 
+TbdLib is required. Clone git repository 'TbdLib' from 
 git@github.com:patgithub/TbdLib.git
 
-Clone git repository 'OpenMesh' from 
-git@github.com:WilstonOreo/OpenMesh.git
+You will need Boost 1.52.0.
+Download the boost files and put them into the ../boost_1_52_0 folder relative to Tomo main directory.
 
-Compiling with clang
---------------------
+You will need Clang 3.1.
+Get the latest LLVM PPA:
 
-Run the bootstrap script 
-./bootstrap.sh
 
-Afterwards, you can run "make" normally.
 
-Update your make files with 
-cmake . 
-
+Go to your command line and enter the following commands:
+$ sudo apt-get install libgl-dev freeglut3-dev libmagick++-dev 
+$ cd ../boost_1_52_0
+$ ./bootstrap.sh
+$ cd ../Tomo
+$ git clone git@github.com:patgithub/TbdLib.git
+$ bjam
 

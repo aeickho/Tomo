@@ -1,6 +1,5 @@
 #include <QtOpenGL/QGLWidget>
 #include <boost/ptr_container/ptr_vector.hpp>
-#include <boost/foreach.hpp>
 #include "tomo/defaults.h"
 
 namespace tomo
@@ -92,12 +91,12 @@ namespace tomo
       typedef Objective<Type> Base;
       virtual void begin(const Type _progress)
       {
-        BOOST_FOREACH( typename Container::reference r, transformations_ )
+        for( typename Container::reference r : transformations_ )
         r.begin(_progress);
       }
       virtual void end()
       {
-        BOOST_FOREACH( typename Container::reference r, transformations_ )
+        for( typename Container::reference r : transformations_ )
         r.end();
       }
     protected:

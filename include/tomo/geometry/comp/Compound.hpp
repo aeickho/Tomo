@@ -4,9 +4,6 @@
 #include "tomo/misc.hpp"
 #include "tomo/geometry/kd/Tree.hpp"
 
-
-#include <boost/foreach.hpp>
-
 /// inline implement compound primitive container accessor for tomo::geometry::aux::Compound
 #define TOMO_COMPOUND_PRIMITIVE_NAME(name) \
         ctnr_type& name() { return objs_; } \

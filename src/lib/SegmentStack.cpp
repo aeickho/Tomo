@@ -18,7 +18,7 @@ namespace tomo
     void SegmentStack::initializePlanes()
     {
       vector< Slice* > _allSlices = slices_.fetch();
-      BOOST_FOREACH( Slice* _slice, _allSlices )
+      for ( Slice* _slice : _allSlices )
       {
         planes_.insert(make_pair<>(_slice->pos(),SegmentPlane()));
       }

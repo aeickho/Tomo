@@ -4,7 +4,6 @@
 #include <tbd/log.h>
 #include <math.h>
 #include <boost/assert.hpp>
-#include <boost/foreach.hpp>
 #include <boost/geometry.hpp>
 #include <boost/geometry/algorithms/for_each.hpp>
 #include <boost/geometry/algorithms/union.hpp>

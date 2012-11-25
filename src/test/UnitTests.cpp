@@ -21,3 +21,4 @@ using namespace tomo;
 #include "tests/LineFilling.hpp"
 #include "tests/Skirt.hpp"
 #include "tests/Perimeter.hpp"
+//#include "tests/Chop.hpp"

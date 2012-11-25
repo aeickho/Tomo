@@ -16,7 +16,7 @@ namespace tomo
           typedef std::list<Ring> RingList;
           RingList _inputRings;
 
-          BOOST_FOREACH( const Ring& _ring, _input)
+          for ( const Ring& _ring : _input )
           {
             _inputRings.push_back(_ring);
           }
