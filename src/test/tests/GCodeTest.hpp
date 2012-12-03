@@ -1,0 +1,6 @@
+#pragma once
+
+BOOST_AUTO_TEST_SUITE( GCodeTestSuite )
+
+BOOST_AUTO_TEST_SUITE_END()
+

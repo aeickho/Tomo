@@ -1,5 +1,4 @@
 #pragma once
-#include "Candidate.hpp"
 
 namespace tomo
 {
@@ -9,22 +8,45 @@ namespace tomo
     {
       namespace split
       {
-        template <typename KDTREE,
-                 typename PRIM_SPLITPOS,
-                 typename PRIM_INTERSECT_COST,
-                 size_t N_BUCKETS = 8>
+        template
+        <typename BUILD_STATE,
+        typename PRIM_SPLITPOS,
+        typename PRIM_INTERSECT_COST,
+        size_t N_BUCKETS = 8>
         struct CostFunction
         {
-          TOMO_INHERIT_MODEL_TYPES(KDTREE)
-          typedef typename KDTREE::primitive_type primitive_type;
-          typedef typename KDTREE::prim_cntr_type prim_cntr_type;
-          typedef typename KDTREE::geometry_type geometry_type;
-          typedef Candidate<KDTREE> candidate_type;
+          typedef BUILD_STATE state_type;
+          typedef typename state_type::primitive_type primitive_type;
+          typedef typename state_type::prim_cntr_type prim_cntr_type;
+          typedef typename state_type::node_geometry_type node_geometry_type;
+          typedef typename state_type::bounds_type bounds_type;
+          typedef typename state_type::scalar_type scalar_type;
 
-          void operator()( const bounds_type& _bounds,
+          CostFunction() : primitive_(nullptr) {}
+
+          bool operator()( const bounds_type& _bounds,
                            const prim_cntr_type& _primitives,
-                           candidate_type& _splitCandidate)
+                           const base::Axis _axis,
+                           scalar_type& _splitPos)
           {
+            struct SplitCandidate
+            {
+              SplitCandidate(scalar_type _pos = INF,
+                             const primitive_type* _prim = nullptr) :
+                pos_(_pos),
+                prim_(_prim)
+              {}
+
+              void put(scalar_type _pos, base::Axis _axis, const primitive_type* _prim)
+              {
+                prim_=_prim;
+                pos_=_pos;
+              }
+
+              TBD_PROPERTY(scalar_type,pos);
+              TBD_PROPERTY_RO(const primitive_type*,prim);
+            };
+
             // With this bucket structure, we can achieve building a good kdtree within O(n*log n)
             struct Buckets
             {
@@ -44,17 +66,17 @@ namespace tomo
                   }
                 }
 
-                TBD_PROPERTY_REF(candidate_type,left);
-                TBD_PROPERTY_REF(candidate_type,right);
+                TBD_PROPERTY_REF(SplitCandidate,left);
+                TBD_PROPERTY_REF(SplitCandidate,right);
                 TBD_PROPERTY(scalar_type,leftExt);
                 TBD_PROPERTY(scalar_type,rightExt);
                 TBD_PROPERTY_REF(scalar_type,cost);
               };
 
             public:
-              Buckets(const bounds_type& _bounds)
+              Buckets(const bounds_type& _bounds, const base::Axis _axis)
               {
-                axis_ = _bounds.dominantAxis();
+                axis_ = _axis;
                 min_ = _bounds.min()[axis_];
                 max_ = _bounds.max()[axis_];
 
@@ -84,9 +106,9 @@ namespace tomo
                 _bucket->put(_splitPos,_primitive);
               }
 
-              candidate_type* splitCandidate()
+              SplitCandidate* splitCandidate()
               {
-                candidate_type* _bestCandidate = NULL;
+                SplitCandidate* _bestCandidate = NULL;
 
                 scalar_type _minSplitCost = INF;
                 scalar_type _overallCost = 0;
@@ -102,8 +124,8 @@ namespace tomo
                 for (int i = 0; i < N_BUCKETS; i++)
                 {
                   Bucket& _bucket = buckets_[i];
-                  Candidate* _left = &_bucket.left();
-                  Candidate* _right = &_bucket.right();
+                  SplitCandidate* _left = &_bucket.left();
+                  SplitCandidate* _right = &_bucket.right();
 
                   if (_left->prim())
                   {
@@ -158,24 +180,24 @@ namespace tomo
               scalar_type max_;
               scalar_type invSize_;
 
-            } _buckets(_bounds);
+            } _buckets(_bounds,_axis);
 
             /// Insert split candidates into buckets
-            BOOST_FOREACH( const primitive_type* _primitive, _primitives )
+            for ( const primitive_type* _primitive : _primitives )
             {
               _buckets.insert(_primitive);
             }
 
-            candidate_type* _bucketSplitCandidate = _buckets.splitCandidate();
+            SplitCandidate* _bucketSplitCandidate = _buckets.splitCandidate();
             if (!_bucketSplitCandidate) return false;
 
-            _splitCandidate = *_bucketSplitCandidate;
-            _nodeGeometry.axis(_buckets.axis());
-            _nodeGeometry.splitPos(_bucketSplitCandidate->pos());
-            _nodeGeometry.bounds(_bounds);
+            _splitPos = _bucketSplitCandidate->pos();
+            primitive_ = _bucketSplitCandidate->primitive();
 
             return true;
           }
+
+          TBD_PROPERTY(primitive_type*,primitive)
         };
       }
     }

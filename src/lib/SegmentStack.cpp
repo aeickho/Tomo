@@ -10,7 +10,7 @@ namespace tomo
 {
   namespace slicing
   {
-    SegmentStack::SegmentStack(SliceStack& _sliceStack) : slices_(_sliceStack)
+/*    SegmentStack::SegmentStack(SliceStack& _sliceStack) : slices_(_sliceStack)
     {
       initializePlanes();
     }
@@ -23,6 +23,6 @@ namespace tomo
         planes_.insert(make_pair<>(_slice->pos(),SegmentPlane()));
       }
     }
-
+*/
   }
 }

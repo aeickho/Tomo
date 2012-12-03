@@ -7,7 +7,7 @@ namespace tomo
   {
     namespace intersect
     {
-      struct SegmentNode
+      struct SegmentNodePointOnly
       {
         typedef prim::Segment Segment;
         typedef kd::NodeGeometry<Segment::model_type> NodeGeometry;

@@ -63,6 +63,7 @@ private:
   {\
     do {\
       typedef tomo::test::generators::test_name generator_type;\
+      using Magick::Color;\
       generator_type _generator;\
       generator_type::ObjectList&& _objs = _generator.generate();\
       int _nObj = 0;\

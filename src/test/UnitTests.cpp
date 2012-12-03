@@ -14,11 +14,12 @@ LOG_INIT;
 
 using namespace tomo;
 
-#include "tests/Matrix.hpp"
+//#include "tests/Matrix.hpp"
 //#include "tests/TriangleSlicer.hpp"
 //#include "tests/VertexNearestVisitors.hpp"
-#include "tests/PolygonOffset.hpp"
-#include "tests/LineFilling.hpp"
-#include "tests/Skirt.hpp"
-#include "tests/Perimeter.hpp"
+//#include "tests/PolygonOffset.hpp"
+//#include "tests/LineFilling.hpp"
+//#include "tests/Skirt.hpp"
+//#include "tests/Perimeter.hpp"
 //#include "tests/Chop.hpp"
+#include "tests/KDTree.hpp"

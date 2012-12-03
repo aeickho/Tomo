@@ -50,7 +50,7 @@ namespace tomo
             wrapper_(_wrapper),
             kdTree_(_kdTree)
           {
-            state_.node(_kdTree.root());
+            state_.node(&_kdTree.nodes().getRoot());
             state_.bounds(_kdTree.bounds());
           }
 
@@ -64,20 +64,20 @@ namespace tomo
 
           void traverseLeft(State& _state)
           {
-            _state.node(kdTree_.node(state_.node()->inner_.left()));
+            _state.node(&kdTree_.nodes().getNode(state_.node()->inner().left()));
           }
 
           void traverseRight(State& _state)
           {
-            _state.node(kdTree_.node(state_.node()->inner_.right()));
+            _state.node(&kdTree_.nodes().getNode(state_.node()->inner().right()));
           }
 
           /// Define what to do in an inner node (draw split plane)
           bool inner(State& _nextState)
           {
             bounds_type _left, _right;
-            geometry::base::Axis _axis = state_.node()->inner_.axis();
-            scalar_type _splitPos = state_.node()->inner_.splitPos();
+            geometry::base::Axis _axis = state_.node()->inner().axis();
+            scalar_type _splitPos = state_.node()->inner().splitPos();
             state_.bounds().split(_splitPos,_axis,_left,_right);
 
             unsigned _alphaValue = 10000+55000*state_.bounds().radius()/kdTree_.bounds().radius();
@@ -115,19 +115,12 @@ namespace tomo
           const KDTREE& kdTree_;
         };
 
-/*        template <typename KDTREE>
-        void draw(const KDTREE& _kdTree,
+        template <typename KDTREE>
+        void drawKDTree(const KDTREE& _kdTree,
                   Magick::Color _color)
         {
           TreeDrawVisitor< KDTREE > _visitor(_kdTree,*this,_color);
           _kdTree.traversal(_visitor);
-        }
-*/
-        template <typename PRIMITIVE>
-        void draw(const geometry::comp::Compound<PRIMITIVE>& _compound, Magick::Color _color)
-        {
-          for( const PRIMITIVE& _primitive : _compound.objs() )
-            draw(_primitive,_color);
         }
 
         template <typename PRIMITIVE>
@@ -303,7 +296,6 @@ namespace tomo
           image_.draw(Magick::DrawableRectangle(_a.x(),_a.y(),_b.x(),_b.y()));
         }
       };
-
     }
   }
 }

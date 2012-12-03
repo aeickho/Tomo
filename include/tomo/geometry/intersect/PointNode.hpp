@@ -9,11 +9,11 @@ namespace tomo
       template <typename POINT>
       struct PointNode
       {
-        typedef POINT Point;
-        typedef kd::NodeGeometry<typename Point::model_type> NodeGeometry;
+        typedef POINT point_type;
+        typedef kd::NodeGeometry<typename point_type::model_type> node_geometry_type;
 
-        kd::NodeIntersectResult operator()(const Point& _p,
-                                       const NodeGeometry& _n)
+        kd::NodeIntersectResult operator()(const point_type& _p,
+                                       const node_geometry_type& _n)
         {
           return kd::NodeIntersectResult(_p[_n.axis()] <= _n.splitPos(),
                                          _p[_n.axis()] >= _n.splitPos());

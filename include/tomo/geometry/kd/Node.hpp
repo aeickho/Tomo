@@ -1,9 +1,6 @@
 #pragma once
-#include <vector>
 #include <tbd/bit.h>
-#include <stdint.h>
 #include "NodeGeometry.hpp"
-#include "NodeIntersectResult.hpp"
 
 namespace tomo
 {
@@ -11,19 +8,24 @@ namespace tomo
   {
     namespace kd
     {
-      // get bit operations from TBD
       namespace bit=tbd::bit;
 
-      namespace detail
+      template
+      <
+        typename MODEL,
+        typename ATTRIBUTES,
+        typename INNER_ATTRIBUTES,
+        typename LEAF_ATTRIBUTES
+      >
+      struct Node
       {
-        struct NoAttributes
-        {
-        };
-      }
+        typedef MODEL model_type;
+        typedef typename MODEL::scalar_type scalar_type;
+        typedef scalar_type splitpos_type;
+        typedef NodeGeometry<model_type> geometry_type;
 
-      template<typename ATTRIBUTES>
-      struct NodeConcept : ATTRIBUTES
-      {
+        typedef ATTRIBUTES attr_type;
+
         bool isLeaf() const
         {
           return !inner_.is();
@@ -31,6 +33,8 @@ namespace tomo
 
         struct Inner
         {
+          typedef INNER_ATTRIBUTES attr_type;
+
           inline bool is() const
           {
             return bit::get<bool>(data_,31,1);
@@ -42,7 +46,11 @@ namespace tomo
           }
 
           /// Set values
-          inline void setup(uint32_t _index, base::Axis _axis, float _splitPos)
+          inline void setup(
+            uint32_t _index,
+            base::Axis _axis,
+            float _splitPos,
+            attr_type _attributes = attr_type())
           {
             bit::set(data_,true,31,1);
             bit::set(data_,_index,2,29);
@@ -59,25 +67,70 @@ namespace tomo
             return left() + 1;
           }
 
-          TBD_PROPERTY_RO(float,splitPos);
-          TBD_PROPERTY_RO(uint32_t,data);
+          TBD_PROPERTY_RO(uint32_t,data)
+          TBD_PROPERTY_RO(float,splitPos)
+          TBD_PROPERTY_REF(attr_type,attributes)
         };
 
         struct Leaf
         {
-          TBD_PROPERTY(uint32_t,begin);
-          TBD_PROPERTY(uint32_t,end);
+          typedef LEAF_ATTRIBUTES attr_type;
+          TBD_PROPERTY_REF(attr_type,attributes)
         };
 
+        Leaf& leaf()
+        {
+          TOMO_ASSERT(isLeaf());
+          return leaf_;
+        }
+
+        const Leaf& leaf() const
+        {
+          TOMO_ASSERT(isLeaf());
+          return leaf_;
+        }
+
+        Inner& inner()
+        {
+          TOMO_ASSERT(inner_.is());
+          return inner_;
+        }
+
+        Inner& inner(uint32_t _index,
+                     base::Axis _axis,
+                     float _splitPos,
+                     typename Inner::attr_type _attributes = typename Inner::attr_type())
+        {
+          inner_.setup(_index,_axis,_splitPos,_attributes);
+          return inner();
+        }
+
+        const Inner& inner() const
+        {
+          TOMO_ASSERT(inner_.is());
+          return inner_;
+        }
+
+      private:
         union
         {
           Inner inner_;
           Leaf leaf_;
         };
+
+      public:
+        TBD_PROPERTY_REF(attr_type,attributes)
       };
 
-      /// Standard kd node without any additional attributes
-      typedef NodeConcept<detail::NoAttributes> Node;
+      /// A void attribute...
+      struct EmptyAttribute {};
+      
+      /// An attribute which holds a range of indices
+      struct RangeAttribute
+      {
+        TBD_PROPERTY(uint32_t,begin)
+        TBD_PROPERTY(uint32_t,end)
+      };
     }
   }
 }

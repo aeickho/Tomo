@@ -10,6 +10,9 @@ namespace tomo
   {
     namespace kd
     {
+      /**@brief A Geometry of node describes bounds, split position and split axis of a kd node
+       *@detail Required for primitive intersection with a node
+       */
       template <typename MODEL>
       struct NodeGeometry : MODEL
       {
@@ -18,9 +21,8 @@ namespace tomo
         typedef base::Bounds<MODEL> bounds_type;
 
         NodeGeometry() {}
-
-        NodeGeometry(const bounds_type& _bounds, 
-                     const axis_type _axis, 
+        NodeGeometry(const bounds_type& _bounds,
+                     const axis_type _axis,
                      const scalar_type _splitPos) :
           bounds_(_bounds),
           axis_(_axis),

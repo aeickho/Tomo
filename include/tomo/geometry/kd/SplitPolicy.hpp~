@@ -1,0 +1,47 @@
+#pragma once
+
+namespace tomo
+{
+  namespace geometry
+  {
+    namespace kd 
+    {
+        template < 
+	  typename STATE,
+          typename SPLITAXIS,
+          typename SPLITPOS> 
+        struct SplitPolicy
+        {
+          typedef STATE state_type;
+          typedef typename STATE::node_type node_type;
+          typedef typename node_type::geometry_type node_geometry_type;
+          typedef typename node_type::attr_type attr_type;
+          typedef typename node_type::Inner::attr_type inner_attr_type;
+          typedef typename node_type::Leaf::attr_type leaf_attr_type;
+
+          bool operator()( const state_type& _state,
+                      	   node_geometry_type& _nodeGeometry)
+          {
+            return false;
+          }
+
+          attr_type nodeAttributes(state_type& _state)
+          {
+            return attr_type();
+          }
+
+          inner_attr_type innerNodeAttributes(state_type& _state)
+          {
+            return inner_attr_type();
+          }
+
+          leaf_attr_type leafNodeAttributes(state_type& _state)
+          {
+            return leaf_attr_type();
+          }
+        };
+      }
+    }
+  }
+}
+

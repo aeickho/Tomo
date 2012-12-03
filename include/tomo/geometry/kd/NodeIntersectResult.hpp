@@ -10,7 +10,7 @@ namespace tomo
       struct NodeIntersectResult
       {
       public:
-        NodeIntersectResult(bool _left = false, bool _right = false) : result_(0)
+        NodeIntersectResult(bool _left = false, bool _right = false)
         {
           set(_left,_right);
         }
@@ -38,4 +38,3 @@ namespace tomo
     }
   }
 }
-
