@@ -10,6 +10,16 @@ namespace tomo
     {
       namespace bit=tbd::bit;
 
+#define TOMO_INHERIT_NODE_TYPES(node_type)\
+      typedef typename node_type::scalar_type scalar_type;\
+      typedef typename node_type::attr_type attr_type;\
+      typedef typename node_type::Inner inner_node_type;\
+      typedef typename inner_node_type::attr_type inner_attr_type;\
+      typedef typename node_type::Leaf leaf_node_type;\
+      typedef typename leaf_node_type::attr_type leaf_attr_type;\
+      typedef typename node_type::node_geometry_type node_geometry_type;\
+      typedef typename node_geometry_type::bounds_type bounds_type;
+
       template
       <
         typename MODEL,
@@ -22,7 +32,7 @@ namespace tomo
         typedef MODEL model_type;
         typedef typename MODEL::scalar_type scalar_type;
         typedef scalar_type splitpos_type;
-        typedef NodeGeometry<model_type> geometry_type;
+        typedef NodeGeometry<model_type> node_geometry_type;
 
         typedef ATTRIBUTES attr_type;
 

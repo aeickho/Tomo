@@ -12,14 +12,12 @@ namespace tomo
         struct DominantAxis
         {
           typedef BUILD_STATE state_type;          
-          typedef typename state_type::bounds_type bounds_type;
 
-          base::Axis operator()( const bounds_type& _bounds)
+          void operator()(state_type& _state)
           {
-            return _bounds.dominantAxis();
+            _state.nodeGeometry().axis(_state.nodeGeometry().bounds().dominantAxis());
           }
         };
-
       }
     }
   }

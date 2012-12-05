@@ -22,7 +22,7 @@ namespace tomo
         typedef typename node_cntr_type::node_type node_type;
         typedef typename node_type::Inner inner_node_type;
         typedef typename node_type::Leaf leaf_node_type;
-        typedef typename node_type::geometry_type node_geometry_type;
+        typedef typename node_type::node_geometry_type node_geometry_type;
         typedef BUILD_POLICY build_policy_type;
         typedef typename build_policy_type::state_type state_type; 
         typedef typename state_type::input_type input_type;
@@ -74,7 +74,10 @@ namespace tomo
 
         void build(const input_type& _input)
         {
-          typedef typename BUILD_POLICY::state_type BuildState;
+          typedef BUILD_POLICY build_policy_type;
+          build_policy_type _buildPolicy;
+
+          typedef typename build_policy_type::state_type BuildState;
           typedef std::array<BuildState,MAX_DEPTH> BuildStack;
           int _stackPt = 0;
 
@@ -88,7 +91,7 @@ namespace tomo
           }
 
           BuildState& _state = _stack[0];
-          bounds_ = _state.bounds();
+          bounds_ = _state.nodeGeometry().bounds();
 
           /// Initialize node container
           nodes_.init(_state);
@@ -97,23 +100,29 @@ namespace tomo
           {
             while (_state.depth() < MAX_DEPTH)
             {
-              node_geometry_type _nodeGeometry;
+              std::cout << "State depth: " << _state.depth() << std::endl;
 
-              // Split node
-              if (!BUILD_POLICY()(_state,_nodeGeometry)) break;
+              // Break if node can't be split
+              if (!_buildPolicy.split(_state)) break;
 
               // Make an inner node
               inner_node_type& _innerNode = 
-                nodes_.insertInner(_state,_nodeGeometry);
+                nodes_.insertInner(
+                    _state,
+                    _buildPolicy.nodeAttributes(_state),
+                    _buildPolicy.innerNodeAttributes(_state));
 
               // Change state
               _stackPt++;
               BuildState& _right = _stack[_stackPt];
-              _state.change(_innerNode,_nodeGeometry,_right);
+              _state.change(_innerNode,_state.nodeGeometry(),_right);
             }
 
             // We have a leaf node!
-            nodes_.insertLeaf(_state);
+            nodes_.insertLeaf(
+                _state,
+                _buildPolicy.nodeAttributes(_state),
+                _buildPolicy.leafNodeAttributes(_state));
 
             // Nothing left to do
             if (_stackPt <= 0) return;

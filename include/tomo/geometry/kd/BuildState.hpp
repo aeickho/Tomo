@@ -6,12 +6,9 @@ namespace tomo
   {
     namespace kd
     {
-#define TOMO_INHERIT_STATE_TYPES() \
-        typedef typename state_base_type::node_type node_type;\
-        typedef typename state_base_type::inner_node_type inner_node_type;\
-        typedef typename state_base_type::bounds_type bounds_type;\
-        typedef typename state_base_type::scalar_type scalar_type;\
-        typedef typename state_base_type::node_geometry_type node_geometry_type;
+#define TOMO_INHERIT_STATE_TYPES(state_type) \
+        typedef typename state_type::node_type node_type;\
+        TOMO_INHERIT_NODE_TYPES(node_type)
 
       template<typename NODE>
       struct BuildState
@@ -19,10 +16,7 @@ namespace tomo
         BuildState() : depth_(0), nodeIndex_(0) {}
 
         typedef NODE node_type;
-        typedef typename node_type::Inner inner_node_type;
-        typedef typename NODE::geometry_type node_geometry_type;
-        typedef typename node_geometry_type::bounds_type bounds_type;
-        typedef typename node_type::scalar_type scalar_type;
+        TOMO_INHERIT_NODE_TYPES(node_type)
         typedef struct {} input_type;
 
         void init(const input_type& _input, unsigned _stackPos)
@@ -40,12 +34,16 @@ namespace tomo
           _stateToPush.depth(depth_);
           _stateToPush.nodeIndex(_innerNode.right());
           // Make bounds for subnodes
-          bounds_.split(_innerNode.splitPos(),_innerNode.axis(),bounds_,_stateToPush.bounds());
+          nodeGeometry_.bounds().split(
+              _innerNode.splitPos(),
+              _innerNode.axis(),
+              nodeGeometry_.bounds(),
+              _stateToPush.nodeGeometry().bounds());
         }
 
         TBD_PROPERTY(unsigned,depth)
         TBD_PROPERTY(unsigned,nodeIndex)
-        TBD_PROPERTY_REF(bounds_type,bounds)
+        TBD_PROPERTY_REF(node_geometry_type,nodeGeometry)
       };
     }
   }

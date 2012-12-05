@@ -2,13 +2,11 @@
 
 #include "Node.hpp"
 #include "BuildState.hpp"
+#include "BuildPolicy.hpp"
 
 #include "tomo/geometry/kd/Tree.hpp"
 #include "tomo/geometry/kd/StaticContainer.hpp"
-#include "tomo/geometry/kd/BuildPolicy.hpp"
 #include "tomo/geometry/kd/BuildState.hpp"
-#include "tomo/geometry/kd/split/CostFunction.hpp"
-#include "tomo/geometry/kd/split/DominantAxis.hpp"
 #include "tomo/geometry/prim/Segment.hpp"
 #include "tomo/geometry/intersect/SegmentNodePointOnly.hpp"
 
@@ -24,7 +22,14 @@ namespace tomo
         typedef Node<prim::Segment> SegmentPointNode;
 
         struct SegmentPointBuildState : BuildState<prim::Segment,SegmentPointNodeIntersection>
-          {};
+        {
+          typedef BuildState<prim::Segment,SegmentPointNodeIntersection> state_type;
+          typedef typename state_type::primitive_type primitive_type;
+          typedef typename state_type::primitive_cntr_type primitive_cntr_type;
+          typedef typename state_type::node_geometry_type node_geometry_type;
+          typedef typename state_type::bounds_type bounds_type;
+          typedef typename state_type::scalar_type scalar_type;
+        };
 
         struct SegmentSplitPos
         {
@@ -48,15 +53,13 @@ namespace tomo
         };
 
         struct SegmentPointTreeBuildPolicy :
-            BuildPolicy<
-            SegmentPointBuildState,
-            split::DominantAxis<SegmentPointBuildState>,
-            split::CostFunction<SegmentPointBuildState,SegmentSplitPos,SegmentSplitCost>
-            >
-          {};
+            BuildPolicy<SegmentPointBuildState,SegmentSplitPos,SegmentSplitCost>
+        {
+        
+        };
 
         struct SegmentPointTreeNodeContainer :
-            node::StaticNodeContainer< SegmentPointBuildState >
+            kd::StaticContainer< SegmentPointBuildState >
         {
         };
 

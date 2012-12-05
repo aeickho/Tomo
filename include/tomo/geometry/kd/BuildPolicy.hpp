@@ -6,7 +6,7 @@ namespace tomo
   {
     namespace kd
     {
-      template 
+      template
       <
         typename STATE,
         typename SPLITAXIS,
@@ -15,17 +15,27 @@ namespace tomo
       struct BuildPolicy
       {
         typedef STATE state_type;
-        typedef typename STATE::node_type node_type;
-        typedef typename node_type::geometry_type node_geometry_type;
-        typedef typename node_type::attr_type attr_type;
-        typedef typename node_type::Inner::attr_type inner_attr_type;
-        typedef typename node_type::Leaf::attr_type leaf_attr_type;
+        TOMO_INHERIT_STATE_TYPES(state_type)
 
         /// Split function
-        bool operator()( const state_type& _state,
-                         node_geometry_type& _nodeGeometry)
+        bool split(state_type& _state)
+        {
+          SPLITAXIS()(_state);
+          return SPLITPOS()(_state);
+        }
+
+        attr_type nodeAttributes(state_type& _state)
         {
         }
+
+        inner_attr_type innerNodeAttributes(state_type& _state)
+        {
+        }
+
+        leaf_attr_type leafNodeAttributes(state_type& _state)
+        {
+        }
+
       };
     }
   }
