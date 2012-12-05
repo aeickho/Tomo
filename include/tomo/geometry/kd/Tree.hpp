@@ -47,7 +47,6 @@ namespace tomo
         bool traversal(VISITOR& _visitor) const
         {
           typedef typename VISITOR::State State;
-
           State _stack[MAX_DEPTH];
           int _stackPt = -1;
 
@@ -63,6 +62,8 @@ namespace tomo
 
             _found |= _visitor.leaf();
             if (_found) return true;
+            
+            // Nothing left to do
             if (_stackPt < 0) return _found;
 
             _visitor.state(_stack[_stackPt]);
