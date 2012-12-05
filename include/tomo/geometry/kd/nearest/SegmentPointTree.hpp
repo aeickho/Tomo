@@ -1,12 +1,10 @@
 #pragma once
 
-#include "Node.hpp"
-#include "BuildState.hpp"
-#include "BuildPolicy.hpp"
-
 #include "tomo/geometry/kd/Tree.hpp"
-#include "tomo/geometry/kd/StaticContainer.hpp"
-#include "tomo/geometry/kd/BuildState.hpp"
+
+#include "BuildPolicy.hpp"
+#include "StaticContainer.hpp"
+
 #include "tomo/geometry/prim/Segment.hpp"
 #include "tomo/geometry/intersect/SegmentNodePointOnly.hpp"
 
@@ -18,68 +16,55 @@ namespace tomo
     {
       namespace nearest
       {
-        typedef intersect::SegmentNodePointOnly SegmentPointNodeIntersection;
-        typedef Node<prim::Segment> SegmentPointNode;
-
-        struct SegmentPointBuildState : BuildState<prim::Segment,SegmentPointNodeIntersection>
+        namespace
         {
-          typedef BuildState<prim::Segment,SegmentPointNodeIntersection> state_type;
-          typedef typename state_type::primitive_type primitive_type;
-          typedef typename state_type::primitive_cntr_type primitive_cntr_type;
-          typedef typename state_type::node_geometry_type node_geometry_type;
-          typedef typename state_type::bounds_type bounds_type;
-          typedef typename state_type::scalar_type scalar_type;
-        };
+          using prim::Segment;
 
-        struct SegmentSplitPos
-        {
-          typedef tomo::geometry::prim::Segment Segment;
-          typedef Segment::scalar_type scalar_type;
+          /// Defines the node with point p0 of a segment
+          typedef Node<Segment> SegmentPointNode;
 
-          scalar_type operator()(const Segment* _segment, base::Axis _axis)
+          /// Defines node-segment intersection strategy
+          typedef intersect::SegmentNodePointOnly SegmentPointNodeIntersection;
+
+          /// Defines the build state required for storing information in each build step
+          typedef BuildState<Segment,SegmentPointNodeIntersection> SegmentBuildState;
+
+          /// Defines how nodes and primitives are stored in the tree
+          typedef StaticContainer<SegmentBuildState> SegmentNodeContainer;
+
+          /// Functor for determining a split position from a primitive
+          struct SegmentSplitPos
           {
-            return _segment->p0()[_axis];
-          }
-        };
+            typedef Segment::scalar_type scalar_type;
 
-        struct SegmentSplitCost
-        {
-          typedef prim::Segment segment_type;
-          typedef segment_type::scalar_type scalar_type;
-          scalar_type operator()(const segment_type* _v)
+            scalar_type operator()(const Segment* _segment, base::Axis _axis)
+            {
+              return _segment->p0()[_axis];
+            }
+          };
+
+          /// Functor for determining the cost of each primitive when making a split
+          struct SegmentSplitCost
           {
-            return 0.25;
-          }
-        };
+            typedef Segment::scalar_type scalar_type;
 
-        struct SegmentPointTreeBuildPolicy :
-            BuildPolicy<SegmentPointBuildState,SegmentSplitPos,SegmentSplitCost>
-        {
-        
-        };
+            scalar_type operator()(const Segment* _v)
+            {
+              return 0.8;
+            }
+          };
 
-        struct SegmentPointTreeNodeContainer :
-            kd::StaticContainer< SegmentPointBuildState >
-        {
-        };
-
+          /// A BuildPolicy has state and defines how to make a split
+          typedef BuildPolicy<SegmentBuildState,
+                  SegmentSplitPos,
+                  SegmentSplitCost> SegmentBuildPolicy;
+        }
 
         /**@brief A SegmentPointTree sorts segments by their first point
-          *@detail Required for segment connecting
+          *@detail Required for segment connecting. 
+                   Each Node holds a pointer to a segment, leaf node can hold several segments
          **/
-        struct SegmentPointTree : Tree<
-            SegmentPointTreeNodeContainer,
-            SegmentPointTreeBuildPolicy
-            >
-        {
-          typedef SegmentPointTreeBuildPolicy build_policy_type;
-          typedef typename build_policy_type::state_type state_type;
-          typedef typename state_type::input_type input_type;
-          typedef typename state_type::bounds_type bounds_type;
-
-          SegmentPointTree() {}
-          SegmentPointTree(const input_type& _input) : Tree(_input) {}
-        };
+        typedef Tree<SegmentNodeContainer,SegmentBuildPolicy> SegmentPointTree;
       }
     }
   }

@@ -25,7 +25,34 @@ namespace tomo
             primitive_(nullptr) {}
 
           typedef PRIMITIVE primitive_type;
-          typedef std::vector<primitive_type*> primitive_cntr_type;
+          typedef std::vector<primitive_type> input_type;
+          typedef std::vector<const primitive_type*> primitive_cntr_type;
+
+          void init(const input_type& _input, unsigned _stackPos)
+          {
+            if (_stackPos == 0)
+            {
+              primitives_.clear();
+              primitives_.reserve(_input.size());
+              bounds_type& _bounds = state_base_type::nodeGeometry().bounds();
+              _bounds = bounds_type();
+              // Fill initial primitive list with pointers of input objects
+              // and calculate bounds on the fly
+              for (const auto& _primitive : _input)
+              {
+                _bounds.extend(_primitive.bounds());
+                primitives_.push_back(&_primitive);
+              }
+            }
+            else
+            {
+              // Reserves n / 2^p items on stack
+              // n = number of primitives (_input.size()), p = _stackPos-1
+              // Ensures that memory is allocated a priori and 
+              // memory requirements are independent from MAX_DEPTH of a kd-tree 
+              primitives_.reserve(_input.size() >> (_stackPos-1));
+            }
+          }
 
           void change(const inner_node_type& _innerNode,
                       BuildState& _stateToPush)
@@ -55,7 +82,7 @@ namespace tomo
             state_base_type::change(_innerNode,_stateToPush);
           }
 
-          TBD_PROPERTY(primitive_type*,primitive)
+          TBD_PROPERTY(const primitive_type*,primitive)
           TBD_PROPERTY_REF(primitive_cntr_type,primitives)
         };
       }

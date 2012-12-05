@@ -32,11 +32,13 @@ namespace tomo
         inner_node_type& insertInner(const state_type& _state)
         {
             nodes_.resize(nodes_.size()+2);
+            return nodes_[_state.nodeIndex()].inner();
         }
 
         leaf_node_type& insertLeaf(const state_type& _state)
         {
             nodes_.resize(nodes_.size()+1);
+            return  nodes_.back().leaf();
         }
 
         const node_type& getRoot() const

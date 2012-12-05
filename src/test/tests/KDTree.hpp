@@ -43,7 +43,6 @@ TOMO_TEST_CASE( KDTree, 1024 )
   using tomo::geometry::Model2f;
   using tomo::geometry::kd::object::SegmentTree;
   using tomo::geometry::kd::nearest::SegmentPointTree;
-  using tomo::geometry::kd::nearest::SegmentPointTreeBuildPolicy;
 
   std::vector<Segment> _segments;
   _obj.fetchSegments(_segments);
@@ -54,12 +53,12 @@ TOMO_TEST_CASE( KDTree, 1024 )
   SegmentTree _segmentTree(_segments);
   _w.drawKDTree(_segmentTree,Color("white"));
   writeImage();
-/*
+
   _w.clear();
   _w.draw(_segments,Color("red"));
   SegmentPointTree _segmentPointTree(_segments);
   _w.drawKDTree(_segmentPointTree,Color("white"));
-  writeImage();*/
+  writeImage();
 }
 TOMO_TEST_CASE_END
 

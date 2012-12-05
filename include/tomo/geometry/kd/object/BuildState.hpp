@@ -30,6 +30,7 @@ namespace tomo
             if (_stackPos == 0)
             {
               primitives_.clear();
+              // Reserve appropriate number of primitives
               primitives_.reserve(_input.size());
               bounds_type& _bounds = state_base_type::nodeGeometry().bounds();
               _bounds = bounds_type();
@@ -72,6 +73,8 @@ namespace tomo
             // Erase remaining objects at back of container
             primitives_.erase(_leftIt,primitives_.end());
             
+            // Call base-class change function
+            // to induce default state change behaviour
             state_base_type::change(_innerNode,_stateToPush);
           }
 

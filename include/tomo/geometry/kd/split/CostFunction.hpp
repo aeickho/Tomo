@@ -181,7 +181,7 @@ namespace tomo
               pos_=_pos;
             }
 
-            TBD_PROPERTY(scalar_type,pos);
+            TBD_PROPERTY_RO(scalar_type,pos);
             TBD_PROPERTY_RO(const primitive_type*,primitive);
           };
         };

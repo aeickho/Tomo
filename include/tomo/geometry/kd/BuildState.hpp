@@ -19,16 +19,20 @@ namespace tomo
         TOMO_INHERIT_NODE_TYPES(node_type)
         typedef struct {} input_type;
 
+        /**@brief Defines how to initialize the state from a certain input
+          *@param _stackPos If stackPos == 0, it setups initial state,
+          *                 otherwise, it will be state of the build stack
+          */
         void init(const input_type& _input, unsigned _stackPos)
         {
         }
 
+        /// Default behaviour of a state change when building a kdtree
         void change(inner_node_type _innerNode, BuildState& _stateToPush)
         {
+          /// Increase depth as we have split the node before
           depth_++;
           nodeIndex_= _innerNode.left();
-
-          LOG_MSG << _innerNode.splitPos();
 
           // Initialize state to be pushed
           _stateToPush.depth(depth_);

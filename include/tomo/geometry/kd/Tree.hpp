@@ -100,8 +100,6 @@ namespace tomo
           {
             while (_state.depth() < MAX_DEPTH)
             {
-              std::cout << "State depth: " << _state.depth() << std::endl;
-
               // Break if node can't be split
               if (!_buildPolicy.split(_state)) break;
 

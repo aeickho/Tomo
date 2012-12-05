@@ -12,36 +12,50 @@ namespace tomo
     {
       namespace object
       {
-        using prim::Segment;
-
-        typedef Node<Segment> SegmentNode;
-        typedef intersect::SegmentNode SegmentNodeIntersection;
-        typedef BuildState<Segment,SegmentNodeIntersection> SegmentBuildState;
-        typedef StaticContainer<SegmentBuildState> SegmentNodeContainer;
-
-        struct SegmentSplitPos
+        namespace
         {
-          typedef Segment::scalar_type scalar_type;
+          using prim::Segment;
 
-          scalar_type operator()(const Segment* _segment, base::Axis _axis)
+          /// Defines the node with a segment
+          typedef Node<Segment> SegmentNode;
+
+          /// Defines node-segment intersection strategy
+          typedef intersect::SegmentNode SegmentNodeIntersection;
+
+          /// Defines the build state required for storing information in each build step
+          typedef BuildState<Segment,SegmentNodeIntersection> SegmentBuildState;
+
+          /// Defines how nodes and primitives are stored in the tree
+          typedef StaticContainer<SegmentBuildState> SegmentNodeContainer;
+
+          /// Functor for determining a split position from a primitive
+          struct SegmentSplitPos
           {
-            return _segment->p0()[_axis];
-          }
-        };
+            typedef Segment::scalar_type scalar_type;
 
-        struct SegmentSplitCost
-        {
-          typedef Segment::scalar_type scalar_type;
-          scalar_type operator()(const Segment* _v)
+            scalar_type operator()(const Segment* _segment, base::Axis _axis)
+            {
+              return _segment->p0()[_axis];
+            }
+          };
+
+          /// Functor for determining the cost of each primitive when making a split
+          struct SegmentSplitCost
           {
-            return 0.333;
-          }
-        };
+            typedef Segment::scalar_type scalar_type;
+            scalar_type operator()(const Segment* _v)
+            {
+              return 0.333;
+            }
+          };
 
-        typedef BuildPolicy<SegmentBuildState,
-                            SegmentSplitPos,
-                            SegmentSplitCost> SegmentBuildPolicy;
+          /// A BuildPolicy has state and defines how to make a split
+          typedef BuildPolicy<SegmentBuildState,
+                  SegmentSplitPos,
+                  SegmentSplitCost> SegmentBuildPolicy;
+        }
 
+        /// A Tree which holds pointers to segments in its leaves
         typedef Tree<SegmentNodeContainer,SegmentBuildPolicy> SegmentTree;
       }
     }

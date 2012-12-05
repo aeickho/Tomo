@@ -102,7 +102,6 @@ namespace tomo
 
         Inner& inner()
         {
-          TOMO_ASSERT(inner_.is());
           return inner_;
         }
 
