@@ -1,6 +1,7 @@
 #pragma once
 
 #include "tomo/geometry/kd/nearest/SegmentPointTree.hpp"
+#include "tomo/geometry/kd/object/SegmentTree.hpp"
 
 #include "../generators/Generator.hpp"
 #include "../generators/create/circleWith3Holes.hpp"
@@ -40,6 +41,7 @@ TOMO_TEST_CASE( KDTree, 1024 )
   using tomo::geometry::base::Point2f;
   using tomo::geometry::prim::Segment;
   using tomo::geometry::Model2f;
+  using tomo::geometry::kd::object::SegmentTree;
   using tomo::geometry::kd::nearest::SegmentPointTree;
   using tomo::geometry::kd::nearest::SegmentPointTreeBuildPolicy;
 
@@ -49,15 +51,15 @@ TOMO_TEST_CASE( KDTree, 1024 )
   _w.draw(_segments,Color("red"));
   writeImage();
 
-/*  SegmentTree _segmentTree(_segments);
+  SegmentTree _segmentTree(_segments);
   _w.drawKDTree(_segmentTree,Color("white"));
   writeImage();
-*/
+/*
   _w.clear();
   _w.draw(_segments,Color("red"));
   SegmentPointTree _segmentPointTree(_segments);
   _w.drawKDTree(_segmentPointTree,Color("white"));
-  writeImage();
+  writeImage();*/
 }
 TOMO_TEST_CASE_END
 

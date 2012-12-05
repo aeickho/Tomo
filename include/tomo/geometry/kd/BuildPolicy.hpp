@@ -26,22 +26,6 @@ namespace tomo
           SPLITAXIS()(_state);
           return SPLITPOS()(_state);
         }
-
-        /// Defines how to determine node's attributes from build state
-        attr_type nodeAttributes(state_type& _state)
-        {
-        }
-
-        /// Defines how to determine inner node's attributes from build state
-        inner_attr_type innerNodeAttributes(state_type& _state)
-        {
-        }
-
-        /// Defines how to determine leaf node's attributes from build state
-        leaf_attr_type leafNodeAttributes(state_type& _state)
-        {
-        }
-
       };
     }
   }

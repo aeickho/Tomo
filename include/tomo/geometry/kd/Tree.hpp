@@ -106,23 +106,16 @@ namespace tomo
               if (!_buildPolicy.split(_state)) break;
 
               // Make an inner node
-              inner_node_type& _innerNode = 
-                nodes_.insertInner(
-                    _state,
-                    _buildPolicy.nodeAttributes(_state),
-                    _buildPolicy.innerNodeAttributes(_state));
+              inner_node_type& _innerNode = nodes_.insertInner(_state);
 
               // Change state
               _stackPt++;
               BuildState& _right = _stack[_stackPt];
-              _state.change(_innerNode,_state.nodeGeometry(),_right);
+              _state.change(_innerNode,_right);
             }
 
             // We have a leaf node!
-            nodes_.insertLeaf(
-                _state,
-                _buildPolicy.nodeAttributes(_state),
-                _buildPolicy.leafNodeAttributes(_state));
+            nodes_.insertLeaf(_state);
 
             // Nothing left to do
             if (_stackPt <= 0) return;

@@ -12,12 +12,12 @@ namespace tomo
         typedef Segment::point_type point_type;
         typedef Segment::vec_type vec_type;
         typedef Segment::scalar_type scalar_type;
-        typedef kd::NodeGeometry<Segment::model_type> NodeGeometry;
+        typedef kd::NodeGeometry<Segment::model_type> node_geometry_type;
 
         kd::NodeIntersectResult operator()(const Segment& _segment,
-                                           const NodeGeometry& _node)
+                                           const node_geometry_type& _node)
         {
-          TOMO_NOT_TESTED();
+         // TOMO_NOT_TESTED();
 
           const base::Axis& _axis = _node.axis();
           const scalar_type& _splitPos = _node.splitPos();
@@ -33,7 +33,7 @@ namespace tomo
             return kd::NodeIntersectResult(false,true);
           } else
           {
-            kd::NodeIntersectResult _result;
+/*            kd::NodeIntersectResult _result;
             base::Axis _orthAxis = base::Axis(1 - int(_axis));
 
             /// Split plane points
@@ -51,7 +51,7 @@ namespace tomo
 
             if ((_dot0 <  0 && _dot1 >= 0) ||
                 (_dot0 >= 0 && _dot1 <  0)) return kd::NodeIntersectResult(true,true);
-
+*/
             return kd::NodeIntersectResult(true,true);
           }
         }

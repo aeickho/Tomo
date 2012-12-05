@@ -23,12 +23,12 @@ namespace tomo
         {
         }
 
-        void change(const inner_node_type& _innerNode,
-                    const node_geometry_type& _nodeGeometry,
-                    BuildState& _stateToPush)
+        void change(inner_node_type _innerNode, BuildState& _stateToPush)
         {
           depth_++;
           nodeIndex_= _innerNode.left();
+
+          LOG_MSG << _innerNode.splitPos();
 
           // Initialize state to be pushed
           _stateToPush.depth(depth_);

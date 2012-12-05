@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Node.hpp"
 #include "tomo/geometry/kd/BuildState.hpp"
 
 namespace tomo
@@ -12,13 +13,12 @@ namespace tomo
       {
         template
         <
-          typename NODE,
           typename PRIMITIVE,
           typename PRIM_NODE_INTERSECTION
         >
-        struct BuildState : kd::BuildState<NODE>
+        struct BuildState : kd::BuildState<Node<PRIMITIVE>>
         {
-          typedef kd::BuildState<NODE> state_base_type;
+          typedef kd::BuildState<Node<PRIMITIVE>> state_base_type;
           TOMO_INHERIT_STATE_TYPES(state_base_type)
 
           typedef PRIMITIVE primitive_type;
@@ -35,10 +35,10 @@ namespace tomo
               _bounds = bounds_type();
               // Fill initial primitive list with pointers of input objects
               // and calculate bounds on the fly
-              for (auto it = _input.begin() ; it != _input.end() ; ++it )
+              for (const auto& _primitive : _input)
               {
-                _bounds.extend(it->bounds());
-                primitives_.push_back(&(*it));
+                _bounds.extend(_primitive.bounds());
+                primitives_.push_back(&_primitive);
               }
             }
             else
@@ -52,26 +52,27 @@ namespace tomo
           }
 
           void change(const inner_node_type& _innerNode,
-                      const node_geometry_type& _nodeGeometry,
                       BuildState& _stateToPush)
           {
-            state_base_type::change(_innerNode,_nodeGeometry,_stateToPush);
             _stateToPush.primitives().clear();
 
             // Insert objects of current state into left and right subnode
-            auto it = primitives_.begin(), _leftIt = it;
-            for (; it != primitives_.end() ; ++it)
+            auto _leftIt = primitives_.begin();
+            for (auto& _primitive : primitives_) 
             {
-              NodeIntersectResult _result = PRIM_NODE_INTERSECTION()(*it,_nodeGeometry);
-              if (_result.right()) _stateToPush.primitives().push_back(*it);
+              NodeIntersectResult _result = 
+                PRIM_NODE_INTERSECTION()(*_primitive,state_base_type::nodeGeometry());
+              if (_result.right()) _stateToPush.primitives().push_back(_primitive);
               if (_result.left())
               {
-                *_leftIt = *it;
+                *_leftIt = _primitive;
                 ++_leftIt;
               }
             }
             // Erase remaining objects at back of container
             primitives_.erase(_leftIt,primitives_.end());
+            
+            state_base_type::change(_innerNode,_stateToPush);
           }
 
           TBD_PROPERTY_REF(primitive_cntr_type,primitives)
