@@ -7,6 +7,7 @@
 #include <boost/static_assert.hpp>
 #include <sstream>
 #include <tbd/log.h>
+#include <array>
 
 #include <boost/serialization/base_object.hpp>
 
@@ -31,19 +32,20 @@ namespace tomo
       {
         TOMO_MODEL_TYPES(MODEL);
         typedef scalar_type value_type;
+        typedef std::array<scalar_type,dimensions_> array_type;
 
         /// Base constructor, all values are initially set to zero
         Coords()
         {
-          TOMO_FOREACH_DIM(i) a_[i] = 0;
+          for (auto& _a : a_) _a = 0;
         }
         Coords( Coords& _coords )
         {
-          TOMO_FOREACH_DIM(i) a_[i] = _coords[i];
+          a_ = _coords.a_;
         }
         Coords( const Coords& _coords )
         {
-          TOMO_FOREACH_DIM(i) a_[i] = _coords[i];
+          a_ = _coords.a_;
         }
         Coords( scalar_type _x, scalar_type _y)
         {
@@ -60,7 +62,7 @@ namespace tomo
 
         inline void operator()(const Coords _coords)
         {
-          TOMO_FOREACH_DIM(i) a_[i] = _coords[i];
+          a_ = _coords.a_;
         }
         inline void operator()(scalar_type _x, scalar_type _y)
         {
@@ -166,7 +168,7 @@ namespace tomo
 
         Coords vectorize(const scalar_type& _s)
         {
-          TOMO_FOREACH_DIM(i) a_[i] = _s;
+          for (auto& _a : a_) _a = _s;
           return *this;
         }
 
@@ -178,7 +180,6 @@ namespace tomo
           ss << a_[i] << ((i < dimensions_) ? "," : ")");
           return ss.str();
         }
-
 
         friend bool operator == ( const Coords& _a, const Coords& _b)
         {
@@ -193,10 +194,18 @@ namespace tomo
           return !(_a == _b);
         }
 
-
       protected:
         /// Array to store coordinate values
-        scalar_type a_[dimensions_];
+        array_type a_;
+          
+        friend class boost::serialization::access; 
+        
+        template<class ARCHIVE>
+        void serialize( ARCHIVE& _ar, const unsigned int _fileVersion )
+        {
+          for (auto& a : a_) _ar & a;
+
+        };
       };
 
 #define COORDS(C) C.x(),C.y(),C.z()

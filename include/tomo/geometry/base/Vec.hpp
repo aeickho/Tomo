@@ -42,7 +42,7 @@ namespace tomo
         vector_type& normalize()
         {
           scalar_type l = length();
-          TOMO_FOREACH_DIM(i) this->a_[i] /= l;
+          for(auto& a : Vec::a_) a /= l;
           return *this;
         }
         vector_type 	     normalized() const
@@ -73,7 +73,7 @@ namespace tomo
         {
           scalar_type sum = 0;
           TOMO_FOREACH_DIM(i)
-          sum += _left[i] * _right[i];
+            sum += _left[i] * _right[i];
           return sum;
         }
 
@@ -84,11 +84,11 @@ namespace tomo
           Axis _domAxis = X;
           scalar_type _max = 0.0;
           //LOG_MSG << fmt("% %") % Vec::a_[0] % Vec::a_[1]; 
+          
           TOMO_FOREACH_DIM(i)
           {
             scalar_type _abs = Vec::a_[i];
             if (_abs < 0) _abs = -_abs;
-
             if (_abs > _max)
             {
               _max = _abs;
@@ -102,19 +102,19 @@ namespace tomo
         Vec operator- () const
         {
           Vec v(*this);
-          TOMO_FOREACH_DIM(i) v[i] = -v[i];
+          for(auto& a : v.a_) a = -a;
           return v;
         }
         void operator *= ( scalar_type f )
         {
-          TOMO_FOREACH_DIM(i) this->a_[i] *= f;
+          for(auto& a : this->a_) a *= f;
         }
 
-        friend Vec operator*( const Vec& a, const scalar_type f )
+        friend Vec operator*( const Vec& _a, const scalar_type f )
         {
-          Vec v(a);
-          TOMO_FOREACH_DIM(i) v[i] *= f;
-          return v;
+          Vec _v(_a);
+          _v *= f;
+          return _v;
         }
         friend Vec operator*( const scalar_type f, const Vec& a )
         {

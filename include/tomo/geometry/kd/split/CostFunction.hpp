@@ -147,18 +147,13 @@ namespace tomo
               {
                 return ((_splitPos - min_)  * _leftCost + (max_ - _splitPos) * _rightCost);
               }
-              scalar_type min_;
-              scalar_type max_;
-              scalar_type invSize_;
-
+              scalar_type min_, max_, invSize_;
             } _buckets(_state.nodeGeometry().bounds(),
                        _state.nodeGeometry().axis());
 
             /// Insert split candidates into buckets
             for ( const primitive_type* _primitive : _state.primitives() )
-            {
               _buckets.insert(_primitive);
-            }
 
             const SplitCandidate* _bucketSplitCandidate = _buckets.splitCandidate();
             if (!_bucketSplitCandidate) return false;

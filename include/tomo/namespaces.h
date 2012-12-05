@@ -12,13 +12,25 @@ namespace tomo
     /// Namespace for KDTree and associated objects
     namespace kd
     {
-      /// Contains visitor patters for kdtree traversal 
-      namespace visitor
+      /// Specializations of a kdtree whose leaves contain objects 
+      namespace object
       {
       }
 
-      /// Contains policies how to build the kdtree
-      namespace build
+      /**@brief Specializations of a kdtree for finding nearest objects
+       * @detail Leaves and inner nodes contain pointer to primitives
+       */
+      namespace nearest
+      {
+      }
+
+      /// Specializations of a kdtree containing a data coeffient in its leaves
+      namespace coeff
+      {
+      }
+
+      /// Contains policies how to split (subdivide) a node of kdtree
+      namespace split
       {
       }
     }
@@ -40,6 +52,11 @@ namespace tomo
 
     /// Functors to determine an intersection between two primitives
     namespace intersect
+    {
+    }
+
+    /// Functors for miscellaneous geometric algorithms
+    namespace algorithm
     {
     }
   }
