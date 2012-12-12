@@ -1,6 +1,8 @@
 #pragma once
 
 #include <array>
+#include "pos.hpp"
+#include "Candidate.hpp"
 
 namespace tomo
 {
@@ -12,11 +14,10 @@ namespace tomo
       {
         template
         <
-          typename BUILD_STATE,
-          typename PRIM_SPLITPOS,
-          typename PRIM_INTERSECT_COST,
-          size_t N_BUCKETS = 8
-        >
+        typename BUILD_STATE,
+                 typename PRIM_INTERSECT_COST,
+                 size_t N_BUCKETS = 8
+                 >
         struct CostFunction
         {
           typedef BUILD_STATE state_type;
@@ -30,6 +31,8 @@ namespace tomo
 
           bool operator()(state_type& _state)
           {
+            typedef Candidate<primitive_type> SplitCandidate;
+            
             // With this bucket structure, we can achieve building a good kdtree within O(n*log n)
             struct Buckets
             {
@@ -77,7 +80,7 @@ namespace tomo
 
               void insert(const primitive_type* _primitive)
               {
-                scalar_type _splitPos = PRIM_SPLITPOS()(_primitive,axis_);
+                scalar_type _splitPos = split::pos(*_primitive,axis_);
                 Bucket* _bucket = bucketBySplitPos(_splitPos);
                 if (!_bucket) return;
 
@@ -87,7 +90,7 @@ namespace tomo
 
               const SplitCandidate* splitCandidate()
               {
-                const SplitCandidate* _bestCandidate = NULL;
+                const SplitCandidate* _bestCandidate = nullptr;
                 scalar_type _minSplitCost = INF;
                 scalar_type _overallCost = 0;
 
@@ -124,7 +127,7 @@ namespace tomo
                       _bestCandidate = &_bucket.right();
                     }
                   }
-                  if (_minSplitCost < _minCost) return NULL;
+                  if (_minSplitCost < _minCost) return nullptr;
                 }
 
                 return _bestCandidate;
@@ -165,25 +168,6 @@ namespace tomo
           }
 
           TBD_PROPERTY(const primitive_type*,primitive)
-
-        private:
-          struct SplitCandidate
-          {
-            SplitCandidate(scalar_type _pos = INF,
-                           const primitive_type* _primitive = nullptr) :
-              pos_(_pos),
-              primitive_(_primitive)
-            {}
-
-            void put(scalar_type _pos, const primitive_type* _primitive)
-            {
-              primitive_=_primitive;
-              pos_=_pos;
-            }
-
-            TBD_PROPERTY_RO(scalar_type,pos);
-            TBD_PROPERTY_RO(const primitive_type*,primitive);
-          };
         };
       }
     }

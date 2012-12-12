@@ -45,6 +45,8 @@ namespace tomo
             TBD_PROPERTY(const node_type*,node);
           };
 
+          typedef State state_type;
+
           TreeDrawVisitor(const KDTREE& _kdTree, Wrapper& _wrapper, Magick::Color _color) :
             color_(_color),
             wrapper_(_wrapper),
@@ -116,11 +118,11 @@ namespace tomo
         };
 
         template <typename KDTREE>
-        void drawKDTree(const KDTREE& _kdTree,
+        void drawKDTree(KDTREE& _kdTree,
                   Magick::Color _color)
         {
           TreeDrawVisitor< KDTREE > _visitor(_kdTree,*this,_color);
-          _kdTree.traversal(_visitor);
+          traversal(_visitor,_kdTree);
         }
 
         template <typename PRIMITIVE>

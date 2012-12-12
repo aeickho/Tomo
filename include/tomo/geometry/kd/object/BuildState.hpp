@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Node.hpp"
+#include "nodeIntersection.hpp"
 #include "tomo/geometry/kd/BuildState.hpp"
 
 namespace tomo
@@ -13,8 +14,7 @@ namespace tomo
       {
         template
         <
-          typename PRIMITIVE,
-          typename PRIM_NODE_INTERSECTION
+          typename PRIMITIVE
         >
         struct BuildState : kd::BuildState<Node<PRIMITIVE>>
         {
@@ -62,7 +62,7 @@ namespace tomo
             for (auto& _primitive : primitives_) 
             {
               NodeIntersectResult _result = 
-                PRIM_NODE_INTERSECTION()(*_primitive,state_base_type::nodeGeometry());
+                nodeIntersection(*_primitive,state_base_type::nodeGeometry());
               if (_result.right()) _stateToPush.primitives().push_back(_primitive);
               if (_result.left())
               {

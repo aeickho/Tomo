@@ -22,24 +22,13 @@ namespace tomo
          *@detail Moreover, a number of objects can be stored in a leaf node.
         **/
         template<typename PRIMITIVE>
-        struct Node : 
-          kd::Node<
-            typename PRIMITIVE::model_type,
-            PrimitivePtrAttribute<PRIMITIVE>,
-            EmptyAttribute,
-            RangeAttribute
-          >
-        {
-          typedef kd::Node<
-            typename PRIMITIVE::model_type,
-            PrimitivePtrAttribute<PRIMITIVE>,
-            EmptyAttribute,
-            RangeAttribute> node_base_type;
-
-          TOMO_INHERIT_NODE_TYPES(node_base_type)
-          typedef PRIMITIVE primitive_type;
-          typedef typename primitive_type::model_type model_type;
-        };
+        using Node = kd::Node
+        <
+          typename PRIMITIVE::model_type,
+          PrimitivePtrAttribute<PRIMITIVE>,
+          EmptyAttribute,
+          RangeAttribute
+        >;
       }
     }
   }

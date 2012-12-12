@@ -13,10 +13,11 @@ Download the boost files and put them into the ../boost_1_52_0 folder relative t
 You will need Clang 3.1.
 Get the latest LLVM PPA:
 
-
+sudo apt-add-repository ppa:eudoxos/llvm-3.1
+sudo apt-get update
 
 Go to your command line and enter the following commands:
-$ sudo apt-get install libgl-dev freeglut3-dev libmagick++-dev 
+$ sudo apt-get install clang libgl-dev freeglut3-dev libmagick++-dev 
 $ cd ../boost_1_52_0
 $ ./bootstrap.sh
 $ cd ../Tomo

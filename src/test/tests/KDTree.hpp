@@ -1,7 +1,8 @@
 #pragma once
 
-#include "tomo/geometry/kd/nearest/SegmentPointTree.hpp"
-#include "tomo/geometry/kd/object/SegmentTree.hpp"
+#include "tomo/geometry/kd/nearest/Tree.hpp"
+#include "tomo/geometry/kd/object/Tree.hpp"
+#include "tomo/geometry/kd/nearest/Visitor.hpp"
 
 #include "../generators/Generator.hpp"
 #include "../generators/create/circleWith3Holes.hpp"
@@ -41,8 +42,7 @@ TOMO_TEST_CASE( KDTree, 1024 )
   using tomo::geometry::base::Point2f;
   using tomo::geometry::prim::Segment;
   using tomo::geometry::Model2f;
-  using tomo::geometry::kd::object::SegmentTree;
-  using tomo::geometry::kd::nearest::SegmentPointTree;
+  using namespace tomo::geometry::kd;
 
   std::vector<Segment> _segments;
   _obj.fetchSegments(_segments);
@@ -50,14 +50,25 @@ TOMO_TEST_CASE( KDTree, 1024 )
   _w.draw(_segments,Color("red"));
   writeImage();
 
-  SegmentTree _segmentTree(_segments);
+  object::Tree<Segment> _segmentTree(_segments);
   _w.drawKDTree(_segmentTree,Color("white"));
   writeImage();
 
   _w.clear();
   _w.draw(_segments,Color("red"));
-  SegmentPointTree _segmentPointTree(_segments);
+  nearest::Tree<Segment> _segmentPointTree(_segments);
   _w.drawKDTree(_segmentPointTree,Color("white"));
+  writeImage();
+
+  _w.clear();
+  _w.draw(_segments,Color("red"));
+
+  Segment& _segment = _segments[_segments.size()/2];
+  nearest::Nearest<Segment> _nearest(_segmentPointTree);
+  _nearest.find(_segment);
+  const Segment* _nearestSegment = _nearest.container().getNearest();
+  _w.draw(_segment,Color("yellow"));
+  _w.draw(*_nearestSegment,Color("white"));
   writeImage();
 }
 TOMO_TEST_CASE_END

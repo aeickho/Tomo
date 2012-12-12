@@ -11,17 +11,17 @@ namespace tomo
       namespace object
       {
         /// A StaticContainer holds nodes, primitive lists and defines how setup node attributes
-        template<typename BUILD_STATE>
+        template<typename PRIMITIVE>
         struct StaticContainer : 
-          kd::StaticContainer<BUILD_STATE>
+          kd::StaticContainer<BuildState<PRIMITIVE>>
         {
-          typedef BUILD_STATE state_type;
+          typedef PRIMITIVE primitive_type;
+          typedef BuildState<PRIMITIVE> state_type;
           TOMO_INHERIT_STATE_TYPES(state_type)
 
           typedef kd::StaticContainer<state_type> base_cntr_type;
 
-          /// An object::StaticContainer stores primitive pointers, hence the typedefs
-          typedef typename state_type::primitive_type primitive_type;
+          /// An object::StaticContainer stores primitive pointers, hence the typedef
           typedef typename state_type::primitive_cntr_type primitive_cntr_type;
 
           void init(const state_type& _state)

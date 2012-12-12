@@ -1,5 +1,6 @@
 #pragma once
 
+#include "BuildState.hpp"
 #include "tomo/geometry/kd/StaticContainer.hpp"
 
 namespace tomo
@@ -11,16 +12,19 @@ namespace tomo
       namespace nearest 
       {
         /// A StaticContainer holds nodes, primitive lists and defines how setup node attributes
-        template<typename BUILD_STATE>
+        template<typename PRIMITIVE>
         struct StaticContainer : 
-          kd::StaticContainer<BUILD_STATE>
+          kd::StaticContainer<BuildState<PRIMITIVE>>
         {
-          typedef BUILD_STATE state_type;
+          typedef BuildState<PRIMITIVE> state_type;
           TOMO_INHERIT_STATE_TYPES(state_type)
 
           typedef kd::StaticContainer<state_type> base_cntr_type;
           typedef typename state_type::primitive_type primitive_type;
           typedef typename state_type::primitive_cntr_type primitive_cntr_type;
+
+          typedef typename primitive_cntr_type::const_iterator prim_const_iterator;
+          typedef typename primitive_cntr_type::iterator prim_iterator;
 
           void init(const state_type& _state)
           {
@@ -66,6 +70,14 @@ namespace tomo
                                _state.primitives().begin(),
                                _state.primitives().end());
             return _leaf;
+          }
+
+          void leafRange(const leaf_node_type& _leaf, 
+                         prim_const_iterator& _begin,
+                         prim_const_iterator& _end) const
+          {
+            _begin = primitives_.begin() + _leaf.attributes().begin();
+            _end = primitives_.begin() + _leaf.attributes().end();
           }
           
         private:

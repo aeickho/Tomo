@@ -18,6 +18,7 @@ namespace tomo
       struct Tree
       {        
         /// Node container types
+        typedef Tree<NODE_CONTAINER,BUILD_POLICY,MAX_DEPTH> type;
         typedef NODE_CONTAINER node_cntr_type;
         typedef typename node_cntr_type::node_type node_type;
         typedef typename node_type::Inner inner_node_type;
@@ -43,11 +44,11 @@ namespace tomo
         }
 
         /// Iterative traversal with visitor
-        template<typename VISITOR>
-        bool traversal(VISITOR& _visitor) const
+        template<typename VISITOR> friend
+        bool traversal(VISITOR& _visitor, type& _kdTree)
         {
-          typedef typename VISITOR::State State;
-          State _stack[MAX_DEPTH];
+          typedef typename VISITOR::state_type state_type;
+          std::array<state_type,MAX_DEPTH> _stack;
           int _stackPt = -1;
 
           if (!_visitor.root()) return false;
