@@ -18,7 +18,7 @@ namespace tomo
         template<>
         float splitCost(const Segment* _s)
         {
-          return 0.8;
+          return 1.0;
         }
 
         using prim::Vertex2f;

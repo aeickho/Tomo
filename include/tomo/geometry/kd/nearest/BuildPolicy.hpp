@@ -4,6 +4,7 @@
 #include "splitCost.hpp"
 #include "tomo/geometry/kd/BuildPolicy.hpp"
 #include "tomo/geometry/kd/split/CostFunction.hpp"
+#include "tomo/geometry/kd/split/Half.hpp"
 #include "tomo/geometry/kd/split/DominantAxis.hpp"
 
 namespace tomo
@@ -33,6 +34,8 @@ namespace tomo
 
           typedef split::DominantAxis<state_type> splitaxis_type;
           typedef split::CostFunction<state_type,SplitCost> splitpos_type;
+
+          //typedef split::Half<state_type> splitpos_type;
 
           bool split(state_type& _state)
           {

@@ -2,7 +2,8 @@
 
 #include "Node.hpp"
 #include "nodeIntersection.hpp"
-#include "tomo/geometry/kd/object/BuildState.hpp"
+#include "tomo/geometry/kd/split/pos.hpp"
+#include "tomo/geometry/kd/BuildState.hpp"
 
 namespace tomo
 {
@@ -11,10 +12,8 @@ namespace tomo
     namespace kd
     {
       namespace nearest
-      {
-        template<
-          typename PRIMITIVE
-        >
+      {        
+        template<typename PRIMITIVE>
         struct BuildState: kd::BuildState<Node<PRIMITIVE>>
         {
           typedef kd::BuildState<Node<PRIMITIVE>> state_base_type;
@@ -30,6 +29,7 @@ namespace tomo
 
           void init(const input_type& _input, unsigned _stackPos)
           {
+            primitive(nullptr);
             if (_stackPos == 0)
             {
               primitives_.clear();
@@ -40,7 +40,9 @@ namespace tomo
               // and calculate bounds on the fly
               for (const auto& _primitive : _input)
               {
-                _bounds.extend(_primitive.bounds());
+                typename primitive_type::point_type 
+                  _p(split::pos(_primitive,base::X),split::pos(_primitive,base::Y));
+                _bounds.extend(_p);
                 primitives_.push_back(&_primitive);
               }
             }
@@ -65,7 +67,7 @@ namespace tomo
             auto it = _primitives.begin(), _leftIt = it;
             for (; it != _primitives.end() ; ++it)
             {
-              if ((*it) == primitive_ && primitive_ != nullptr) continue;
+  //            if ((*it) == primitive_ && primitive_ != nullptr) continue;
 
               NodeIntersectResult _result = 
                 nearest::nodeIntersection(**it,state_base_type::nodeGeometry());
@@ -78,13 +80,15 @@ namespace tomo
             }
             // Erase remaining objects at back of container
             _primitives.erase(_leftIt,_primitives.end());
-            
+        
             state_base_type::change(_innerNode,_stateToPush);
           }
 
+          
           TBD_PROPERTY(const primitive_type*,primitive)
           TBD_PROPERTY_REF(primitive_cntr_type,primitives)
         };
+        
       }
     }
   }

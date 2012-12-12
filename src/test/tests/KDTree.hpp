@@ -22,7 +22,7 @@ namespace tomo
         {
           using geometry::base::Point2f;
           ObjectList _objs;
-          _objs.push_back(create::circleWith3Holes(Point2f(0.5,0.5),0.4,32));
+          _objs.push_back(create::circleWith3Holes(Point2f(0.5,0.5),0.4,7));
           return _objs;
         }
 
@@ -36,7 +36,7 @@ namespace tomo
 }
 
 
-TOMO_TEST_CASE( KDTree, 1024 )
+TOMO_TEST_CASE( KDTree, 512 )
 {
   using tomo::geometry::base::Vec2f;
   using tomo::geometry::base::Point2f;
@@ -60,16 +60,27 @@ TOMO_TEST_CASE( KDTree, 1024 )
   _w.drawKDTree(_segmentPointTree,Color("white"));
   writeImage();
 
+  int i = 0;
+  for (Segment& _segment : _segments)
+  {
   _w.clear();
   _w.draw(_segments,Color("red"));
+  _w.drawEndings(false);
 
-  Segment& _segment = _segments[_segments.size()/2];
+  //Segment& _segment = _segments[1];
   nearest::Nearest<Segment> _nearest(_segmentPointTree);
   _nearest.find(_segment);
   const Segment* _nearestSegment = _nearest.container().getNearest();
+
+  std::cout << i << ": Nearest distance: " << _nearest.container().minDistance() << std::endl;
+  std::cout << i << ": Distance to next seg: " << algorithm::sqrDistance(_segment,_segments[(i+1) % _segments.size()]) << std::endl;
+
   _w.draw(_segment,Color("yellow"));
-  _w.draw(*_nearestSegment,Color("white"));
+
+  if (_nearestSegment) _w.draw(*_nearestSegment,Color("white"));
   writeImage();
+  ++i;
+  }
 }
 TOMO_TEST_CASE_END
 

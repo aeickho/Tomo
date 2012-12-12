@@ -23,7 +23,7 @@ namespace tomo
             const base::Point2f& _p,
             const kd::NodeGeometry<Point2f::model_type> _n)
         {
-          return kd::NodeIntersectResult(_p[_n.axis()] <= _n.splitPos(),
+          return kd::NodeIntersectResult(_p[_n.axis()] <  _n.splitPos(),
                                          _p[_n.axis()] >= _n.splitPos());
         }
 

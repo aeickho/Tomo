@@ -58,7 +58,7 @@ namespace tomo
           {
             while (!_visitor.state().node()->isLeaf())
             {
-              _stackPt += _visitor.inner(_stack[_stackPt+1]);
+               _stackPt += _visitor.inner(_stack[_stackPt+1]);
             }
 
             _found |= _visitor.leaf();

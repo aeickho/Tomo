@@ -25,12 +25,7 @@ namespace tomo
           };
 
           template<typename PRIMITIVE>
-          struct NearestContainerBase
-          {
-          };
-
-          template<typename PRIMITIVE>
-          struct NearestContainer : NearestContainerBase<PRIMITIVE>
+          struct NearestContainer 
           {
             typedef PRIMITIVE primitive_type;
             typedef typename primitive_type::scalar_type scalar_type;
@@ -65,7 +60,7 @@ namespace tomo
 
           /// A container which can hold several nearest primitives
           template<typename PRIMITIVE>
-          struct NearestContainerMulti : NearestContainerBase<PRIMITIVE>
+          struct NearestContainerMulti 
           {
             typedef PRIMITIVE primitive_type;
             typedef typename primitive_type::scalar_type scalar_type;
@@ -150,29 +145,31 @@ namespace tomo
 
         /// Nearest visitor base concept
         template<typename NEAREST_CONTAINER>
-        struct Visitor :
+        struct Visitor/* :
             kd::Visitor<
             Tree<typename NEAREST_CONTAINER::primitive_type>,
-            VisitorState<typename NEAREST_CONTAINER::primitive_type>>
+            VisitorState<typename NEAREST_CONTAINER::primitive_type>>*/
         {
           typedef NEAREST_CONTAINER cntr_type;
           typedef typename cntr_type::primitive_type primitive_type; 
           typedef VisitorState<primitive_type> state_type;
           typedef Tree<primitive_type> kdtree_type;
-          typedef kd::Visitor<kdtree_type,state_type> base_visitor_type;
           typedef typename kdtree_type::bounds_type bounds_type;
           typedef typename primitive_type::scalar_type scalar_type;
           
-          Visitor(kdtree_type& _kdTree) : base_visitor_type(_kdTree)
+          Visitor(kdtree_type& _kdTree) : kdTree_(_kdTree)
           {
+            state_.node(&_kdTree.nodes().getRoot());
+            state_.bounds(_kdTree.bounds());
           }
 
           void find(primitive_type& _primitive)
           {
             primitive(&_primitive);
-            traversal(*this,base_visitor_type::kdTree());
+            traversal(*this,kdTree_);
           }
 
+          TBD_PROPERTY_REF(state_type,state)
           TBD_PROPERTY_REF_RO(cntr_type,container)
           TBD_PROPERTY_REF(primitive_type*,primitive)
 
@@ -181,55 +178,52 @@ namespace tomo
           bool root()
           {
             TOMO_ASSERT(primitive_);
-            base_visitor_type::state().node(&base_visitor_type::kdTree().nodes().getRoot());
-            base_visitor_type::state().bounds(base_visitor_type::kdTree().bounds());
             container_.clear();
             return true;
+          }
+
+          void traverseLeft(state_type& _state, bounds_type& _bounds)
+          {
+            _state.node(&kdTree_.nodes().getNode(state_.node()->inner().left()));
+            _state.bounds(_bounds);
+          }
+
+          void traverseRight(state_type& _state, bounds_type& _bounds)
+          {
+            _state.node(&kdTree_.nodes().getNode(state_.node()->inner().right()));
+            _state.bounds(_bounds);
           }
 
           /// Inner node traversal
           bool inner(state_type& _pushedState)
           {
-            bounds_type _left, _right;
-
-            state_type& _state = base_visitor_type::state();
-
             /// Split current node's bounds in to a left and right one
-            _state.bounds().split(_state.node()->inner().splitPos(),
-                                  _state.node()->inner().axis(),
+            bounds_type _left, _right;
+            state_.bounds().split(state_.node()->inner().splitPos(),
+                                  state_.node()->inner().axis(),
                                   _left,_right);
 
+            insert(state_.node()->attributes().primitive());
+            
             /// Calculate primitives squared distance to node's bounds
             scalar_type _leftDist = algorithm::sqrDistance(*primitive_,_left),
                         _rightDist = algorithm::sqrDistance(*primitive_,_right);
             bool _leftFirst = _leftDist <= _rightDist;
             scalar_type _minDist = container_.minDistance();
 
-            bool _traverseLeft = _leftDist <= _minDist;
+            bool _traverseLeft  = _leftDist <= _minDist;
             bool _traverseRight = _rightDist <= _minDist;
-
-            insert(_state.node()->attributes().primitive());
 
             if (_leftFirst)
             {
-              if (_traverseRight)
-              {
-                base_visitor_type::traverseRight(_pushedState);
-                _pushedState.bounds(_right);
-              }
-              base_visitor_type::traverseLeft(_state);
-              _state.bounds(_left);
+              if (_traverseRight) traverseRight(_pushedState,_right);
+              traverseLeft(state_,_left);
               return _traverseRight;
             }
             else
             {
-              if (_traverseLeft)
-              {
-                base_visitor_type::traverseLeft(_pushedState);
-                _pushedState.bounds(_left);
-              }
-              base_visitor_type::traverseRight(_state);
-              _state.bounds(_right);
+             if (_traverseLeft) traverseLeft(_pushedState,_left);
+              traverseRight(state_,_right);
               return _traverseLeft;
             }
             return false;
@@ -243,21 +237,33 @@ namespace tomo
             /// replace it
             typename kdtree_type::node_cntr_type::prim_const_iterator _begin, _end;
             typedef typename kdtree_type::leaf_node_type leaf_node_type;
-            const leaf_node_type& _leaf = base_visitor_type::state().node()->leaf();
+            const leaf_node_type& _leaf = state_.node()->leaf();
             
-            base_visitor_type::kdTree().nodes().leafRange(_leaf,_begin,_end);
+            insert(state_.node()->attributes().primitive());
+
+            kdTree().nodes().leafRange(_leaf,_begin,_end);
             for (auto it = _begin; it != _end; ++it) insert(*it);
 
             return false;
           }
+
+        const kdtree_type& kdTree() const
+        {
+          return kdTree_;
+        }
+
         
         private:
           void insert(const primitive_type* _primitive)
           {
             if (_primitive == primitive_ || _primitive == nullptr) return;
-            scalar_type _distance = algorithm::sqrDistance(*primitive_,*_primitive);
+            scalar_type _distance = algorithm::sqrDistance(*_primitive,*primitive_);
+
+            if (_distance > 0.000001) return;
             container_.insert(_distance,_primitive);
           }
+
+          kdtree_type& kdTree_;
         };
 
         template<typename PRIMITIVE>
